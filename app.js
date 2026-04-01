@@ -12,7 +12,6 @@ canvas.height = rect.height;
 // =====================
 let db = { areas: [], nodes: [], links: [] };
 let currentTool = "select";
-let activeButton = document.getElementById("selectButton");
 let selectedNode = null;
 let selectedArea = null;
 let draggingNode = null;
@@ -21,6 +20,36 @@ let draggingOffset = { x: 0, y: 0 };
 let resizingArea = null;
 let resizing = false;
 let linkStart = null;
+
+const actions = {
+    tool: (btn) => toggleTool(btn.dataset.tool, btn),
+
+    new: () => clearAll(),
+
+    "export-json": () => exportFile(false),
+    "export-gzip": () => exportFile(true),
+    "export-png": () => exportPNG(),
+
+    import: () => triggerImport(),
+};
+
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    if (actions[action]) {
+        actions[action](btn);
+    }
+});
+
+function setActiveToolButton(tool) {
+    document.querySelectorAll("[data-action='tool']")
+        .forEach(b => b.classList.remove("active"));
+
+    const btn = document.querySelector(`[data-tool='${tool}']`);
+    if (btn) btn.classList.add("active");
+}
 
 // =====================
 // ICONOS
@@ -292,27 +321,18 @@ function toggleTool(tool, button) {
     // Si haces click en la misma tool
     if (currentTool === tool) {
         if (tool === "select") return;
-        const selectBtn = document.getElementById("selectButton");
-        if (selectBtn) {
-            if (activeButton) activeButton.classList.remove("active");
 
-            currentTool = "select";
-            activeButton = selectBtn;
-            selectBtn.classList.add("active");
-        }
+        currentTool = "select";
+        setActiveToolButton("select");
 
         linkStart = null;
         updateCursor();
         return;
     }
 
-    // Cambiar de tool normal
-    if (activeButton) activeButton.classList.remove("active");
-
+    // Cambiar tool
     currentTool = tool;
-    activeButton = button;
-
-    if (button) button.classList.add("active");
+    setActiveToolButton(tool);
 
     linkStart = null;
     updateCursor();
@@ -479,6 +499,7 @@ canvas.addEventListener("mousedown", (e) => {
         createTextNode(x - 50, y - 25);
         // centramos el rectángulo
         render();
+        return;
     }
 
     if (area && isOnResizeHandle(area, x, y)) {
@@ -509,6 +530,7 @@ canvas.addEventListener("mousedown", (e) => {
             clearInspector();
         }
         render();
+        return;
     }
 });
 
@@ -924,6 +946,12 @@ function resetState() {
     selectedNode = null;
     selectedArea = null;
     linkStart = null;
+
+    draggingNode = null;
+    draggingArea = null;
+    resizing = false;
+    resizingArea = null;
+
     clearInspector();
 }
 
@@ -931,10 +959,9 @@ function resetState() {
 // INIT
 // =====================
 function init() {
-    const selectBtn = document.getElementById("selectButton");
     currentTool = "select";
-    activeButton = selectBtn;
-    selectBtn.classList.add("active");
+
+    setActiveToolButton("select");
 
     clearInspector();
     updateCursor();

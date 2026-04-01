@@ -10,17 +10,17 @@
 
 <body>
 
-    <!-- Barra superior -->
+    <!-- ===================== -->
+    <!-- BARRA SUPERIOR -->
+    <!-- ===================== -->
     <div id="topbar">
         <b id="logo">RED CENTRO</b>
 
-        <!-- NUEVA HOJA -->
-        <button onclick="clearAll()">
+        <button data-action="new">
             <img src="img/tools/new.svg" class="btn-icon">
             Nueva hoja
         </button>
 
-        <!-- EXPORTAR DROPDOWN -->
         <div class="dropdown">
             <button class="dropbtn">
                 <img src="img/tools/floppy.svg" class="btn-icon">
@@ -29,17 +29,17 @@
 
             <div class="dropdown-content">
 
-                <button onclick="exportFile(false)">
+                <button data-action="export-json">
                     <img src="img/tools/json.svg" class="btn-icon">
                     <span>Texto JSON</span>
                 </button>
 
-                <button onclick="exportFile(true)">
+                <button data-action="export-gzip">
                     <img src="img/tools/zip.svg" class="btn-icon">
                     <span>Comprimido GZIP</span>
                 </button>
 
-                <button onclick="exportPNG()">
+                <button data-action="export-png">
                     <img src="img/tools/picture.svg" class="btn-icon">
                     <span>Imagen PNG</span>
                 </button>
@@ -47,8 +47,7 @@
             </div>
         </div>
 
-        <!-- IMPORTAR (UN SOLO BOTÓN) -->
-        <button onclick="triggerImport()">
+        <button data-action="import">
             <img src="img/tools/folder.svg" class="btn-icon">
             Cargar archivo
         </button>
@@ -56,60 +55,70 @@
         <input type="file" id="importFile" accept=".json,.gz,.gzip" style="display:none;">
     </div>
 
+    <!-- ===================== -->
     <!-- CONTENEDOR PRINCIPAL -->
+    <!-- ===================== -->
     <div id="container">
 
+        <!-- ===================== -->
         <!-- TOOLBAR IZQUIERDA -->
+        <!-- ===================== -->
         <div id="toolbar">
 
             <h5>Dispositivos</h5>
 
-            <button class="tool-btn" data-label="Router" onclick="toggleTool('router', this)">
+            <button class="tool-btn" data-action="tool" data-tool="router">
                 <img src="img/devices/router.svg" class="btn-icon">&nbsp;Router
             </button>
 
-            <button class="tool-btn" data-label="Switch" onclick="toggleTool('switch', this)">
+            <button class="tool-btn" data-action="tool" data-tool="switch">
                 <img src="img/devices/switch.svg" class="btn-icon">&nbsp;Switch
             </button>
 
-            <button class="tool-btn" data-label="PC" onclick="toggleTool('pc', this)">
+            <button class="tool-btn" data-action="tool" data-tool="pc">
                 <img src="img/devices/pc.svg" class="btn-icon">&nbsp;PC
             </button>
 
-            <button class="tool-btn" data-label="Patch" onclick="toggleTool('patch', this)">
+            <button class="tool-btn" data-action="tool" data-tool="patch">
                 <img src="img/devices/patch.svg" class="btn-icon">&nbsp;Patch panel
             </button>
 
             <h5>Relaciones</h5>
 
-            <button class="tool-btn" onclick="toggleTool('link', this)">
+            <button class="tool-btn" data-action="tool" data-tool="link">
                 <img src="img/tools/cable.svg" class="btn-icon">&nbsp;Enlace
             </button>
 
-            <button class="tool-btn" onclick="toggleTool('area', this)">
+            <button class="tool-btn" data-action="tool" data-tool="area">
                 <img src="img/tools/area.svg" class="btn-icon">&nbsp;Área
             </button>
 
             <h5>Herramientas</h5>
 
-            <button class="tool-btn active" id="selectButton" onclick="toggleTool('select', this)">
+            <button class="tool-btn active" id="selectButton"
+                    data-action="tool" data-tool="select">
                 <img src="img/tools/cursor.svg" class="btn-icon">&nbsp;Selección
             </button>
 
-            <button class="tool-btn" onclick="toggleTool('text', this)">
+            <button class="tool-btn" data-action="tool" data-tool="text">
                 <img src="img/tools/text.svg" class="btn-icon">&nbsp;Texto
             </button>
 
-            <button class="tool-btn" id="deleteButton" onclick="toggleTool('delete', this)">
+            <button class="tool-btn" id="deleteButton"
+                    data-action="tool" data-tool="delete">
                 <img src="img/tools/delete.svg" class="btn-icon">&nbsp;Eliminar
             </button>
 
         </div>
 
-        <!-- CANVAS CENTRAL -->
+        <!-- ===================== -->
+        <!-- CANVAS -->
+        <!-- ===================== -->
         <canvas id="canvas" width="900" height="600"></canvas>
 
-        <!-- INSPECTOR DERECHA -->
+        <!-- ===================== -->
+        <!-- INSPECTOR -->
+        <!-- ===================== -->
         <div id="inspector">
             <h3>Propiedades</h3>
             <div id="props"></div>
@@ -117,7 +126,11 @@
 
     </div>
 
+    <!-- ===================== -->
+    <!-- SCRIPT -->
+    <!-- ===================== -->
     <script src="app.js"></script>
+
 </body>
 
 </html>
