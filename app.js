@@ -11,8 +11,8 @@ canvas.height = rect.height;
 // ESTADO
 // =====================
 let db = { areas: [], nodes: [], links: [] };
-let currentTool = null;
-let activeButton = null;
+let currentTool = "select";
+let activeButton = document.getElementById("selectButton");
 let selectedNode = null;
 let selectedArea = null;
 let draggingNode = null;
@@ -32,24 +32,37 @@ const icons = {
     patch: loadIcon("img/devices/patch.svg"),
     area: loadIcon("img/devices/area.svg")
 };
-function loadIcon(src) { const img = new Image(); img.src = src; return img; }
+function loadIcon(src) {
+    const img = new Image();
+    img.src = src;
+    return img;
+}
 
 // =====================
 // UTIL
 // =====================
-function uuid() { return crypto.randomUUID(); }
-function getMousePos(evt) { const r = canvas.getBoundingClientRect(); return { x: evt.clientX - r.left, y: evt.clientY - r.top }; }
+function uuid() {
+    return crypto.randomUUID();
+}
+function getMousePos(evt) {
+    const r = canvas.getBoundingClientRect();
+    return { x: evt.clientX - r.left, y: evt.clientY - r.top };
+}
 function getNodeAt(x, y) {
     return db.nodes.find(n => {
-        const w = n._width || 50;   // fallback al tamaño fijo
+        const w = n._width || 50;
+        // fallback al tamaño fijo
         const h = n._height || 50;
         return x >= n.position.x && x <= n.position.x + w &&
             y >= n.position.y && y <= n.position.y + h;
     });
 }
-function getAreaAt(x, y) { return db.areas.find(a => x >= a.x && x <= a.x + a.width && y >= a.y && y <= a.y + a.height); }
+function getAreaAt(x, y) {
+    return db.areas.find(a => x >= a.x && x <= a.x + a.width && y >= a.y && y <= a.y + a.height);
+}
 function isOnResizeHandle(area, x, y) {
-    const handleSize = 10; // tamaño del cuadrado rojo
+    const handleSize = 10;
+    // tamaño del cuadrado rojo
     return x >= area.x + area.width - handleSize && x <= area.x + area.width &&
         y >= area.y + area.height - handleSize && y <= area.y + area.height;
 }
@@ -80,7 +93,9 @@ function getLinkAt(x, y) {
         const uy = dx / len;
         const gap = 10;
 
-        for (let i = 0; i < links.length; i++) {
+        for (let i = 0;
+            i < links.length;
+            i++) {
             const link = links[i];
             const offset = (i - (links.length - 1) / 2) * gap;
             const ox = ux * offset;
@@ -100,25 +115,6 @@ function getLinkAt(x, y) {
         }
     }
     return null;
-}
-
-// =====================
-// DELETE
-// =====================
-function deleteAt(x, y) {
-    const node = getNodeAt(x, y);
-    if (node) {
-        db.nodes = db.nodes.filter(n => n.id !== node.id);
-        db.links = db.links.filter(l => l.from.nodeId !== node.id && l.to.nodeId !== node.id);
-        return;
-    }
-    const link = getLinkAt(x, y);
-    if (link) {
-        db.links = db.links.filter(l => l.id !== link.id);
-        return;
-    }
-    const area = getAreaAt(x, y);
-    if (area) db.areas = db.areas.filter(a => a.id !== area.id);
 }
 
 // =====================
@@ -166,7 +162,8 @@ function drawArea(a) {
     ctx.strokeRect(a.x, a.y, a.width, a.height);
 
     ctx.fillStyle = "black";
-    ctx.textAlign = "left"; // 👈 explícito
+    ctx.textAlign = "left";
+    // 👈 explícito
     ctx.textBaseline = "top";
 
     ctx.fillText(a.name, a.x + 5, a.y + 5);
@@ -177,10 +174,12 @@ function drawArea(a) {
     ctx.restore();
 }
 function drawNode(n) {
-    ctx.save(); // 👈 guardar estado
+    ctx.save();
+    // 👈 guardar estado
 
     if (n.type === "text") {
-        ctx.font = "12px Arial"; // definir font antes de medir texto
+        ctx.font = "12px Arial";
+        // definir font antes de medir texto
         const padding = 10;
 
         // Dividimos líneas
@@ -245,22 +244,36 @@ function drawNode(n) {
 
     ctx.fillText(n.name, n.position.x + 25, n.position.y + 52);
 
-    ctx.restore(); // 👈 restaurar estado
+    ctx.restore();
+    // 👈 restaurar estado
 }
 function drawLinks() {
     const groups = {};
-    db.links.forEach(l => { const k = [l.from.nodeId, l.to.nodeId].sort().join('_'); if (!groups[k]) groups[k] = []; groups[k].push(l); });
+    db.links.forEach(l => {
+        const k = [l.from.nodeId, l.to.nodeId].sort().join('_');
+        if (!groups[k]) groups[k] = [];
+        groups[k].push(l);
+    });
     for (const k in groups) {
-        const ls = groups[k]; const f = db.nodes.find(n => n.id === ls[0].from.nodeId); const t = db.nodes.find(n => n.id === ls[0].to.nodeId);
+        const ls = groups[k];
+        const f = db.nodes.find(n => n.id === ls[0].from.nodeId);
+        const t = db.nodes.find(n => n.id === ls[0].to.nodeId);
         if (!f || !t) continue;
-        const dx = t.position.x - f.position.x; const dy = t.position.y - f.position.y; const len = Math.sqrt(dx * dx + dy * dy);
-        const ux = -dy / len; const uy = dx / len; const gap = 10;
+        const dx = t.position.x - f.position.x;
+        const dy = t.position.y - f.position.y;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        const ux = -dy / len;
+        const uy = dx / len;
+        const gap = 10;
         ls.forEach((l, i) => {
-            const off = (i - (ls.length - 1) / 2) * gap; const ox = ux * off; const oy = uy * off;
+            const off = (i - (ls.length - 1) / 2) * gap;
+            const ox = ux * off;
+            const oy = uy * off;
             ctx.beginPath();
             ctx.moveTo(f.position.x + 25 + ox, f.position.y + 25 + oy);
             ctx.lineTo(t.position.x + 25 + ox, t.position.y + 25 + oy);
-            ctx.strokeStyle = "black"; ctx.stroke();
+            ctx.strokeStyle = "black";
+            ctx.stroke();
         });
     }
 }
@@ -275,11 +288,40 @@ function render() {
 // TOOLS
 // =====================
 function toggleTool(tool, button) {
-    if (currentTool === tool) { currentTool = null; if (button) button.classList.remove("active"); activeButton = null; linkStart = null; updateCursor(); return; }
+
+    // Si haces click en la misma tool
+    if (currentTool === tool) {
+        if (tool === "select") return;
+        const selectBtn = document.getElementById("selectButton");
+        if (selectBtn) {
+            if (activeButton) activeButton.classList.remove("active");
+
+            currentTool = "select";
+            activeButton = selectBtn;
+            selectBtn.classList.add("active");
+        }
+
+        linkStart = null;
+        updateCursor();
+        return;
+    }
+
+    // Cambiar de tool normal
     if (activeButton) activeButton.classList.remove("active");
-    currentTool = tool; activeButton = button; if (button) button.classList.add("active"); linkStart = null; updateCursor();
+
+    currentTool = tool;
+    activeButton = button;
+
+    if (button) button.classList.add("active");
+
+    linkStart = null;
+    updateCursor();
 }
-function clearTool() { currentTool = null; linkStart = null; if (activeButton) activeButton.classList.remove("active"); activeButton = null; updateCursor(); }
+
+function clearTool() {
+    const selectBtn = document.getElementById("selectButton");
+    toggleTool("select", selectBtn);
+}
 
 // =====================
 // CURSOR Y MOVIMIENTO INTEGRADO
@@ -316,7 +358,7 @@ function updateCursor() {
     // CURSOR SOBRE NODOS
     if (!cursorSet && !draggingNode && !draggingArea && !resizing) {
         // Solo poner pointer si no estamos en herramientas de creación o link
-        if (!["router", "switch", "pc", "patch", "link", "delete", "area"].includes(currentTool)) {
+        if (currentTool === "select") {
             const node = getNodeAt(lastMouseX, lastMouseY);
             if (node) {
                 canvas.style.cursor = "pointer";
@@ -356,31 +398,96 @@ function updateCursor() {
 // =====================
 // EVENTS
 // =====================
+
+function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
+    let node = selectedNode;
+    let area = selectedArea;
+    let link = null;
+
+    // Si viene por coordenadas (click con tool delete)
+    if (x !== null && y !== null) {
+        node = getNodeAt(x, y);
+        if (!node) link = getLinkAt(x, y);
+        if (!node && !link) area = getAreaAt(x, y);
+    }
+
+    if (!node && !area && !link) return;
+
+    if (confirmDelete) {
+        const ok = confirm("¿Seguro que quieres eliminar el elemento seleccionado?");
+        if (!ok) return;
+    }
+
+    // BORRAR NODO
+    if (node) {
+        db.nodes = db.nodes.filter(n => n.id !== node.id);
+        db.links = db.links.filter(l =>
+            l.from.nodeId !== node.id &&
+            l.to.nodeId !== node.id
+        );
+    }
+
+    // BORRAR LINK
+    if (link) {
+        db.links = db.links.filter(l => l.id !== link.id);
+    }
+
+    // BORRAR AREA
+    if (area) {
+        db.areas = db.areas.filter(a => a.id !== area.id);
+    }
+
+    selectedNode = null;
+    selectedArea = null;
+    clearInspector();
+    render();
+}
+
 canvas.addEventListener("mousedown", (e) => {
     const { x, y } = getMousePos(e);
     const node = getNodeAt(x, y);
     const area = getAreaAt(x, y);
 
-    if (currentTool === "delete") { deleteAt(x, y); selectedNode = null; selectedArea = null; clearInspector(); render(); return; }
+    if (currentTool === "delete") {
+        deleteSelection({ x, y, confirmDelete: true });
+        return;
+    }
 
-    if (["router", "switch", "patch", "pc"].includes(currentTool)) { createNode(currentTool, x - 25, y - 25); render(); return; }
-    if (currentTool === "area") { createArea(x - 75, y - 50); render(); return; }
+    if (["router", "switch", "patch", "pc"].includes(currentTool)) {
+        createNode(currentTool, x - 25, y - 25);
+        render();
+        return;
+    }
+    if (currentTool === "area") {
+        createArea(x - 75, y - 50);
+        render();
+        return;
+    }
 
     if (currentTool === "link") {
         if (!node) return;
         if (!linkStart) linkStart = node;
-        else if (node !== linkStart) { db.links.push({ id: uuid(), type: "ethernet", from: { nodeId: linkStart.id }, to: { nodeId: node.id } }); linkStart = null; }
-        render(); return;
+        else if (node !== linkStart) {
+            db.links.push({ id: uuid(), type: "ethernet", from: { nodeId: linkStart.id }, to: { nodeId: node.id } });
+            linkStart = null;
+        }
+        render();
+        return;
     }
 
     if (currentTool === "text") {
-        createTextNode(x - 50, y - 25); // centramos el rectángulo
+        createTextNode(x - 50, y - 25);
+        // centramos el rectángulo
         render();
     }
 
-    if (area && isOnResizeHandle(area, x, y)) { resizingArea = area; resizing = true; return; }
+    if (area && isOnResizeHandle(area, x, y)) {
+        resizingArea = area;
+        resizing = true;
+        return;
+    }
 
-    if (!currentTool) {
+    if (currentTool === "select") {
         if (node) {
             selectedNode = node;
             selectedArea = null;
@@ -391,7 +498,8 @@ canvas.addEventListener("mousedown", (e) => {
         else if (area) {
             selectedArea = area;
             selectedNode = null;
-            updateAreaInspector(area); // <-- aquí mostramos propiedades del área
+            updateAreaInspector(area);
+            // <-- aquí mostramos propiedades del área
             draggingArea = area;
             draggingOffset = { x: x - area.x, y: y - area.y };
         }
@@ -445,7 +553,8 @@ canvas.addEventListener("mousemove", (e) => {
     if (cursorIcon && cursorIcon.complete) {
         ctx.save();
         ctx.globalAlpha = 0.5;
-        const size = 25; // 50% del tamaño normal 50px
+        const size = 25;
+        // 50% del tamaño normal 50px
         ctx.drawImage(cursorIcon, x - size / 2, y - size / 2, size, size);
         ctx.restore();
     }
@@ -465,48 +574,46 @@ canvas.addEventListener("mousemove", (e) => {
     updateCursor();
 });
 
-canvas.addEventListener("mouseup", () => { draggingNode = null; draggingArea = null; resizing = false; resizingArea = null; updateCursor(); });
-canvas.addEventListener("contextmenu", (e) => { e.preventDefault(); if (currentTool === "link" && linkStart) { linkStart = null; render(); } });
-document.addEventListener("keydown", (e) => {
+canvas.addEventListener("mouseup", () => {
+    draggingNode = null;
+    draggingArea = null;
+    resizing = false;
+    resizingArea = null;
+    updateCursor();
+});
+canvas.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    if (currentTool === "link" && linkStart) {
+        linkStart = null;
+        render();
+    }
+});
 
+document.addEventListener("keydown", (e) => {
     // ESC → cancelar selección / herramienta
     if (e.key === "Escape") {
         resetState();
-        clearTool();
+
+        const selectBtn = document.getElementById("selectButton");
+        toggleTool("select", selectBtn);
+
         render();
         return;
     }
 
-    if (
-        e.key === "Delete" &&
-        !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
-    ) {
+    // SUPR → activar Eliminar y borrar si hay selección
+    if (e.key === "Delete" &&
+        !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
 
-        const hasSelection = selectedNode || selectedArea;
-        if (!hasSelection) return;
+        const deleteButton = document.getElementById("deleteButton");
 
-        const ok = confirm("¿Seguro que quieres eliminar el elemento seleccionado?");
-        if (!ok) return;
+        toggleTool('delete', deleteButton);
 
-        // BORRAR NODO
-        if (selectedNode) {
-            db.nodes = db.nodes.filter(n => n.id !== selectedNode.id);
-            db.links = db.links.filter(l =>
-                l.from.nodeId !== selectedNode.id &&
-                l.to.nodeId !== selectedNode.id
-            );
-        }
-
-        // BORRAR ÁREA
-        if (selectedArea) {
-            db.areas = db.areas.filter(a => a.id !== selectedArea.id);
-        }
-
-        // Limpiar selección
-        selectedNode = null;
-        selectedArea = null;
-        clearInspector();
-        render();
+        setTimeout(() => {
+            if (selectedNode || selectedArea) {
+                deleteSelection({ confirmDelete: true });
+            }
+        }, 0);
     }
 });
 
@@ -566,12 +673,27 @@ function updateInspector(node) {
 }
 
 function saveNodeId(oldId) {
-    const input = document.getElementById("nodeIdInput"); const error = document.getElementById("errorMsg"); const newId = input.value.trim();
-    if (!newId) { error.textContent = "El ID no puede estar vacío"; return; }
-    if (db.nodes.some(n => n.id === newId && n.id !== oldId)) { error.textContent = "Ya existe un dispositivo con ese ID"; return; }
-    const node = db.nodes.find(n => n.id === oldId); node.id = newId; node.name = newId;
-    db.links.forEach(l => { if (l.from.nodeId === oldId) l.from.nodeId = newId; if (l.to.nodeId === oldId) l.to.nodeId = newId; });
-    error.textContent = "✔ Guardado correctamente"; error.style.color = "green"; render();
+    const input = document.getElementById("nodeIdInput");
+    const error = document.getElementById("errorMsg");
+    const newId = input.value.trim();
+    if (!newId) {
+        error.textContent = "El ID no puede estar vacío";
+        return;
+    }
+    if (db.nodes.some(n => n.id === newId && n.id !== oldId)) {
+        error.textContent = "Ya existe un dispositivo con ese ID";
+        return;
+    }
+    const node = db.nodes.find(n => n.id === oldId);
+    node.id = newId;
+    node.name = newId;
+    db.links.forEach(l => {
+        if (l.from.nodeId === oldId) l.from.nodeId = newId;
+        if (l.to.nodeId === oldId) l.to.nodeId = newId;
+    });
+    error.textContent = "✔ Guardado correctamente";
+    error.style.color = "green";
+    render();
 }
 
 function saveNodeName(nodeId) {
@@ -596,7 +718,9 @@ function saveNodeText(nodeId) {
     render();
 }
 
-function clearInspector() { document.getElementById("props").innerHTML = "<i>Selecciona un elemento</i>"; }
+function clearInspector() {
+    document.getElementById("props").innerHTML = "<i>Selecciona un elemento</i>";
+}
 
 // =====================
 // INSPECTOR ÁREA
@@ -625,7 +749,10 @@ function saveAreaId(oldId) {
     const input = document.getElementById("areaIdInput");
     const error = document.getElementById("areaErrorMsg");
     const newId = input.value.trim();
-    if (!newId) { error.textContent = "El ID no puede estar vacío"; return; }
+    if (!newId) {
+        error.textContent = "El ID no puede estar vacío";
+        return;
+    }
     if (db.areas.some(a => a.id === newId && a.id !== oldId)) {
         error.textContent = "Ya existe un área con ese ID";
         return;
@@ -647,38 +774,39 @@ function saveAreaName(areaId) {
 // =====================
 // SAVE / LOAD
 // =====================
-function exportJSON() {
-    const blob = new Blob(
-        [JSON.stringify(db)],
-        { type: "application/json" }
-    );
+async function exportFile(compressed = false) {
+    let blob;
 
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "network.json";
-    a.click();
-}
+    if (compressed) {
+        blob = await compressJSON(db);
+    } else {
+        blob = new Blob(
+            [JSON.stringify(db, null, 2)],
+            { type: "application/json" }
+        );
+    }
 
-async function exportGZIP() {
-    const blob = await compressJSON(db);
+    const ext = compressed ? "json.gz" : "json";
 
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "network.json.gz";
-    a.click();
+    downloadBlob(blob, `network.${ext}`);
 }
 
 function exportPNG() {
-    const dataURL = canvas.toDataURL("image/png"); // Obtiene la imagen del canvas
-    const a = document.createElement("a");
-    a.href = dataURL;
-    a.download = "network.png"; // Nombre del archivo
-    a.click();
+    canvas.toBlob(blob => {
+        downloadBlob(blob, "network.png");
+    });
 }
 
-function handleImport(event) { const file = event.target.files[0]; const reader = new FileReader(); reader.onload = () => { db = JSON.parse(reader.result); clearInspector(); render(); }; reader.readAsText(file); }
+function downloadBlob(blob, filename) {
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
 
-let importMode = "json";
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 function triggerImport() {
     const input = document.getElementById("importFile");
@@ -686,73 +814,34 @@ function triggerImport() {
     input.click();
 }
 
-document.getElementById("importFile").addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = async () => {
-        try {
-            const buffer = reader.result;
-            const bytes = new Uint8Array(buffer);
-
-            // 🔍 Detectar GZIP (1F 8B)
-            const isGzip = bytes[0] === 0x1f && bytes[1] === 0x8b;
-
-            if (isGzip) {
-                const blob = new Blob([buffer]);
-                db = await decompressJSON(blob);
-            } else {
-                // asumir JSON
-                const text = new TextDecoder().decode(buffer);
-                db = JSON.parse(text);
-            }
-
-            resetState();
-            render();
-
-        } catch (err) {
-            alert("Error importando archivo: " + err.message);
-        }
-    };
-
-    reader.readAsArrayBuffer(file);
+document.getElementById("importFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) importFile(file);
 });
 
-function importJSON(file) {
-    const reader = new FileReader();
+async function importFile(file) {
+    try {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
 
-    reader.onload = () => {
-        try {
-            db = JSON.parse(reader.result);
+        const isGzip =
+            file.name.endsWith(".gz") ||
+            file.name.endsWith(".gzip") ||
+            (bytes[0] === 0x1f && bytes[1] === 0x8b);
 
-            resetState();
-            render();
-        } catch (err) {
-            alert("Error JSON: " + err.message);
+        if (isGzip) {
+            db = await decompressJSON(new Blob([buffer]));
+        } else {
+            const text = new TextDecoder().decode(buffer);
+            db = JSON.parse(text);
         }
-    };
 
-    reader.readAsText(file);
-}
+        resetState();
+        render();
 
-function importGZIP(file) {
-    const reader = new FileReader();
-
-    reader.onload = async () => {
-        try {
-            const blob = new Blob([reader.result]);
-            db = await decompressJSON(blob);
-
-            resetState();
-            render();
-        } catch (err) {
-            alert("Error GZIP: " + err.message);
-        }
-    };
-
-    reader.readAsArrayBuffer(file);
+    } catch (err) {
+        alert("Error importando archivo: " + err.message);
+    }
 }
 
 
@@ -806,7 +895,7 @@ fetch("example.json")
         render();
     })
     .catch(err => {
-        console.warn("No se pudo cargar example_min.json:", err.message);
+        console.warn("No se pudo cargar example.json:", err.message);
     });
 
 // =====================
@@ -814,7 +903,8 @@ fetch("example.json")
 // =====================
 canvas.addEventListener("dragover", (e) => {
     e.preventDefault();
-    canvas.style.border = "2px dashed blue"; // efecto visual opcional
+    canvas.style.border = "2px dashed blue";
+    // efecto visual opcional
 });
 
 canvas.addEventListener("dragleave", (e) => {
@@ -827,19 +917,7 @@ canvas.addEventListener("drop", (e) => {
     canvas.style.border = "none";
 
     const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    const name = file.name.toLowerCase();
-
-    if (name.endsWith(".json")) {
-        importJSON(file);
-    }
-    else if (name.endsWith(".gz") || name.endsWith(".json.gz") || name.endsWith(".gzip") || name.endsWith(".json.gzip")) {
-        importGZIP(file);
-    }
-    else {
-        alert("Formato no soportado");
-    }
+    if (file) importFile(file);
 });
 
 function resetState() {
@@ -852,4 +930,15 @@ function resetState() {
 // =====================
 // INIT
 // =====================
-clearInspector(); updateCursor(); render();
+function init() {
+    const selectBtn = document.getElementById("selectButton");
+    currentTool = "select";
+    activeButton = selectBtn;
+    selectBtn.classList.add("active");
+
+    clearInspector();
+    updateCursor();
+    render();
+}
+
+init();

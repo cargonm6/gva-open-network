@@ -29,12 +29,12 @@
 
             <div class="dropdown-content">
 
-                <button onclick="exportJSON()">
+                <button onclick="exportFile(false)">
                     <img src="img/tools/json.svg" class="btn-icon">
                     <span>Texto JSON</span>
                 </button>
 
-                <button onclick="exportGZIP()">
+                <button onclick="exportFile(true)">
                     <img src="img/tools/zip.svg" class="btn-icon">
                     <span>Comprimido GZIP</span>
                 </button>
@@ -92,7 +92,7 @@
 
             <h5>Herramientas</h5>
 
-            <button onclick="clearTool()">
+            <button class="tool-btn active" id="selectButton" onclick="toggleTool('select', this)">
                 <img src="img/tools/cursor.svg" class="btn-icon">&nbsp;Selección
             </button>
 
@@ -100,7 +100,7 @@
                 <img src="img/tools/text.svg" class="btn-icon">&nbsp;Texto
             </button>
 
-            <button class="tool-btn" onclick="toggleTool('delete', this)">
+            <button class="tool-btn" id="deleteButton" onclick="toggleTool('delete', this)">
                 <img src="img/tools/delete.svg" class="btn-icon">&nbsp;Eliminar
             </button>
 
