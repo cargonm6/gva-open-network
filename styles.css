@@ -13,6 +13,7 @@ h5 {
     text-align: center;
 }
 
+/* ===================== TOPBAR ===================== */
 #topbar {
     width: 100%;
     height: 40px;
@@ -42,12 +43,75 @@ h5 {
     padding: 5px 10px;
     box-sizing: border-box;
     white-space: nowrap;
-    min-width: 120px; /* ancho mínimo para desktop */
-    
+    min-width: 120px;
 }
 
 #topbar input[type="file"] {
     display: none;
+}
+
+/* ===================== DROPDOWN ===================== */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 120px;
+}
+
+/* menú */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    min-width: 170px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+    border-radius: 6px;
+    z-index: 999;
+    flex-direction: column;
+    padding: 4px 0;
+}
+
+/* mostrar menú */
+.dropdown:hover .dropdown-content {
+    display: flex;
+}
+
+/* botones del dropdown */
+.dropdown-content button {
+    width: 100%;
+    border: none;
+    background: white;
+    padding: 8px 10px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* clave */
+    gap: 8px;
+
+    text-align: left;
+}
+
+.dropdown-content button:hover {
+    background-color: #ecf0f1;
+}
+
+/* texto del dropdown */
+.dropdown-content button span {
+    flex: 1;
+    text-align: left;
 }
 
 /* ===================== CONTENEDOR PRINCIPAL ===================== */
@@ -78,33 +142,35 @@ h5 {
     padding: 5px 10px;
     box-sizing: border-box;
     white-space: nowrap;
-    min-width: 130px; /* para desktop, suficiente para texto+icono */
+    min-width: 130px;
 }
 
+/* iconos */
 #toolbar button img.btn-icon,
 #topbar button img.btn-icon,
-#topbar .custom-file-label img.btn-icon {
+#topbar .custom-file-label img.btn-icon,
+.dropdown-content button img {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
     margin: 0;
 }
 
-/* Botón activo */
+/* botón activo */
 .tool-btn.active {
     background-color: #3498db;
     color: white;
     border: 2px solid #1f618d;
 }
 
-/* ===================== CANVAS CENTRAL ===================== */
+/* ===================== CANVAS ===================== */
 canvas {
     border: 1px solid #ccc;
     flex-grow: 1;
     cursor: pointer;
 }
 
-/* ===================== INSPECTOR DERECHA ===================== */
+/* ===================== INSPECTOR ===================== */
 #inspector {
     width: 250px;
     background: #ecf0f1;
@@ -115,7 +181,7 @@ canvas {
     overflow-y: auto;
 }
 
-/* ===================== LABEL COMO BOTÓN ===================== */
+/* ===================== CUSTOM FILE LABEL ===================== */
 .custom-file-label {
     display: inline-flex;
     align-items: center;
@@ -134,7 +200,7 @@ canvas {
     white-space: nowrap;
 }
 
-/* Hover */
+/* hover global */
 #toolbar button:hover,
 #topbar button:hover,
 #topbar .custom-file-label:hover {
@@ -144,6 +210,7 @@ canvas {
 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 1024px) {
+
     #container {
         flex-direction: column;
     }
@@ -158,7 +225,7 @@ canvas {
 
     #toolbar button {
         flex: 0 0 auto;
-        width: 40px; /* ancho fijo solo para icono */
+        width: 40px;
         height: 40px;
         margin: 0;
         padding: 0;
@@ -168,7 +235,7 @@ canvas {
         overflow: visible;
     }
 
-    /* Ocultar texto dejando solo icono */
+    /* tooltip texto */
     #toolbar button::after {
         content: attr(data-label);
         position: absolute;
@@ -187,13 +254,8 @@ canvas {
         z-index: 10;
     }
 
-    /* Mostrar texto al hacer hover */
     #toolbar button:hover::after {
         opacity: 1;
-    }
-
-    #toolbar button img.btn-icon {
-        margin: 0;
     }
 
     #inspector {

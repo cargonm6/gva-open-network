@@ -1,4 +1,5 @@
 *.json
 *.png
-!example.json
-!example.png
+*.gzip
+*.gz
+!example.*

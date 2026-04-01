@@ -14,28 +14,56 @@
     <div id="topbar">
         <b id="logo">RED CENTRO</b>
 
+        <!-- NUEVA HOJA -->
         <button onclick="clearAll()">
-            <img src="img/tools/new.svg" class="btn-icon"> Nueva hoja
+            <img src="img/tools/new.svg" class="btn-icon">
+            Nueva hoja
         </button>
 
-        <button onclick="exportJSON()">
-            <img src="img/tools/floppy.svg" class="btn-icon"> Exportar JSON
+        <!-- EXPORTAR DROPDOWN -->
+        <div class="dropdown">
+            <button class="dropbtn">
+                <img src="img/tools/floppy.svg" class="btn-icon">
+                Exportar ▾
+            </button>
+
+            <div class="dropdown-content">
+
+                <button onclick="exportJSON()">
+                    <img src="img/tools/json.svg" class="btn-icon">
+                    <span>Texto JSON</span>
+                </button>
+
+                <button onclick="exportGZIP()">
+                    <img src="img/tools/zip.svg" class="btn-icon">
+                    <span>Comprimido GZIP</span>
+                </button>
+
+                <button onclick="exportPNG()">
+                    <img src="img/tools/picture.svg" class="btn-icon">
+                    <span>Imagen PNG</span>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- IMPORTAR (UN SOLO BOTÓN) -->
+        <button onclick="triggerImport()">
+            <img src="img/tools/folder.svg" class="btn-icon">
+            Cargar archivo
         </button>
 
-        <button id="exportPNG">
-            <img src="img/tools/picture.svg" class="btn-icon"> Exportar PNG
-        </button>
-
-        <button id="loadJSONBtn">
-            <img src="img/tools/folder.svg" class="btn-icon"> Cargar JSON
-        </button>
-        <input type="file" id="importFile" style="display:none;" onchange="handleImport(event)">
+        <input type="file" id="importFile" accept=".json,.gz,.gzip" style="display:none;">
     </div>
 
+    <!-- CONTENEDOR PRINCIPAL -->
     <div id="container">
-        <!-- Barra lateral izquierda -->
+
+        <!-- TOOLBAR IZQUIERDA -->
         <div id="toolbar">
+
             <h5>Dispositivos</h5>
+
             <button class="tool-btn" data-label="Router" onclick="toggleTool('router', this)">
                 <img src="img/devices/router.svg" class="btn-icon">&nbsp;Router
             </button>
@@ -75,16 +103,18 @@
             <button class="tool-btn" onclick="toggleTool('delete', this)">
                 <img src="img/tools/delete.svg" class="btn-icon">&nbsp;Eliminar
             </button>
+
         </div>
 
-        <!-- Canvas central -->
+        <!-- CANVAS CENTRAL -->
         <canvas id="canvas" width="900" height="600"></canvas>
 
-        <!-- Barra lateral derecha -->
+        <!-- INSPECTOR DERECHA -->
         <div id="inspector">
             <h3>Propiedades</h3>
             <div id="props"></div>
         </div>
+
     </div>
 
     <script src="app.js"></script>

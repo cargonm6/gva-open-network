@@ -44,7 +44,7 @@ function getNodeAt(x, y) {
         const w = n._width || 50;   // fallback al tamaño fijo
         const h = n._height || 50;
         return x >= n.position.x && x <= n.position.x + w &&
-               y >= n.position.y && y <= n.position.y + h;
+            y >= n.position.y && y <= n.position.y + h;
     });
 }
 function getAreaAt(x, y) { return db.areas.find(a => x >= a.x && x <= a.x + a.width && y >= a.y && y <= a.y + a.height); }
@@ -182,13 +182,13 @@ function drawNode(n) {
     if (n.type === "text") {
         ctx.font = "12px Arial"; // definir font antes de medir texto
         const padding = 10;
-    
+
         // Dividimos líneas
         const lines = n.text.split("\\n");
-    
+
         // Altura → 14px por línea (aproximado) + padding
         const height = lines.length * 14 + padding;
-    
+
         // Anchura → máximo de texto + padding
         let maxWidth = 0;
         lines.forEach(line => {
@@ -196,28 +196,28 @@ function drawNode(n) {
             if (w > maxWidth) maxWidth = w;
         });
         const width = maxWidth + padding;
-    
+
         // Guardamos tamaño en el nodo para hit testing y dragging
         n._width = width;
         n._height = height;
-    
+
         // Fondo
         ctx.fillStyle = "#ffffaa";
         ctx.fillRect(n.position.x, n.position.y, width, height);
-    
+
         // Borde
         ctx.strokeStyle = (n === selectedNode) ? "red" : "black";
         ctx.strokeRect(n.position.x, n.position.y, width, height);
-    
+
         // Texto
         ctx.fillStyle = "black";
         ctx.textAlign = "left";
         ctx.textBaseline = "top";
-    
+
         lines.forEach((line, i) => {
             ctx.fillText(line, n.position.x + padding / 2, n.position.y + padding / 2 + i * 14);
         });
-    
+
         return;
     }
 
@@ -471,17 +471,22 @@ document.addEventListener("keydown", (e) => {
 
     // ESC → cancelar selección / herramienta
     if (e.key === "Escape") {
-        selectedNode = null;
-        selectedArea = null;
-        linkStart = null;
-        clearInspector();
+        resetState();
         clearTool();
         render();
         return;
     }
 
-    // SUPR → borrar seleccionado
-    if (e.key === "Delete" && document.activeElement.tagName !== "INPUT") {
+    if (
+        e.key === "Delete" &&
+        !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+    ) {
+
+        const hasSelection = selectedNode || selectedArea;
+        if (!hasSelection) return;
+
+        const ok = confirm("¿Seguro que quieres eliminar el elemento seleccionado?");
+        if (!ok) return;
 
         // BORRAR NODO
         if (selectedNode) {
@@ -642,31 +647,149 @@ function saveAreaName(areaId) {
 // =====================
 // SAVE / LOAD
 // =====================
-function exportJSON() { const blob = new Blob([JSON.stringify(db, null, 0)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "network.json"; a.click(); }
-function handleImport(event) { const file = event.target.files[0]; const reader = new FileReader(); reader.onload = () => { db = JSON.parse(reader.result); clearInspector(); render(); }; reader.readAsText(file); }
+function exportJSON() {
+    const blob = new Blob(
+        [JSON.stringify(db)],
+        { type: "application/json" }
+    );
 
-document.getElementById("loadJSONBtn").addEventListener("click", () => {
-    document.getElementById("importFile").click();
-});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "network.json";
+    a.click();
+}
 
-document.getElementById("exportPNG").addEventListener("click", () => {
+async function exportGZIP() {
+    const blob = await compressJSON(db);
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "network.json.gz";
+    a.click();
+}
+
+function exportPNG() {
     const dataURL = canvas.toDataURL("image/png"); // Obtiene la imagen del canvas
     const a = document.createElement("a");
     a.href = dataURL;
     a.download = "network.png"; // Nombre del archivo
     a.click();
+}
+
+function handleImport(event) { const file = event.target.files[0]; const reader = new FileReader(); reader.onload = () => { db = JSON.parse(reader.result); clearInspector(); render(); }; reader.readAsText(file); }
+
+let importMode = "json";
+
+function triggerImport() {
+    const input = document.getElementById("importFile");
+    input.value = "";
+    input.click();
+}
+
+document.getElementById("importFile").addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = async () => {
+        try {
+            const buffer = reader.result;
+            const bytes = new Uint8Array(buffer);
+
+            // 🔍 Detectar GZIP (1F 8B)
+            const isGzip = bytes[0] === 0x1f && bytes[1] === 0x8b;
+
+            if (isGzip) {
+                const blob = new Blob([buffer]);
+                db = await decompressJSON(blob);
+            } else {
+                // asumir JSON
+                const text = new TextDecoder().decode(buffer);
+                db = JSON.parse(text);
+            }
+
+            resetState();
+            render();
+
+        } catch (err) {
+            alert("Error importando archivo: " + err.message);
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
 });
+
+function importJSON(file) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        try {
+            db = JSON.parse(reader.result);
+
+            resetState();
+            render();
+        } catch (err) {
+            alert("Error JSON: " + err.message);
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+function importGZIP(file) {
+    const reader = new FileReader();
+
+    reader.onload = async () => {
+        try {
+            const blob = new Blob([reader.result]);
+            db = await decompressJSON(blob);
+
+            resetState();
+            render();
+        } catch (err) {
+            alert("Error GZIP: " + err.message);
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+
 
 function clearAll() {
     if (!confirm("¿Estás seguro de que quieres borrar todos los elementos?")) return;
     db.nodes = [];
     db.areas = [];
     db.links = [];
-    selectedNode = null;
-    selectedArea = null;
-    linkStart = null;
-    clearInspector();
+    resetState();
     render();
+}
+
+async function compressJSON(data) {
+    const json = JSON.stringify(data);
+
+    const stream = new Blob([json]).stream();
+
+    const compressedStream = stream.pipeThrough(
+        new CompressionStream("gzip")
+    );
+
+    return await new Response(compressedStream).blob();
+}
+
+async function decompressJSON(blob) {
+    try {
+        const stream = blob.stream().pipeThrough(
+            new DecompressionStream("gzip")
+        );
+
+        const text = await new Response(stream).text();
+        return JSON.parse(text);
+
+    } catch (err) {
+        throw new Error("Archivo comprimido inválido o corrupto");
+    }
 }
 
 // =====================
@@ -679,10 +802,7 @@ fetch("example.json")
     })
     .then(data => {
         db = data;
-        selectedNode = null;
-        selectedArea = null;
-        linkStart = null;
-        clearInspector();
+        resetState();
         render();
     })
     .catch(err => {
@@ -709,26 +829,25 @@ canvas.addEventListener("drop", (e) => {
     const file = e.dataTransfer.files[0];
     if (!file) return;
 
-    if (file.type !== "application/json" && !file.name.endsWith(".json")) {
-        alert("Solo se permiten archivos JSON");
-        return;
-    }
+    const name = file.name.toLowerCase();
 
-    const reader = new FileReader();
-    reader.onload = () => {
-        try {
-            db = JSON.parse(reader.result);
-            selectedNode = null;
-            selectedArea = null;
-            linkStart = null;
-            clearInspector();
-            render();
-        } catch (err) {
-            alert("Error al leer el JSON: " + err.message);
-        }
-    };
-    reader.readAsText(file);
+    if (name.endsWith(".json")) {
+        importJSON(file);
+    }
+    else if (name.endsWith(".gz") || name.endsWith(".json.gz") || name.endsWith(".gzip") || name.endsWith(".json.gzip")) {
+        importGZIP(file);
+    }
+    else {
+        alert("Formato no soportado");
+    }
 });
+
+function resetState() {
+    selectedNode = null;
+    selectedArea = null;
+    linkStart = null;
+    clearInspector();
+}
 
 // =====================
 // INIT
