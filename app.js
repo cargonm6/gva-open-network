@@ -29,6 +29,7 @@ const icons = {
     router: loadIcon("img/devices/router.svg"),
     switch: loadIcon("img/devices/switch.svg"),
     pc: loadIcon("img/devices/pc.svg"),
+    patch: loadIcon("img/devices/patch.svg"),
     area: loadIcon("img/devices/area.svg")
 };
 function loadIcon(src) { const img = new Image(); img.src = src; return img; }
@@ -38,7 +39,14 @@ function loadIcon(src) { const img = new Image(); img.src = src; return img; }
 // =====================
 function uuid() { return crypto.randomUUID(); }
 function getMousePos(evt) { const r = canvas.getBoundingClientRect(); return { x: evt.clientX - r.left, y: evt.clientY - r.top }; }
-function getNodeAt(x, y) { return db.nodes.find(n => x >= n.position.x && x <= n.position.x + 50 && y >= n.position.y && y <= n.position.y + 50); }
+function getNodeAt(x, y) {
+    return db.nodes.find(n => {
+        const w = n._width || 50;   // fallback al tamaño fijo
+        const h = n._height || 50;
+        return x >= n.position.x && x <= n.position.x + w &&
+               y >= n.position.y && y <= n.position.y + h;
+    });
+}
 function getAreaAt(x, y) { return db.areas.find(a => x >= a.x && x <= a.x + a.width && y >= a.y && y <= a.y + a.height); }
 function isOnResizeHandle(area, x, y) {
     const handleSize = 10; // tamaño del cuadrado rojo
@@ -136,22 +144,108 @@ function createArea(x, y) {
     db.areas.push({ id, name: id, x, y, width: 150, height: 100 });
 }
 
+function createTextNode(x, y, content = "Nuevo texto") {
+    const id = generateUniqueId("text", db.nodes);
+    db.nodes.push({
+        id,
+        type: "text",
+        name: id,
+        position: { x, y },
+        text: content,       // contenido del texto
+        metadata: {}
+    });
+}
+
 // =====================
 // DRAW
 // =====================
 function drawArea(a) {
+    ctx.save();
+
     ctx.strokeStyle = (a === selectedArea) ? "red" : "gray";
     ctx.strokeRect(a.x, a.y, a.width, a.height);
-    ctx.fillStyle = "black"; ctx.textBaseline = "top";
+
+    ctx.fillStyle = "black";
+    ctx.textAlign = "left"; // 👈 explícito
+    ctx.textBaseline = "top";
+
     ctx.fillText(a.name, a.x + 5, a.y + 5);
+
     ctx.fillStyle = "red";
     ctx.fillRect(a.x + a.width - 10, a.y + a.height - 10, 10, 10);
+
+    ctx.restore();
 }
 function drawNode(n) {
+    ctx.save(); // 👈 guardar estado
+
+    if (n.type === "text") {
+        ctx.font = "12px Arial"; // definir font antes de medir texto
+        const padding = 10;
+    
+        // Dividimos líneas
+        const lines = n.text.split("\\n");
+    
+        // Altura → 14px por línea (aproximado) + padding
+        const height = lines.length * 14 + padding;
+    
+        // Anchura → máximo de texto + padding
+        let maxWidth = 0;
+        lines.forEach(line => {
+            const w = ctx.measureText(line).width;
+            if (w > maxWidth) maxWidth = w;
+        });
+        const width = maxWidth + padding;
+    
+        // Guardamos tamaño en el nodo para hit testing y dragging
+        n._width = width;
+        n._height = height;
+    
+        // Fondo
+        ctx.fillStyle = "#ffffaa";
+        ctx.fillRect(n.position.x, n.position.y, width, height);
+    
+        // Borde
+        ctx.strokeStyle = (n === selectedNode) ? "red" : "black";
+        ctx.strokeRect(n.position.x, n.position.y, width, height);
+    
+        // Texto
+        ctx.fillStyle = "black";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+    
+        lines.forEach((line, i) => {
+            ctx.fillText(line, n.position.x + padding / 2, n.position.y + padding / 2 + i * 14);
+        });
+    
+        return;
+    }
+
     const icon = icons[n.type];
-    if (icon && icon.complete) ctx.drawImage(icon, n.position.x, n.position.y, 50, 50);
-    else { ctx.fillStyle = "#3498db"; ctx.fillRect(n.position.x, n.position.y, 50, 50); }
-    if (n === selectedNode) { ctx.strokeStyle = "red"; ctx.strokeRect(n.position.x, n.position.y, 50, 50); }
+
+    // Icono
+    if (icon && icon.complete) {
+        ctx.drawImage(icon, n.position.x, n.position.y, 50, 50);
+    } else {
+        ctx.fillStyle = "#3498db";
+        ctx.fillRect(n.position.x, n.position.y, 50, 50);
+    }
+
+    // Selección
+    if (n === selectedNode) {
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(n.position.x, n.position.y, 50, 50);
+    }
+
+    // Nombre
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.font = "12px Arial";
+
+    ctx.fillText(n.name, n.position.x + 25, n.position.y + 52);
+
+    ctx.restore(); // 👈 restaurar estado
 }
 function drawLinks() {
     const groups = {};
@@ -222,7 +316,7 @@ function updateCursor() {
     // CURSOR SOBRE NODOS
     if (!cursorSet && !draggingNode && !draggingArea && !resizing) {
         // Solo poner pointer si no estamos en herramientas de creación o link
-        if (!["router", "switch", "pc", "link", "delete", "area"].includes(currentTool)) {
+        if (!["router", "switch", "pc", "patch", "link", "delete", "area"].includes(currentTool)) {
             const node = getNodeAt(lastMouseX, lastMouseY);
             if (node) {
                 canvas.style.cursor = "pointer";
@@ -233,12 +327,16 @@ function updateCursor() {
 
     // CREACION DE NODOS
     if (!cursorSet) {
-        if (["router", "switch", "pc", "area"].includes(currentTool)) {
+        if (["router", "switch", "pc", "patch", "area"].includes(currentTool)) {
             canvas.style.cursor = "crosshair";
             cursorIcon = icons[currentTool];
             cursorSet = true;
         } else if (currentTool === "link") {
             canvas.style.cursor = "crosshair";
+            cursorIcon = null;
+            cursorSet = true;
+        } else if (currentTool === "text") {
+            canvas.style.cursor = "text";
             cursorIcon = null;
             cursorSet = true;
         } else if (currentTool === "delete") {
@@ -265,7 +363,7 @@ canvas.addEventListener("mousedown", (e) => {
 
     if (currentTool === "delete") { deleteAt(x, y); selectedNode = null; selectedArea = null; clearInspector(); render(); return; }
 
-    if (["router", "switch", "pc"].includes(currentTool)) { createNode(currentTool, x - 25, y - 25); render(); return; }
+    if (["router", "switch", "patch", "pc"].includes(currentTool)) { createNode(currentTool, x - 25, y - 25); render(); return; }
     if (currentTool === "area") { createArea(x - 75, y - 50); render(); return; }
 
     if (currentTool === "link") {
@@ -273,6 +371,11 @@ canvas.addEventListener("mousedown", (e) => {
         if (!linkStart) linkStart = node;
         else if (node !== linkStart) { db.links.push({ id: uuid(), type: "ethernet", from: { nodeId: linkStart.id }, to: { nodeId: node.id } }); linkStart = null; }
         render(); return;
+    }
+
+    if (currentTool === "text") {
+        createTextNode(x - 50, y - 25); // centramos el rectángulo
+        render();
     }
 
     if (area && isOnResizeHandle(area, x, y)) { resizingArea = area; resizing = true; return; }
@@ -364,24 +467,95 @@ canvas.addEventListener("mousemove", (e) => {
 
 canvas.addEventListener("mouseup", () => { draggingNode = null; draggingArea = null; resizing = false; resizingArea = null; updateCursor(); });
 canvas.addEventListener("contextmenu", (e) => { e.preventDefault(); if (currentTool === "link" && linkStart) { linkStart = null; render(); } });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") { selectedNode = null; selectedArea = null; linkStart = null; clearInspector(); clearTool(); render(); } });
+document.addEventListener("keydown", (e) => {
+
+    // ESC → cancelar selección / herramienta
+    if (e.key === "Escape") {
+        selectedNode = null;
+        selectedArea = null;
+        linkStart = null;
+        clearInspector();
+        clearTool();
+        render();
+        return;
+    }
+
+    // SUPR → borrar seleccionado
+    if (e.key === "Delete" && document.activeElement.tagName !== "INPUT") {
+
+        // BORRAR NODO
+        if (selectedNode) {
+            db.nodes = db.nodes.filter(n => n.id !== selectedNode.id);
+            db.links = db.links.filter(l =>
+                l.from.nodeId !== selectedNode.id &&
+                l.to.nodeId !== selectedNode.id
+            );
+        }
+
+        // BORRAR ÁREA
+        if (selectedArea) {
+            db.areas = db.areas.filter(a => a.id !== selectedArea.id);
+        }
+
+        // Limpiar selección
+        selectedNode = null;
+        selectedArea = null;
+        clearInspector();
+        render();
+    }
+});
 
 // =====================
 // INSPECTOR
 // =====================
 function updateInspector(node) {
+    if (node.type === "text") {
+        const div = document.getElementById("props");
+        div.innerHTML = `
+            <label>ID:</label><br>
+            <input id="nodeIdInput" value="${node.id}"/>
+            <button onclick="saveNodeId('${node.id}')">Guardar</button><br><br>
+
+            <label>Texto:</label><br>
+            <textarea id="nodeTextInput" rows="4" cols="20">${node.text.replace(/\\n/g, "\n")}</textarea>
+            <button onclick="saveNodeText('${node.id}')">Guardar</button><br><br>
+
+            <b>X:</b> ${Math.round(node.position.x)}<br>
+            <b>Y:</b> ${Math.round(node.position.y)}<br>
+        `;
+        return;
+    }
+
     let areaName = "Ninguna";
     for (const a of db.areas) {
-        if (node.position.x >= a.x && node.position.x <= a.x + a.width && node.position.y >= a.y && node.position.y <= a.y + a.height) { areaName = a.name; break; }
+        if (
+            node.position.x >= a.x &&
+            node.position.x <= a.x + a.width &&
+            node.position.y >= a.y &&
+            node.position.y <= a.y + a.height
+        ) {
+            areaName = a.name;
+            break;
+        }
     }
+
     node.metadata.area = areaName;
+
     const div = document.getElementById("props");
     div.innerHTML = `
-        <label>ID:</label><br><input id="nodeIdInput" value="${node.id}"/><button onclick="saveNodeId('${node.id}')">Guardar</button><br><br>
+        <label>ID:</label><br>
+        <input id="nodeIdInput" value="${node.id}"/>
+        <button onclick="saveNodeId('${node.id}')">Guardar</button><br><br>
+
+        <label>Nombre:</label><br>
+        <input id="nodeNameInput" value="${node.name}"/>
+        <button onclick="saveNodeName('${node.id}')">Guardar</button><br><br>
+
         <b>Tipo:</b> ${node.type}<br>
         <b>X:</b> ${Math.round(node.position.x)}<br>
         <b>Y:</b> ${Math.round(node.position.y)}<br>
         <b>Área:</b> ${areaName}<br><br>
+
         <span id="errorMsg" style="color:red;"></span>
     `;
 }
@@ -393,6 +567,28 @@ function saveNodeId(oldId) {
     const node = db.nodes.find(n => n.id === oldId); node.id = newId; node.name = newId;
     db.links.forEach(l => { if (l.from.nodeId === oldId) l.from.nodeId = newId; if (l.to.nodeId === oldId) l.to.nodeId = newId; });
     error.textContent = "✔ Guardado correctamente"; error.style.color = "green"; render();
+}
+
+function saveNodeName(nodeId) {
+    const input = document.getElementById("nodeNameInput");
+    const node = db.nodes.find(n => n.id === nodeId);
+
+    if (!input.value.trim()) return;
+
+    node.name = input.value.trim();
+
+    render();
+}
+
+function saveNodeText(nodeId) {
+    const input = document.getElementById("nodeTextInput");
+    const node = db.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // Convertimos saltos de línea a \\n para JSON
+    node.text = input.value.replace(/\n/g, "\\n");
+
+    render();
 }
 
 function clearInspector() { document.getElementById("props").innerHTML = "<i>Selecciona un elemento</i>"; }
