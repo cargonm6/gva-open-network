@@ -674,7 +674,7 @@ function clearAll() {
 // =====================
 fetch("example.json")
     .then(response => {
-        if (!response.ok) throw new Error("No se encontró example_min.json");
+        if (!response.ok) throw new Error("No se encontró example.json");
         return response.json();
     })
     .then(data => {
