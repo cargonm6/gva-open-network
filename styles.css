@@ -21,9 +21,13 @@ h5 {
     color: white;
     display: flex;
     align-items: center;
-    padding: 5px 10px;
+    padding: 5px 5px;
     box-sizing: border-box;
-    gap: 10px;
+}
+
+#topbar #logo-img {
+    height: 60px;
+    margin-right: 5px;
 }
 
 #topbar #logo {
@@ -44,6 +48,7 @@ h5 {
     box-sizing: border-box;
     white-space: nowrap;
     min-width: 120px;
+    margin-right: 10px;
 }
 
 #topbar input[type="file"] {

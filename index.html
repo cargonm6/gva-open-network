@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>RED CENTRO</title>
+    <title>ONetMap</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -14,7 +14,7 @@
     <!-- BARRA SUPERIOR -->
     <!-- ===================== -->
     <div id="topbar">
-        <b id="logo">RED CENTRO</b>
+        <img id="logo-img" src="img/logo.svg"><b id="logo">ONetMap</b>
 
         <button data-action="new">
             <img src="img/tools/new.svg" class="btn-icon">
@@ -50,6 +50,11 @@
         <button data-action="import">
             <img src="img/tools/folder.svg" class="btn-icon">
             Cargar archivo
+        </button>
+
+        <button data-action="help">
+            <img src="img/tools/help.svg" class="btn-icon">
+            Ayuda
         </button>
 
         <input type="file" id="importFile" accept=".json,.gz,.gzip" style="display:none;">

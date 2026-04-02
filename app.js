@@ -31,6 +31,8 @@ const actions = {
     "export-png": () => exportPNG(),
 
     import: () => triggerImport(),
+
+    help: () => openHelp(),
 };
 
 document.addEventListener("click", (e) => {
@@ -941,6 +943,14 @@ canvas.addEventListener("drop", (e) => {
     const file = e.dataTransfer.files[0];
     if (file) importFile(file);
 });
+
+// =====================
+// DRAG & DROP JSON
+// =====================
+
+function openHelp() {
+    alert("Esta acción está en fase de desarrollo.");
+}
 
 function resetState() {
     selectedNode = null;
