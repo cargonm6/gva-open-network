@@ -3,9 +3,56 @@
 // =====================
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const rect = canvas.getBoundingClientRect();
-canvas.width = rect.width;
-canvas.height = rect.height;
+
+let dpr = window.devicePixelRatio || 1;
+let view = {
+    scale: 1,
+    offsetX: 0,
+    offsetY: 0
+};
+
+let renderPending = false;
+
+function requestRender() {
+    if (renderPending) return;
+
+    renderPending = true;
+
+    requestAnimationFrame(() => {
+        renderPending = false;
+        render();
+    });
+}
+
+function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    requestRender();
+}
+
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
+
+resizeCanvas();
+
+function applyTransform() {
+    const rect = canvas.getBoundingClientRect();
+
+    ctx.setTransform(
+        dpr * view.scale,
+        0,
+        0,
+        dpr * view.scale,
+        dpr * view.offsetX,
+        dpr * view.offsetY
+    );
+}
 
 // =====================
 // ESTADO
@@ -20,6 +67,9 @@ let draggingOffset = { x: 0, y: 0 };
 let resizingArea = null;
 let resizing = false;
 let linkStart = null;
+
+let mouseDownPos = null;
+let isDragging = false;
 
 const actions = {
     tool: (btn) => toggleTool(btn.dataset.tool, btn),
@@ -75,10 +125,19 @@ function loadIcon(src) {
 function uuid() {
     return crypto.randomUUID();
 }
+
 function getMousePos(evt) {
     const r = canvas.getBoundingClientRect();
-    return { x: evt.clientX - r.left, y: evt.clientY - r.top };
+
+    const x = evt.clientX - r.left;
+    const y = evt.clientY - r.top;
+
+    return screenToWorld(x, y);
 }
+
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+
 function getNodeAt(x, y) {
     return db.nodes.find(n => {
         const w = n._width || 50;
@@ -308,11 +367,49 @@ function drawLinks() {
         });
     }
 }
+
 function render() {
+    const rect = canvas.getBoundingClientRect();
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    applyTransform();
+
     db.areas.forEach(drawArea);
     drawLinks();
     db.nodes.forEach(drawNode);
+
+    // 👇 PREVIEW AQUÍ (IMPORTANTE)
+    drawPreview();
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function drawPreview() {
+    if (cursorIcon && cursorIcon.complete) {
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(cursorIcon, lastMouseX - 12, lastMouseY - 12, 25, 25);
+        ctx.restore();
+    }
+
+    if (currentTool === "link" && linkStart) {
+        ctx.beginPath();
+        ctx.moveTo(linkStart.position.x + 25, linkStart.position.y + 25);
+        ctx.lineTo(lastMouseX, lastMouseY);
+        ctx.strokeStyle = "blue";
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+}
+
+function screenToWorld(x, y) {
+    return {
+        x: (x - view.offsetX) / view.scale,
+        y: (y - view.offsetY) / view.scale
+    };
 }
 
 // =====================
@@ -353,67 +450,50 @@ let lastMouseX = 0;
 let lastMouseY = 0;
 
 function updateCursor() {
+
+    cursorIcon = null; 
+
+    // 🔥 PRIORIDAD MÁXIMA: DRAGGING
+    if (draggingNode || draggingArea || resizing) {
+        canvas.style.cursor = "move";
+        cursorIcon = null;
+        return;
+    }
+
     let cursorSet = false;
 
-    // REDIMENSIONANDO
-    if (resizing && resizingArea) {
-        canvas.style.cursor = "se-resize";
-        cursorSet = true;
-    }
-    // ARRASTRANDO
-    else if (draggingNode || draggingArea) {
-        canvas.style.cursor = "move";
-        cursorSet = true;
-    }
-    // CURSOR SOBRE HANDLE DE CUALQUIER AREA
-    else {
-        // Verificar todos los handles de resize
-        for (const area of db.areas) {
-            if (isOnResizeHandle(area, lastMouseX, lastMouseY)) {
-                canvas.style.cursor = "se-resize";
-                cursorSet = true;
-                break;
-            }
+    // RESIZE HANDLE
+    for (const area of db.areas) {
+        if (isOnResizeHandle(area, lastMouseX, lastMouseY)) {
+            canvas.style.cursor = "se-resize";
+            cursorSet = true;
+            break;
         }
     }
 
-    // CURSOR SOBRE NODOS
-    if (!cursorSet && !draggingNode && !draggingArea && !resizing) {
-        // Solo poner pointer si no estamos en herramientas de creación o link
-        if (currentTool === "select") {
-            const node = getNodeAt(lastMouseX, lastMouseY);
-            if (node) {
-                canvas.style.cursor = "pointer";
-                cursorSet = true;
-            }
+    // NODE HOVER
+    if (!cursorSet && currentTool === "select") {
+        const node = getNodeAt(lastMouseX, lastMouseY);
+        if (node) {
+            canvas.style.cursor = "pointer";
+            cursorSet = true;
         }
     }
 
-    // CREACION DE NODOS
+    // TOOLS
     if (!cursorSet) {
         if (["router", "switch", "pc", "patch", "area"].includes(currentTool)) {
             canvas.style.cursor = "crosshair";
             cursorIcon = icons[currentTool];
-            cursorSet = true;
         } else if (currentTool === "link") {
             canvas.style.cursor = "crosshair";
-            cursorIcon = null;
-            cursorSet = true;
         } else if (currentTool === "text") {
             canvas.style.cursor = "text";
-            cursorIcon = null;
-            cursorSet = true;
         } else if (currentTool === "delete") {
             canvas.style.cursor = "not-allowed";
-            cursorIcon = null;
-            cursorSet = true;
+        } else {
+            canvas.style.cursor = "default";
         }
-    }
-
-    // DEFAULT
-    if (!cursorSet) {
-        canvas.style.cursor = "default";
-        cursorIcon = null;
     }
 }
 
@@ -462,13 +542,69 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
     selectedNode = null;
     selectedArea = null;
     clearInspector();
-    render();
+    requestRender();
+}
+
+canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+
+    const mouse = getMousePos(e);
+
+    const newScale = view.scale * (e.deltaY < 0 ? 1.1 : 1 / 1.1);
+
+    setZoom(newScale, mouse.x, mouse.y);
+}, { passive: false });
+
+const zoomSlider = document.getElementById("zoomSlider");
+
+zoomSlider.addEventListener("input", (e) => {
+    const rect = canvas.getBoundingClientRect();
+
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+
+    setZoom(parseFloat(e.target.value), cx, cy);
+});
+
+function setZoom(newScale, centerX, centerY) {
+    const oldScale = view.scale;
+
+    newScale = Math.max(0.5, Math.min(2, newScale));
+
+    const scaleFactor = newScale / oldScale;
+
+    view.offsetX = centerX - (centerX - view.offsetX) * scaleFactor;
+    view.offsetY = centerY - (centerY - view.offsetY) * scaleFactor;
+
+    view.scale = newScale;
+
+    zoomSlider.value = newScale;
+
+    requestRender();
+}
+
+function resetZoom() {
+    view.scale = 1;
+    view.offsetX = 0;
+    view.offsetY = 0;
+    zoomSlider.value = 1;
+    requestRender();
 }
 
 canvas.addEventListener("mousedown", (e) => {
+    if (e.button === 1) {
+        isPanning = true;
+        panStart = { x: e.clientX, y: e.clientY };
+        canvas.style.cursor = "grabbing";
+        return;
+    }
+
     const { x, y } = getMousePos(e);
     const node = getNodeAt(x, y);
     const area = getAreaAt(x, y);
+
+    mouseDownPos = { x, y };
+    isDragging = false;
 
     if (currentTool === "delete") {
         deleteSelection({ x, y, confirmDelete: true });
@@ -477,30 +613,38 @@ canvas.addEventListener("mousedown", (e) => {
 
     if (["router", "switch", "patch", "pc"].includes(currentTool)) {
         createNode(currentTool, x - 25, y - 25);
-        render();
+        requestRender();
         return;
     }
+
     if (currentTool === "area") {
         createArea(x - 75, y - 50);
-        render();
+        requestRender();
         return;
     }
 
     if (currentTool === "link") {
         if (!node) return;
-        if (!linkStart) linkStart = node;
-        else if (node !== linkStart) {
-            db.links.push({ id: uuid(), type: "ethernet", from: { nodeId: linkStart.id }, to: { nodeId: node.id } });
+
+        if (!linkStart) {
+            linkStart = node;
+        } else if (node !== linkStart) {
+            db.links.push({
+                id: uuid(),
+                type: "ethernet",
+                from: { nodeId: linkStart.id },
+                to: { nodeId: node.id }
+            });
             linkStart = null;
         }
-        render();
+
+        requestRender();
         return;
     }
 
     if (currentTool === "text") {
         createTextNode(x - 50, y - 25);
-        // centramos el rectángulo
-        render();
+        requestRender();
         return;
     }
 
@@ -515,23 +659,17 @@ canvas.addEventListener("mousedown", (e) => {
             selectedNode = node;
             selectedArea = null;
             updateInspector(node);
-            draggingNode = node;
-            draggingOffset = { x: x - node.position.x, y: y - node.position.y };
-        }
-        else if (area) {
+        } else if (area) {
             selectedArea = area;
             selectedNode = null;
             updateAreaInspector(area);
-            // <-- aquí mostramos propiedades del área
-            draggingArea = area;
-            draggingOffset = { x: x - area.x, y: y - area.y };
-        }
-        else {
+        } else {
             selectedNode = null;
             selectedArea = null;
             clearInspector();
         }
-        render();
+
+        requestRender();
         return;
     }
 });
@@ -540,76 +678,118 @@ canvas.addEventListener("mousedown", (e) => {
 // MOUSEMOVE
 // =====================
 canvas.addEventListener("mousemove", (e) => {
+    if (isPanning) {
+        view.offsetX += e.movementX;
+        view.offsetY += e.movementY;
+        updateCursor();
+        requestRender();
+        return;
+    }
+
     const { x, y } = getMousePos(e);
     lastMouseX = x;
     lastMouseY = y;
 
-    // DRAGGING
+    // =========================
+    // detectar intención de drag
+    // =========================
+    if (mouseDownPos && !isDragging) {
+        const dx = x - mouseDownPos.x;
+        const dy = y - mouseDownPos.y;
+
+        if (Math.sqrt(dx * dx + dy * dy) > 3) {
+            isDragging = true;
+
+            if (selectedNode) {
+                draggingNode = selectedNode;
+
+                draggingOffset = {
+                    x: x - selectedNode.position.x,
+                    y: y - selectedNode.position.y
+                };
+            }
+
+            if (selectedArea) {
+                draggingArea = selectedArea;
+
+                draggingOffset = {
+                    x: x - selectedArea.x,
+                    y: y - selectedArea.y
+                };
+            }
+        }
+    }
+
+    // =========================
+    // DRAG NODE
+    // =========================
     if (draggingNode) {
         draggingNode.position.x = x - draggingOffset.x;
         draggingNode.position.y = y - draggingOffset.y;
+
         updateInspector(draggingNode);
-        render();
+        requestRender();
         updateCursor();
         return;
     }
+
+    // =========================
+    // DRAG AREA
+    // =========================
     if (draggingArea) {
         draggingArea.x = x - draggingOffset.x;
         draggingArea.y = y - draggingOffset.y;
-        render();
+
+        requestRender();
         updateCursor();
         return;
     }
 
-    // RESIZING AREA
+    // =========================
+    // RESIZE AREA
+    // =========================
     if (resizing && resizingArea) {
-        resizingArea.width = x - resizingArea.x;
-        resizingArea.height = y - resizingArea.y;
-        render();
+        const newW = x - resizingArea.x;
+        const newH = y - resizingArea.y;
+
+        resizingArea.width = Math.max(10, newW);
+        resizingArea.height = Math.max(10, newH);
+
+        requestRender();
         updateCursor();
         return;
     }
 
-    // RENDER NORMAL
-    render();
-
-    // PREVIEW DE ICONO SEMITRANSPARENTE
-    if (cursorIcon && cursorIcon.complete) {
-        ctx.save();
-        ctx.globalAlpha = 0.5;
-        const size = 25;
-        // 50% del tamaño normal 50px
-        ctx.drawImage(cursorIcon, x - size / 2, y - size / 2, size, size);
-        ctx.restore();
-    }
-
-    // LINK TEMPORAL
-    if (currentTool === "link" && linkStart) {
-        ctx.beginPath();
-        ctx.moveTo(linkStart.position.x + 25, linkStart.position.y + 25);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "blue";
-        ctx.setLineDash([5, 5]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-    }
-
-    // ACTUALIZAR CURSOR FINAL
+    // =========================
+    // hover normal
+    // =========================
+    requestRender();
     updateCursor();
 });
 
 canvas.addEventListener("mouseup", () => {
+    isPanning = false;
+
     draggingNode = null;
     draggingArea = null;
     resizing = false;
     resizingArea = null;
+
+    mouseDownPos = null;
+    isDragging = false;
+
     updateCursor();
 });
+
+canvas.addEventListener("mouseleave", () => {
+    isPanning = false;
+});
+
 canvas.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     if (currentTool === "link" && linkStart) {
         linkStart = null;
-        render();
+        requestRender();
     }
 });
 
@@ -621,7 +801,7 @@ document.addEventListener("keydown", (e) => {
         const selectBtn = document.getElementById("selectButton");
         toggleTool("select", selectBtn);
 
-        render();
+        requestRender();
         return;
     }
 
@@ -717,7 +897,7 @@ function saveNodeId(oldId) {
     });
     error.textContent = "✔ Guardado correctamente";
     error.style.color = "green";
-    render();
+    requestRender();
 }
 
 function saveNodeName(nodeId) {
@@ -728,7 +908,7 @@ function saveNodeName(nodeId) {
 
     node.name = input.value.trim();
 
-    render();
+    requestRender();
 }
 
 function saveNodeText(nodeId) {
@@ -739,7 +919,7 @@ function saveNodeText(nodeId) {
     // Convertimos saltos de línea a \\n para JSON
     node.text = input.value.replace(/\n/g, "\\n");
 
-    render();
+    requestRender();
 }
 
 function clearInspector() {
@@ -785,14 +965,14 @@ function saveAreaId(oldId) {
     area.id = newId;
     error.textContent = "✔ Guardado correctamente";
     error.style.color = "green";
-    render();
+    requestRender();
 }
 
 function saveAreaName(areaId) {
     const input = document.getElementById("areaNameInput");
     const area = db.areas.find(a => a.id === areaId);
     area.name = input.value.trim();
-    render();
+    requestRender();
 }
 
 // =====================
@@ -861,7 +1041,7 @@ async function importFile(file) {
         }
 
         resetState();
-        render();
+        requestRender();
 
     } catch (err) {
         alert("Error importando archivo: " + err.message);
@@ -876,7 +1056,7 @@ function clearAll() {
     db.areas = [];
     db.links = [];
     resetState();
-    render();
+    requestRender();
 }
 
 async function compressJSON(data) {
@@ -916,7 +1096,8 @@ fetch("example.json")
     .then(data => {
         db = data;
         resetState();
-        render();
+        resetZoom();
+        requestRender();
     })
     .catch(err => {
         console.warn("No se pudo cargar example.json:", err.message);
@@ -973,9 +1154,11 @@ function init() {
 
     setActiveToolButton("select");
 
+    resetZoom();
+
     clearInspector();
     updateCursor();
-    render();
+    requestRender();
 }
 
 init();
