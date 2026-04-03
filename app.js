@@ -27,11 +27,13 @@ function requestRender() {
 function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
 
-    canvas.width = rect.width * window.devicePixelRatio;
-    canvas.height = rect.height * window.devicePixelRatio;
+    dpr = window.devicePixelRatio || 1;
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    ctx.scale(dpr, dpr);
 
     requestRender();
 }
@@ -42,8 +44,6 @@ window.addEventListener("orientationchange", resizeCanvas);
 resizeCanvas();
 
 function applyTransform() {
-    const rect = canvas.getBoundingClientRect();
-
     ctx.setTransform(
         dpr * view.scale,
         0,
@@ -196,7 +196,10 @@ function getLinkAt(x, y) {
             const x2 = to.position.x + 25 + ox;
             const y2 = to.position.y + 25 + oy;
 
-            const t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / ((x2 - x1) ** 2 + (y2 - y1) ** 2);
+            const denom = ((x2 - x1) ** 2 + (y2 - y1) ** 2);
+            if (denom === 0) continue;
+
+            const t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / denom;
             if (t < 0 || t > 1) continue;
 
             const px = x1 + t * (x2 - x1);
@@ -263,6 +266,7 @@ function drawArea(a) {
 
     ctx.restore();
 }
+
 function drawNode(n) {
     ctx.save();
     // 👈 guardar estado
@@ -273,7 +277,7 @@ function drawNode(n) {
         const padding = 10;
 
         // Dividimos líneas
-        const lines = n.text.split("\\n");
+        const lines = n.text.split("\n");
 
         // Altura → 14px por línea (aproximado) + padding
         const height = lines.length * 14 + padding;
@@ -369,20 +373,20 @@ function drawLinks() {
 }
 
 function render() {
-    const rect = canvas.getBoundingClientRect();
-
+    // Reset transform + clear
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Apply world transform
     applyTransform();
 
+    // Draw scene
     db.areas.forEach(drawArea);
     drawLinks();
     db.nodes.forEach(drawNode);
-
-    // 👇 PREVIEW AQUÍ (IMPORTANTE)
     drawPreview();
 
+    // Reset for UI overlays future
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
@@ -451,7 +455,12 @@ let lastMouseY = 0;
 
 function updateCursor() {
 
-    cursorIcon = null; 
+    cursorIcon = null;
+
+    if (isPanning) {
+        canvas.style.cursor = "grabbing";
+        return;
+    }
 
     // 🔥 PRIORIDAD MÁXIMA: DRAGGING
     if (draggingNode || draggingArea || resizing) {
@@ -557,13 +566,22 @@ canvas.addEventListener("wheel", (e) => {
 
 const zoomSlider = document.getElementById("zoomSlider");
 
+function sliderToZoom(v) {
+    return Math.pow(2, (v - 0.5) * 2);
+    // 0 → 0.5x | 0.5 → 1x | 1 → 2x
+}
+
+function zoomToSlider(z) {
+    return (Math.log2(z) / 2) + 0.5;
+}
+
 zoomSlider.addEventListener("input", (e) => {
     const rect = canvas.getBoundingClientRect();
-
     const cx = rect.width / 2;
     const cy = rect.height / 2;
 
-    setZoom(parseFloat(e.target.value), cx, cy);
+    const zoom = sliderToZoom(parseFloat(e.target.value));
+    setZoom(zoom, cx, cy);
 });
 
 function setZoom(newScale, centerX, centerY) {
@@ -578,7 +596,8 @@ function setZoom(newScale, centerX, centerY) {
 
     view.scale = newScale;
 
-    zoomSlider.value = newScale;
+    zoomSlider.value = zoomToSlider(newScale); // 👈 si usas mapping
+    updateZoomLabel(); // 👈 AÑADIR
 
     requestRender();
 }
@@ -587,8 +606,14 @@ function resetZoom() {
     view.scale = 1;
     view.offsetX = 0;
     view.offsetY = 0;
-    zoomSlider.value = 1;
+    zoomSlider.value = zoomToSlider(view.scale);
     requestRender();
+    updateZoomLabel();
+}
+
+function updateZoomLabel() {
+    const percent = Math.round(view.scale * 100);
+    document.getElementById("zoomLabel").textContent = percent + "%";
 }
 
 canvas.addEventListener("mousedown", (e) => {
@@ -833,7 +858,7 @@ function updateInspector(node) {
             <button onclick="saveNodeId('${node.id}')">Guardar</button><br><br>
 
             <label>Texto:</label><br>
-            <textarea id="nodeTextInput" rows="4" cols="20">${node.text.replace(/\\n/g, "\n")}</textarea>
+            <textarea id="nodeTextInput" rows="4" cols="20">${node.text}</textarea>
             <button onclick="saveNodeText('${node.id}')">Guardar</button><br><br>
 
             <b>X:</b> ${Math.round(node.position.x)}<br>
@@ -917,7 +942,7 @@ function saveNodeText(nodeId) {
     if (!node) return;
 
     // Convertimos saltos de línea a \\n para JSON
-    node.text = input.value.replace(/\n/g, "\\n");
+    node.text = input.value;
 
     requestRender();
 }
