@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ONetMap - Guía de uso</title>
+    <link rel="stylesheet" href="css/help.css">
+</head>
+
+<body>
+
+    <header>
+        <h1 class="title">
+            <img src="img/logo.svg" class="logo">
+            ONetMap — Guía de uso
+        </h1>
+        <p>Aprende a crear y gestionar tu diagrama de red paso a paso</p>
+    </header>
+
+    <div id="layout">
+
+        <!-- ===================== ÍNDICE ===================== -->
+        <nav>
+            <h3>📌 Qué puedes hacer</h3>
+            <a href="#empezar">Empezar a usar ONetMap</a>
+            <a href="#dispositivos">Añadir dispositivos</a>
+            <a href="#conectar">Conectar elementos</a>
+            <a href="#organizar">Organizar tu red</a>
+            <a href="#texto">Añadir notas</a>
+            <a href="#seleccionar">Seleccionar y mover</a>
+            <a href="#editar">Editar propiedades</a>
+            <a href="#zoom">Navegar en el lienzo</a>
+            <a href="#guardar">Guardar y cargar</a>
+            <a href="#atajos">Atajos rápidos</a>
+        </nav>
+
+        <!-- ===================== CONTENIDO ===================== -->
+        <main>
+
+            <!-- ===================== INTRO ===================== -->
+            <section id="empezar">
+                <h2>🚀 Empezar a usar ONetMap</h2>
+
+                <div class="card">
+                    <p>
+                        ONetMap es un editor visual donde puedes crear redes de dispositivos arrastrando, conectando y
+                        organizando elementos directamente en el lienzo.
+                    </p>
+
+                    <p>
+                        Todo ocurre en el <b>canvas central</b>. La barra izquierda contiene herramientas y la derecha
+                        muestra propiedades del elemento seleccionado.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ===================== DISPOSITIVOS ===================== -->
+            <section id="dispositivos">
+                <h2>🖥️ Añadir dispositivos a la red</h2>
+
+                <div class="card">
+                    <p>Para añadir un dispositivo:</p>
+
+                    <ol>
+                        <li>Selecciona una herramienta (Router, Switch, PC o Patch Panel)</li>
+                        <li>Haz click en el lienzo</li>
+                        <li>El dispositivo aparecerá automáticamente</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Tip</summary>
+                        <p>Puedes colocar varios dispositivos rápidamente sin cambiar de herramienta.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== CONECTAR ===================== -->
+            <section id="conectar">
+                <h2>🔗 Conectar dispositivos</h2>
+
+                <div class="card">
+                    <p>Para crear una conexión:</p>
+
+                    <ol>
+                        <li>Selecciona la herramienta <b>Enlace</b></li>
+                        <li>Haz click en el primer dispositivo</li>
+                        <li>Haz click en el segundo dispositivo</li>
+                    </ol>
+
+                    <p>
+                        El sistema dibuja automáticamente la conexión entre ambos nodos.
+                    </p>
+
+                    <details>
+                        <summary>⚠️ Importante</summary>
+                        <p>No puedes crear enlaces sin seleccionar dos dispositivos diferentes.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== ORGANIZAR ===================== -->
+            <section id="organizar">
+                <h2>📦 Organizar tu red con áreas</h2>
+
+                <div class="card">
+                    <p>
+                        Las áreas te permiten agrupar dispositivos visualmente.
+                    </p>
+
+                    <ol>
+                        <li>Selecciona la herramienta <b>Área</b></li>
+                        <li>Haz click en el lienzo</li>
+                        <li>Ajusta el tamaño arrastrando la esquina inferior derecha</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Uso recomendado</summary>
+                        <p>Usa áreas para separar salas, edificios o zonas de red.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== TEXTO ===================== -->
+            <section id="texto">
+                <h2>📝 Añadir notas o texto</h2>
+
+                <div class="card">
+                    <p>
+                        Puedes añadir notas directamente en el diagrama.
+                    </p>
+
+                    <ol>
+                        <li>Selecciona la herramienta <b>Texto</b></li>
+                        <li>Haz click en el lienzo</li>
+                        <li>Escribe el contenido</li>
+                    </ol>
+
+                    <details>
+                        <summary>✏️ Editar texto</summary>
+                        <p>Haz doble click sobre el texto para editarlo nuevamente.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== SELECCIÓN ===================== -->
+            <section id="seleccionar">
+                <h2>🖱️ Seleccionar y mover elementos</h2>
+
+                <div class="card">
+                    <p>
+                        Selecciona cualquier elemento haciendo click sobre él.
+                    </p>
+
+                    <ul>
+                        <li>Arrastra para mover dispositivos</li>
+                        <li>Haz click en un área para seleccionarla</li>
+                    </ul>
+
+                    <details>
+                        <summary>🔴 Indicador visual</summary>
+                        <p>El elemento seleccionado se resalta en rojo.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== EDITAR ===================== -->
+            <section id="editar">
+                <h2>⚙️ Editar propiedades</h2>
+
+                <div class="card">
+                    <p>
+                        Cuando seleccionas un elemento, verás sus propiedades en el panel derecho.
+                    </p>
+
+                    <ul>
+                        <li>Cambiar ID</li>
+                        <li>Cambiar nombre</li>
+                        <li>Editar texto (si aplica)</li>
+                    </ul>
+
+                    <details>
+                        <summary>⚠️ Validaciones</summary>
+                        <p>No puedes usar IDs duplicados dentro del proyecto.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== ZOOM ===================== -->
+            <section id="zoom">
+                <h2>🔍 Navegar en el lienzo</h2>
+
+                <div class="card">
+                    <ul>
+                        <li>Usa la rueda del mouse para hacer zoom</li>
+                        <li>Usa el slider izquierdo para ajustar zoom</li>
+                        <li>Botón central del mouse para mover el lienzo</li>
+                    </ul>
+
+                    <details>
+                        <summary>🎯 Consejo</summary>
+                        <p>El zoom se centra en la posición del cursor.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- ===================== GUARDAR ===================== -->
+            <section id="guardar">
+                <h2>💾 Guardar y cargar proyectos</h2>
+
+                <div class="card">
+
+                    <h3>📤 Exportar</h3>
+                    <ul>
+                        <li>JSON → editable</li>
+                        <li>GZIP → comprimido</li>
+                        <li>PNG → imagen del diagrama</li>
+                    </ul>
+
+                    <h3>📥 Importar</h3>
+                    <p>Puedes cargar archivos <code>.json</code>, <code>.gz</code> o <code>.gzip</code>.</p>
+
+                    <details>
+                        <summary>💡 Consejo</summary>
+                        <p>Guarda frecuentemente si estás trabajando en diagramas grandes.</p>
+                    </details>
+
+                </div>
+            </section>
+
+            <!-- ===================== ATAJOS ===================== -->
+            <section id="atajos">
+                <h2>⌨️ Atajos rápidos</h2>
+
+                <div class="card">
+                    <ul>
+                        <li><span class="tag">Ctrl + C</span> Clonar dispositivo</li>
+                        <li><span class="tag">Enter</span> Guardar texto</li>
+                        <li><span class="tag">Esc</span> Cancelar herramienta</li>
+                        <li><span class="tag">Delete</span> Eliminar elemento</li>
+                    </ul>
+
+                    <details>
+                        <summary>⚡ Flujo rápido</summary>
+                        <p>Puedes usar Ctrl + C para duplicar dispositivos seleccionados rápidamente.</p>
+                    </details>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
