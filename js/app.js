@@ -3,6 +3,7 @@
 // =====================
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const font = "12px Arial";
 
 let dpr = window.devicePixelRatio || 1;
 let view = {
@@ -73,7 +74,7 @@ let resizing = false;
 
 let linkStart = null;
 
-let cloneMode = null; // guarda el nodo que se va a clonar
+let cloneMode = null;
 
 let mouseDownPos = null;
 let isDragging = false;
@@ -230,14 +231,19 @@ function createArea(x, y) {
 
 function createTextNode(x, y, content = "Nuevo texto") {
     const id = generateUniqueId("text", db.nodes);
-    db.nodes.push({
+
+    const node = {
         id,
         type: "text",
         name: id,
         position: { x, y },
-        text: content,       // contenido del texto
+        text: content,
         metadata: {}
-    });
+    };
+
+    db.nodes.push(node);
+    updateTextNodeSize(node);
+    return node; // 👈 IMPORTANTE
 }
 
 function cloneNode(node, x, y) {
@@ -265,6 +271,8 @@ function cloneNode(node, x, y) {
 const textEditor = document.getElementById("textEditor");
 
 function openTextEditor(node) {
+    console.log("editando texto");
+    console.log(node);
     editingTextNode = node;
 
     const rect = canvas.getBoundingClientRect();
@@ -277,6 +285,8 @@ function openTextEditor(node) {
 
     textEditor.style.left = rect.left + screen.x + "px";
     textEditor.style.top = rect.top + screen.y + "px";
+
+    console.log(rect.left + screen.x + "px", rect.top + screen.y + "px")
 
     textEditor.style.width = "200px";
     textEditor.style.height = "100px";
@@ -299,19 +309,34 @@ textEditor.addEventListener("blur", () => {
 });
 
 function updateTextNodeSize(n) {
-    ctx.font = "12px Arial";
+    ctx.save();
 
-    const padding = 10;
+    ctx.font = font;
+
+    const paddingX = 20; // horizontal
+    const paddingY = 10; // vertical
+    const strokeComp = 4; // compensar borde
+
     const lines = n.text.split("\n");
 
     let maxWidth = 0;
-    lines.forEach(line => {
-        const w = ctx.measureText(line).width;
-        if (w > maxWidth) maxWidth = w;
-    });
 
-    n._width = maxWidth + padding;
-    n._height = lines.length * 14 + padding;
+    for (const line of lines) {
+        const m = ctx.measureText(line);
+
+        const realWidth =
+            (m.actualBoundingBoxLeft || 0) +
+            (m.actualBoundingBoxRight || m.width);
+
+        if (realWidth > maxWidth) {
+            maxWidth = realWidth;
+        }
+    }
+
+    n._width = Math.ceil(maxWidth + paddingX + strokeComp);
+    n._height = Math.ceil(lines.length * 14 + paddingY);
+
+    ctx.restore();
 }
 
 // =====================
@@ -329,7 +354,11 @@ function render() {
     // Draw scene
     db.areas.forEach(drawArea);
     drawLinks();
-    db.nodes.forEach(drawNode);
+    db.nodes.forEach(drawNodeBase);
+
+    db.areas.forEach(drawAreaLabel);
+    db.nodes.forEach(drawNodeLabel);
+
     drawPreview();
 
     // Reset for UI overlays future
@@ -342,54 +371,28 @@ function drawArea(a) {
     ctx.strokeStyle = (a === selectedArea) ? "red" : "gray";
     ctx.strokeRect(a.x, a.y, a.width, a.height);
 
-    ctx.fillStyle = "black";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-
-    ctx.fillText(a.name, a.x + 5, a.y + 5);
-
     ctx.fillStyle = "red";
     ctx.fillRect(a.x + a.width - 10, a.y + a.height - 10, 10, 10);
 
     ctx.restore();
 }
 
-function drawNode(n) {
+function drawAreaLabel(a) {
+    drawTextWithOutline(a.name, a.x + 5, a.y + 5);
+}
+
+function drawNodeBase(n) {
     ctx.save();
 
     if (n.type === "text") {
-        ctx.font = "12px Arial";
-        const padding = 10;
-
-        const lines = n.text.split("\n");
-
-        const height = lines.length * 14 + padding;
-
-        let maxWidth = 0;
-        lines.forEach(line => {
-            const w = ctx.measureText(line).width;
-            if (w > maxWidth) maxWidth = w;
-        });
-
-        const width = maxWidth + padding;
+        const width = n._width || 100;
+        const height = n._height || 40;
 
         ctx.fillStyle = "#ffffaa";
         ctx.fillRect(n.position.x, n.position.y, width, height);
 
         ctx.strokeStyle = (n === selectedNode) ? "red" : "black";
         ctx.strokeRect(n.position.x, n.position.y, width, height);
-
-        ctx.fillStyle = "black";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-
-        lines.forEach((line, i) => {
-            ctx.fillText(
-                line,
-                n.position.x + padding / 2,
-                n.position.y + padding / 2 + i * 14
-            );
-        });
 
         ctx.restore();
         return;
@@ -409,12 +412,30 @@ function drawNode(n) {
         ctx.strokeRect(n.position.x, n.position.y, 50, 50);
     }
 
-    ctx.fillStyle = "black";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
-    ctx.font = "12px Arial";
+    ctx.restore();
+}
 
-    ctx.fillText(n.name, n.position.x + 25, n.position.y + 52);
+function drawNodeLabel(n) {
+    ctx.save();
+
+    if (n.type === "text") {
+        const padding = 10;
+        const lines = n.text.split("\n");
+
+        lines.forEach((line, i) => {
+            drawTextWithOutline(line, n.position.x + padding / 2, n.position.y + padding / 2 + i * 14, "left", "#ffffaa");
+        });
+
+        ctx.restore();
+        return;
+    }
+
+    drawTextWithOutline(
+        n.name,
+        n.position.x + 25,
+        n.position.y + 52,
+        "center"
+    );
 
     ctx.restore();
 }
@@ -451,7 +472,6 @@ function drawLinks() {
 }
 
 function drawPreview() {
-
     const icon = getActiveCursorIcon();
 
     if (icon && icon.complete) {
@@ -470,6 +490,23 @@ function drawPreview() {
         ctx.stroke();
         ctx.setLineDash([]);
     }
+}
+
+function drawTextWithOutline(text, x, y, align = "left", outlineColor = "white") {
+    ctx.save();
+
+    ctx.font = font;
+    ctx.textAlign = align;
+    ctx.textBaseline = "top";
+
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = outlineColor;
+    ctx.strokeText(text, x, y);
+
+    ctx.fillStyle = "black";
+    ctx.fillText(text, x, y);
+
+    ctx.restore();
 }
 
 // =====================
@@ -682,14 +719,25 @@ canvas.addEventListener("mousedown", (e) => {
     }
 
     if (currentTool === "text") {
-        createTextNode(x - 50, y - 25);
+        console.log("creando nodo de texto");
+        const node = createTextNode(x, y - 10);
         requestRender();
+        setTimeout(() => {
+            openTextEditor(node);
+        }, 0);
         return;
     }
 
     if (area && isOnResizeHandle(area, x, y)) {
+        // 🔥 limpiar selección para evitar drag
+        selectedNode = null;
+        selectedArea = null;
+        clearInspector();
+
         resizingArea = area;
         resizing = true;
+
+        requestRender();
         return;
     }
 
@@ -729,7 +777,7 @@ canvas.addEventListener("mousemove", (e) => {
     // =========================
     // detectar intención de drag
     // =========================
-    if (mouseDownPos && !isDragging) {
+    if (mouseDownPos && !isDragging && !resizing) {
         const dx = x - mouseDownPos.x;
         const dy = y - mouseDownPos.y;
 
@@ -853,24 +901,34 @@ canvas.addEventListener("mouseleave", () => {
 
 document.addEventListener("keydown", (e) => {
 
+    const el = document.activeElement;
+    const isTyping =
+        el.tagName === "INPUT" ||
+        el.tagName === "TEXTAREA" ||
+        el.isContentEditable;
+
+    // ✅ Caso especial: cerrar editor con Enter
+    if (isTyping) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            textEditor.blur();
+            e.preventDefault();
+        }
+        return;
+    }
+
+    // =========================
+    // SHORTCUTS GLOBALES
+    // =========================
+
     if (e.ctrlKey && e.key.toLowerCase() === "c") {
         if (selectedNode) {
             cloneMode = selectedNode;
-
-            // icono de cursor
             cursorIcon = icons[selectedNode.type] || null;
-
             updateCursor();
-
             e.preventDefault();
         }
     }
 
-    if (e.key === "Enter" && !e.shiftKey) {
-        textEditor.blur();
-    }
-
-    // ESC → cancelar selección / herramienta
     if (e.key === "Escape") {
         resetState();
 
@@ -884,10 +942,7 @@ document.addEventListener("keydown", (e) => {
         return;
     }
 
-    // SUPR → activar Eliminar y borrar si hay selección
-    if (e.key === "Delete" &&
-        !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
-
+    if (e.key === "Delete") {
         const deleteButton = document.getElementById("deleteButton");
 
         toggleTool('delete', deleteButton);
@@ -1046,7 +1101,7 @@ function saveNodeText(nodeId) {
 
     node.text = input.value;
 
-    updateTextNodeSize(node); // 👈 SOLO AQUÍ
+    updateTextNodeSize(node);
 
     requestRender();
 }
@@ -1121,8 +1176,8 @@ function setZoom(newScale, centerX, centerY) {
 
     view.scale = newScale;
 
-    zoomSlider.value = zoomToSlider(newScale); // 👈 si usas mapping
-    updateZoomLabel(); // 👈 AÑADIR
+    zoomSlider.value = zoomToSlider(newScale);
+    updateZoomLabel();
 
     requestRender();
 }
@@ -1183,7 +1238,20 @@ async function exportFile(compressed = false) {
 }
 
 function exportPNG() {
-    canvas.toBlob(blob => {
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d");
+
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+
+    // Fondo blanco
+    tempCtx.fillStyle = "white";
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Copiar el canvas original encima
+    tempCtx.drawImage(canvas, 0, 0);
+
+    tempCanvas.toBlob(blob => {
         downloadBlob(blob, "network.png");
     });
 }
@@ -1321,7 +1389,7 @@ function loadIcon(src) {
 // INICIALIZACIÓN
 // =====================
 
-fetch("example.json")
+fetch("data/example.json")
     .then(response => {
         if (!response.ok) throw new Error("No se encontró example.json");
         return response.json();
