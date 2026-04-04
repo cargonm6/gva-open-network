@@ -183,6 +183,10 @@ canvas {
     overflow-y: auto;
 }
 
+#inspector input, #inspector textarea {
+    width: calc(100% - 10px);
+}
+
 /* ===================== CUSTOM FILE LABEL ===================== */
 .custom-file-label {
     display: inline-flex;

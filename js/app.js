@@ -155,7 +155,12 @@ function getNodeAt(x, y) {
 }
 
 function getAreaAt(x, y) {
-    return db.areas.find(a => x >= a.x && x <= a.x + a.width && y >= a.y && y <= a.y + a.height);
+    return db.areas.find(a =>
+        x >= a.position.x &&
+        x <= a.position.x + a.size.width &&
+        y >= a.position.y &&
+        y <= a.position.y + a.size.height
+    );
 }
 
 function getLinkAt(x, y) {
@@ -209,10 +214,12 @@ function getLinkAt(x, y) {
 }
 
 function isOnResizeHandle(area, x, y) {
-    const handleSize = 10;
-    // tamaño del cuadrado rojo
-    return x >= area.x + area.width - handleSize && x <= area.x + area.width &&
-        y >= area.y + area.height - handleSize && y <= area.y + area.height;
+    const handleSize = 10 / view.scale;
+
+    return x >= area.position.x + area.size.width - handleSize &&
+        x <= area.position.x + area.size.width &&
+        y >= area.position.y + area.size.height - handleSize &&
+        y <= area.position.y + area.size.height;
 }
 
 // =====================
@@ -221,12 +228,30 @@ function isOnResizeHandle(area, x, y) {
 
 function createNode(type, x, y) {
     const id = generateUniqueId(type, db.nodes);
-    db.nodes.push({ id, type, name: id, position: { x, y }, metadata: {}, interfaces: [] });
+
+    db.nodes.push({
+        id,
+        type,
+        name: id,
+        position: { x, y },
+        metadata: {
+            productor: "",
+            modelo: "",
+            notas: ""
+        },
+        interfaces: []
+    });
 }
 
 function createArea(x, y) {
     const id = generateUniqueId("area", db.areas);
-    db.areas.push({ id, name: id, x, y, width: 150, height: 100 });
+
+    db.areas.push({
+        id,
+        name: id,
+        position: { x, y },
+        size: { width: 150, height: 100 }
+    });
 }
 
 function createTextNode(x, y, content = "Nuevo texto") {
@@ -368,17 +393,20 @@ function render() {
 function drawArea(a) {
     ctx.save();
 
+    const { x, y } = a.position;
+    const { width, height } = a.size;
+
     ctx.strokeStyle = (a === selectedArea) ? "red" : "gray";
-    ctx.strokeRect(a.x, a.y, a.width, a.height);
+    ctx.strokeRect(x, y, width, height);
 
     ctx.fillStyle = "red";
-    ctx.fillRect(a.x + a.width - 10, a.y + a.height - 10, 10, 10);
+    ctx.fillRect(x + width - 10, y + height - 10, 10, 10);
 
     ctx.restore();
 }
 
 function drawAreaLabel(a) {
-    drawTextWithOutline(a.name, a.x + 5, a.y + 5);
+    drawTextWithOutline(a.name, a.position.x + 5, a.position.y + 5);
 }
 
 function drawNodeBase(n) {
@@ -797,8 +825,8 @@ canvas.addEventListener("mousemove", (e) => {
                 draggingArea = selectedArea;
 
                 draggingOffset = {
-                    x: x - selectedArea.x,
-                    y: y - selectedArea.y
+                    x: x - selectedArea.position.x,
+                    y: y - selectedArea.position.y
                 };
             }
         }
@@ -821,8 +849,8 @@ canvas.addEventListener("mousemove", (e) => {
     // DRAG AREA
     // =========================
     if (draggingArea) {
-        draggingArea.x = x - draggingOffset.x;
-        draggingArea.y = y - draggingOffset.y;
+        draggingArea.position.x = x - draggingOffset.x;
+        draggingArea.position.y = y - draggingOffset.y;
 
         requestRender();
         updateCursor();
@@ -833,11 +861,11 @@ canvas.addEventListener("mousemove", (e) => {
     // RESIZE AREA
     // =========================
     if (resizing && resizingArea) {
-        const newW = x - resizingArea.x;
-        const newH = y - resizingArea.y;
+        const newW = x - resizingArea.position.x;
+        const newH = y - resizingArea.position.y;
 
-        resizingArea.width = Math.max(10, newW);
-        resizingArea.height = Math.max(10, newH);
+        resizingArea.size.width = Math.max(10, newW);
+        resizingArea.size.height = Math.max(10, newH);
 
         requestRender();
         updateCursor();
@@ -1012,8 +1040,10 @@ function updateInspector(node) {
         const div = document.getElementById("props");
         div.innerHTML = `
             <label>ID:</label><br>
-            <input id="nodeIdInput" value="${node.id}"/>
-            <button onclick="saveNodeId('${node.id}')">Guardar</button><br><br>
+            <input id="nodeIdInput" 
+                value="${node.id}" 
+                data-oldid="${node.id}"
+                onkeydown="handleNodeIdKeyDown(event)"/><br><br>
 
             <label>Texto:</label><br>
             <textarea id="nodeTextInput" rows="4" cols="20">${node.text}</textarea>
@@ -1028,49 +1058,179 @@ function updateInspector(node) {
     let areaName = "Ninguna";
     for (const a of db.areas) {
         if (
-            node.position.x >= a.x &&
-            node.position.x <= a.x + a.width &&
-            node.position.y >= a.y &&
-            node.position.y <= a.y + a.height
+            node.position.x >= a.position.x &&
+            node.position.x <= a.position.x + a.size.width &&
+            node.position.y >= a.position.y &&
+            node.position.y <= a.position.y + a.size.height
         ) {
             areaName = a.name;
             break;
         }
     }
 
-    node.metadata.area = areaName;
-
     const div = document.getElementById("props");
+
     div.innerHTML = `
-        <label>ID:</label><br>
-        <input id="nodeIdInput" value="${node.id}"/>
-        <button onclick="saveNodeId('${node.id}')">Guardar</button><br><br>
+    <label>ID:</label><br>
+    <input id="nodeIdInput" 
+       value="${node.id}" 
+       data-oldid="${node.id}"
+       onkeydown="handleNodeIdKeyDown(event)"/><br><br>
 
-        <label>Nombre:</label><br>
-        <input id="nodeNameInput" value="${node.name}"/>
-        <button onclick="saveNodeName('${node.id}')">Guardar</button><br><br>
+    <label>Nombre:</label><br>
+    <input id="nodeNameInput" value="${node.name}" 
+       onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
 
-        <b>Tipo:</b> ${node.type}<br>
-        <b>X:</b> ${Math.round(node.position.x)}<br>
-        <b>Y:</b> ${Math.round(node.position.y)}<br>
-        <b>Área:</b> ${areaName}<br><br>
+    <b>Tipo:</b> ${node.type}<br>
+    <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
+    <b>Área:</b> ${areaName}<br><br>
 
-        <span id="errorMsg" style="color:red;"></span>
+    <span id="errorMsg" style="color:red;"></span>
+
+    ${node.type !== "area" && node.type !== "text"
+            ? renderMetadataEditor(node)
+            : ""}
+`;
+}
+
+function renderMetadataEditor(node) {
+    if (!node.metadata) node.metadata = {};
+
+    let html = `<hr><b>Metadata</b><br><br>`;
+
+    Object.entries(node.metadata).forEach(([key, value]) => {
+        const inputId = `meta_${key}`;
+
+        // botón de eliminar
+        const deleteButton = `<button style="color:red;" onclick="deleteMetadataKey('${node.id}', '${key}')">X</button>`;
+
+        if (typeof value === "string" && value.length > 40) {
+            // textarea para textos largos
+            html += `
+                <label>${key}:</label> ${deleteButton}<br>
+                <textarea id="${inputId}" rows="3"
+                    onkeydown="handleMetaKeyDown(event, '${node.id}', '${key}')"
+                >${value}</textarea><br><br>
+            `;
+        } else {
+            html += `
+                <label>${key}:</label> ${deleteButton}<br>
+                <input id="${inputId}" value="${value ?? ''}" 
+                    onkeydown="handleMetaKeyDown(event, '${node.id}', '${key}')"
+                /><br><br>
+            `;
+        }
+    });
+
+    // añadir nuevo campo
+    html += `
+        <hr>
+        <input id="newMetaKey" placeholder="Agregar clave (Enter)" 
+            onkeydown="handleNewMetaKey(event, '${node.id}')"
+        />
     `;
+
+    return html;
+}
+
+function handleNodeIdKeyDown(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const oldId = e.target.dataset.oldid; // <-- tomar siempre el último ID válido
+        saveNodeId(oldId);
+        e.target.blur(); // perder foco como confirmación
+    }
+}
+
+function handleNodeNameKeyDown(e, nodeId) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        saveNodeName(nodeId);
+        e.target.blur(); // perder foco como confirmación
+    }
+}
+
+function handleMetaKeyDown(e, nodeId, key) {
+    if (e.key === 'Enter') {
+        if (e.target.tagName === 'TEXTAREA' && !e.ctrlKey) {
+            // Para textarea, Enter solo inserta línea
+            return;
+        }
+        e.preventDefault(); // evitar salto de línea o submit
+        saveNodeMetadataField(nodeId, key);
+
+        e.target.blur();
+    }
+}
+
+function saveNodeMetadataField(nodeId, key) {
+    const node = db.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const el = document.getElementById(`meta_${key}`);
+    if (!el) return;
+
+    node.metadata[key] = el.value;
+    requestRender();
+}
+
+function deleteMetadataKey(nodeId, key) {
+    const node = db.nodes.find(n => n.id === nodeId);
+    if (!node || !node.metadata) return;
+
+    const confirmDelete = confirm(`¿Eliminar la clave "${key}"?`);
+    if (!confirmDelete) return;
+
+    delete node.metadata[key];
+    updateInspector(node); // refresca el panel
+    requestRender();       // opcional, refresca canvas
+}
+
+function handleNewMetaKey(e, nodeId) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById("newMetaKey");
+        const key = input.value.trim();
+        if (!key) return;
+
+        const node = db.nodes.find(n => n.id === nodeId);
+        if (!node) return;
+
+        if (!node.metadata) node.metadata = {};
+
+        if (node.metadata[key] !== undefined) {
+            alert("Ya existe esa clave");
+            return;
+        }
+
+        node.metadata[key] = "";
+        input.value = "";
+        updateInspector(node);
+    }
 }
 
 function saveNodeId(oldId) {
     const input = document.getElementById("nodeIdInput");
     const error = document.getElementById("errorMsg");
     const newId = input.value.trim();
+
+    // Vacío
     if (!newId) {
         error.textContent = "El ID no puede estar vacío";
+        error.style.color = "red";
+        input.value = input.dataset.oldid; // restaurar valor anterior
         return;
     }
+
+    // Ya existe
     if (db.nodes.some(n => n.id === newId && n.id !== oldId)) {
         error.textContent = "Ya existe un dispositivo con ese ID";
+        error.style.color = "red";
+        input.value = input.dataset.oldid; // restaurar valor anterior
         return;
     }
+
+    // Guardar nuevo ID
     const node = db.nodes.find(n => n.id === oldId);
     node.id = newId;
     node.name = newId;
@@ -1078,19 +1238,22 @@ function saveNodeId(oldId) {
         if (l.from.nodeId === oldId) l.from.nodeId = newId;
         if (l.to.nodeId === oldId) l.to.nodeId = newId;
     });
+
+    // Actualizar data-oldid para la próxima validación
+    input.dataset.oldid = newId;
+
     error.textContent = "✔ Guardado correctamente";
     error.style.color = "green";
+
     requestRender();
 }
 
 function saveNodeName(nodeId) {
     const input = document.getElementById("nodeNameInput");
     const node = db.nodes.find(n => n.id === nodeId);
-
-    if (!input.value.trim()) return;
+    if (!node || !input.value.trim()) return;
 
     node.name = input.value.trim();
-
     requestRender();
 }
 
@@ -1125,10 +1288,10 @@ function updateAreaInspector(area) {
         <input id="areaNameInput" value="${area.name}"/>
         <button onclick="saveAreaName('${area.id}')">Guardar</button><br><br>
 
-        <b>X:</b> ${Math.round(area.x)}<br>
-        <b>Y:</b> ${Math.round(area.y)}<br>
-        <b>Ancho:</b> ${Math.round(area.width)}<br>
-        <b>Alto:</b> ${Math.round(area.height)}<br><br>
+        <b>X:</b> ${Math.round(area.position.x)}<br>
+        <b>Y:</b> ${Math.round(area.position.y)}<br>
+        <b>Ancho:</b> ${Math.round(area.size.width)}<br>
+        <b>Alto:</b> ${Math.round(area.size.height)}<br>
 
         <span id="areaErrorMsg" style="color:red;"></span>
     `;

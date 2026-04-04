@@ -3,18 +3,26 @@
     {
       "id": "area_9165",
       "name": "Área 1",
-      "x": 70,
-      "y": 238,
-      "width": 452,
-      "height": 353
+      "position": {
+        "x": 70,
+        "y": 238
+      },
+      "size": {
+        "width": 452,
+        "height": 353
+      }
     },
     {
       "id": "area_6420",
       "name": "Área 2",
-      "x": 537,
-      "y": 238,
-      "width": 410,
-      "height": 352
+      "position": {
+        "x": 537,
+        "y": 238
+      },
+      "size": {
+        "width": 410,
+        "height": 352
+      }
     }
   ],
   "nodes": [
