@@ -368,6 +368,12 @@ function updateTextNodeSize(n) {
 // RENDER Y DIBUJO
 // =====================
 
+const root = document.documentElement;
+
+function getColor(variable) {
+    return getComputedStyle(root).getPropertyValue(variable).trim();
+}
+
 function render() {
     // Reset transform + clear
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -396,10 +402,10 @@ function drawArea(a) {
     const { x, y } = a.position;
     const { width, height } = a.size;
 
-    ctx.strokeStyle = (a === selectedArea) ? "red" : "gray";
+    ctx.strokeStyle = (a === selectedArea) ? getColor("--color-alert") : getColor("--color-area-border");
     ctx.strokeRect(x, y, width, height);
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = getColor("--color-alert");
     ctx.fillRect(x + width - 10, y + height - 10, 10, 10);
 
     ctx.restore();
@@ -416,10 +422,10 @@ function drawNodeBase(n) {
         const width = n._width || 100;
         const height = n._height || 40;
 
-        ctx.fillStyle = "#ffffaa";
+        ctx.fillStyle = getColor("--color-textarea-bg");
         ctx.fillRect(n.position.x, n.position.y, width, height);
 
-        ctx.strokeStyle = (n === selectedNode) ? "red" : "black";
+        ctx.strokeStyle = (n === selectedNode) ? getColor("--color-alert") : "black";
         ctx.strokeRect(n.position.x, n.position.y, width, height);
 
         ctx.restore();
@@ -431,12 +437,12 @@ function drawNodeBase(n) {
     if (icon && icon.complete) {
         ctx.drawImage(icon, n.position.x, n.position.y, 50, 50);
     } else {
-        ctx.fillStyle = "#3498db";
+        ctx.fillStyle = getColor("--color-link-drawing");
         ctx.fillRect(n.position.x, n.position.y, 50, 50);
     }
 
     if (n === selectedNode) {
-        ctx.strokeStyle = "red";
+        ctx.strokeStyle = getColor("--color-alert");
         ctx.strokeRect(n.position.x, n.position.y, 50, 50);
     }
 
@@ -451,7 +457,7 @@ function drawNodeLabel(n) {
         const lines = n.text.split("\n");
 
         lines.forEach((line, i) => {
-            drawTextWithOutline(line, n.position.x + padding / 2, n.position.y + padding / 2 + i * 14, "left", "#ffffaa");
+            drawTextWithOutline(line, n.position.x + padding / 2, n.position.y + padding / 2 + i * 14, "left", getColor("--color-textarea-bg"));
         });
 
         ctx.restore();
@@ -513,7 +519,7 @@ function drawPreview() {
         ctx.beginPath();
         ctx.moveTo(linkStart.position.x + 25, linkStart.position.y + 25);
         ctx.lineTo(lastMouseX, lastMouseY);
-        ctx.strokeStyle = "blue";
+        ctx.strokeStyle = getColor("--color-link-drawing");
         ctx.setLineDash([5, 5]);
         ctx.stroke();
         ctx.setLineDash([]);
@@ -527,7 +533,7 @@ function drawTextWithOutline(text, x, y, align = "left", outlineColor = "white")
     ctx.textAlign = align;
     ctx.textBaseline = "top";
 
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 2;
     ctx.strokeStyle = outlineColor;
     ctx.strokeText(text, x, y);
 
@@ -572,7 +578,7 @@ function updateCursor() {
         }
     }
 
-    if (["router", "switch", "pc", "patch", "area"].includes(currentTool)) {
+    if (["router", "switch", "pc", "patch", "screen", "ap", "area"].includes(currentTool)) {
         canvas.style.cursor = "crosshair";
         return;
     }
@@ -600,7 +606,7 @@ function getActiveCursorIcon() {
         return icons[cloneMode.type];
     }
 
-    if (["router", "switch", "pc", "patch", "area"].includes(currentTool)) {
+    if (["router", "switch", "pc", "patch", "screen", "ap", "area"].includes(currentTool)) {
         return icons[currentTool];
     }
 
@@ -715,7 +721,7 @@ canvas.addEventListener("mousedown", (e) => {
         return;
     }
 
-    if (["router", "switch", "patch", "pc"].includes(currentTool)) {
+    if (["router", "switch", "pc", "patch", "screen", "ap"].includes(currentTool)) {
         createNode(currentTool, x - 25, y - 25);
         requestRender();
         return;
@@ -1217,7 +1223,7 @@ function saveNodeId(oldId) {
     // Vacío
     if (!newId) {
         error.textContent = "El ID no puede estar vacío";
-        error.style.color = "red";
+        error.style.color = getColor("--color-alert");
         input.value = input.dataset.oldid; // restaurar valor anterior
         return;
     }
@@ -1225,7 +1231,7 @@ function saveNodeId(oldId) {
     // Ya existe
     if (db.nodes.some(n => n.id === newId && n.id !== oldId)) {
         error.textContent = "Ya existe un dispositivo con ese ID";
-        error.style.color = "red";
+        error.style.color = getColor("--color-alert");
         input.value = input.dataset.oldid; // restaurar valor anterior
         return;
     }
@@ -1243,7 +1249,7 @@ function saveNodeId(oldId) {
     input.dataset.oldid = newId;
 
     error.textContent = "✔ Guardado correctamente";
-    error.style.color = "green";
+    error.style.color = getColor("--color-success");
 
     requestRender();
 }
@@ -1534,13 +1540,34 @@ function resetState() {
 // ICONOS Y ASSETS
 // =====================
 
-const icons = {
-    router: loadIcon("img/devices/router.svg"),
-    switch: loadIcon("img/devices/switch.svg"),
-    pc: loadIcon("img/devices/pc.svg"),
-    patch: loadIcon("img/devices/patch.svg"),
-    area: loadIcon("img/devices/area.svg")
-};
+let icons = {};
+
+function loadIconSet(setName) {
+    iconSet = setName;
+
+    icons = {
+        router: loadIcon(`img/devices/${setName}/router.svg`),
+        switch: loadIcon(`img/devices/${setName}/switch.svg`),
+        pc: loadIcon(`img/devices/${setName}/pc.svg`),
+        ap: loadIcon(`img/devices/${setName}/ap.svg`),
+        patch: loadIcon(`img/devices/${setName}/patch.svg`),
+        screen: loadIcon(`img/devices/${setName}/screen.svg`),
+        area: loadIcon(`img/devices/symbol/area.svg`)
+    };
+
+    console.log(icons.router);
+
+    requestRender();
+}
+
+function changeIconSet(setName, label) {
+    loadIconSet(setName);
+
+    document.getElementById("iconSetLabel").textContent = label;
+    document.getElementById("iconSetPreview").src = `img/devices/${setName}/router.svg`;
+
+    localStorage.setItem("iconSet", setName);
+}
 
 function loadIcon(src) {
     const img = new Image();
@@ -1571,6 +1598,12 @@ function init() {
     currentTool = "select";
 
     setActiveToolButton("select");
+
+    const savedIconSet = localStorage.getItem("iconSet") || "symbol";
+    loadIconSet(savedIconSet);
+    const label = savedIconSet === "real" ? "Realista" : "Simbólica";
+    document.getElementById("iconSetLabel").textContent = label;
+    document.getElementById("iconSetPreview").src = `img/devices/${savedIconSet}/router.svg`;
 
     resetZoom();
 

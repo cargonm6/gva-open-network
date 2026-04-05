@@ -1,0 +1,9 @@
+# Referencias de iconos de red
+
+1. Cisco Network Topology Icons 3015
+   Enlace: https://vecta.io/symbols/240/cisco-network-topology-icons-3015
+   Descripción: Conjunto de iconos oficiales de Cisco para diagramas de topología de red.
+
+2. Basic Network
+   Enlace: https://vecta.io/symbols/37/basic-network
+   Descripción: Iconos básicos de red para diagramas sencillos.

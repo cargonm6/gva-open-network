@@ -72,21 +72,56 @@
 
             <h5>Dispositivos</h5>
 
-            <button class="tool-btn" data-action="tool" data-tool="router">
-                <img src="img/devices/router.svg" class="btn-icon">&nbsp;Router
-            </button>
+            <div class="dropdown toolbar-dropdown">
+                <button class="tool-btn dropbtn">
+                    <img src="img/devices/symbol/router.svg" class="btn-icon">
+                    Intermedios ▾
+                </button>
+                <div class="dropdown-content">
+                    <button data-action="tool" data-tool="router">
+                        <img src="img/devices/symbol/router.svg" class="btn-icon">
+                        Router
+                    </button>
+                    <button data-action="tool" data-tool="switch">
+                        <img src="img/devices/symbol/switch.svg" class="btn-icon">
+                        Switch
+                    </button>
+                    <button data-action="tool" data-tool="ap">
+                        <img src="img/devices/symbol/ap.svg" class="btn-icon">
+                        Punto de acceso
+                    </button>
+                </div>
+            </div>
 
-            <button class="tool-btn" data-action="tool" data-tool="switch">
-                <img src="img/devices/switch.svg" class="btn-icon">&nbsp;Switch
-            </button>
+            <div class="dropdown toolbar-dropdown">
+                <button class="tool-btn dropbtn">
+                    <img src="img/devices/symbol/pc.svg" class="btn-icon">
+                    Terminales ▾
+                </button>
+                <div class="dropdown-content">
+                    <button data-action="tool" data-tool="pc">
+                        <img src="img/devices/symbol/pc.svg" class="btn-icon">
+                        PC
+                    </button>
+                    <button data-action="tool" data-tool="screen">
+                        <img src="img/devices/symbol/screen.svg" class="btn-icon">
+                        Pantalla
+                    </button>
+                </div>
+            </div>
 
-            <button class="tool-btn" data-action="tool" data-tool="pc">
-                <img src="img/devices/pc.svg" class="btn-icon">&nbsp;PC
-            </button>
-
-            <button class="tool-btn" data-action="tool" data-tool="patch">
-                <img src="img/devices/patch.svg" class="btn-icon">&nbsp;Patch panel
-            </button>
+            <div class="dropdown toolbar-dropdown">
+                <button class="tool-btn dropbtn">
+                    <img src="img/devices/symbol/patch.svg" class="btn-icon">
+                    Estructura ▾
+                </button>
+                <div class="dropdown-content">
+                    <button data-action="tool" data-tool="patch">
+                        <img src="img/devices/symbol/patch.svg" class="btn-icon">
+                        Patch panel
+                    </button>
+                </div>
+            </div>
 
             <h5>Relaciones</h5>
 
@@ -112,8 +147,30 @@
                 <img src="img/tools/delete.svg" class="btn-icon">&nbsp;Eliminar
             </button>
 
-            <h5>Zoom: <span id="zoomLabel">100%</span></h5>
+            <h5>Vista</h5>
 
+            <div class="dropdown toolbar-dropdown">
+                <button class="tool-btn dropbtn">
+                    <img id="iconSetPreview" src="img/devices/symbol/router.svg" class="btn-icon">
+                    <span id="iconSetLabel">Simbólica</span> ▾
+                </button>
+
+                <div class="dropdown-content">
+
+                    <button onclick="changeIconSet('symbol', 'Simbólica')">
+                        <img src="img/devices/symbol/router.svg">
+                        <span>Simbólica</span>
+                    </button>
+
+                    <button onclick="changeIconSet('real', 'Realista')">
+                        <img src="img/devices/real/router.svg">
+                        <span>Realista</span>
+                    </button>
+
+                </div>
+            </div>
+
+            <p>Zoom: <span id="zoomLabel">100%</span></p>
             <input id="zoomSlider" type="range" min="0" max="1" step="0.01" value="0.5">
 
         </div>
