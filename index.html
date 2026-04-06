@@ -125,9 +125,22 @@
 
             <h5>Relaciones</h5>
 
-            <button class="tool-btn" data-action="tool" data-tool="link">
-                <img src="img/tools/cable.svg" class="btn-icon">&nbsp;Enlace
-            </button>
+            <div class="dropdown toolbar-dropdown">
+                <button class="tool-btn dropbtn">
+                    <img src="img/tools/cable.svg" class="btn-icon">
+                    Enlace ▾
+                </button>
+                <div class="dropdown-content">
+                    <button data-action="tool" data-tool="link-wired">
+                        <img src="img/tools/cable.svg" class="btn-icon">
+                        Ethernet
+                    </button>
+                    <button data-action="tool" data-tool="link-wireless">
+                        <img src="img/tools/wireless.svg" class="btn-icon">
+                        Inalámbrico
+                    </button>
+                </div>
+            </div>
 
             <button class="tool-btn" data-action="tool" data-tool="area">
                 <img src="img/tools/area.svg" class="btn-icon">&nbsp;Área

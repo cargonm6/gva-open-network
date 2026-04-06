@@ -23,6 +23,18 @@
         "width": 410,
         "height": 352
       }
+    },
+    {
+      "id": "area_2366",
+      "name": "Área 3",
+      "position": {
+        "x": 960,
+        "y": 238
+      },
+      "size": {
+        "width": 346,
+        "height": 351
+      }
     }
   ],
   "nodes": [
@@ -376,12 +388,85 @@
       "metadata": {},
       "_width": 194,
       "_height": 38
+    },
+    {
+      "id": "ap_1331",
+      "type": "ap",
+      "name": "ap_1331",
+      "position": {
+        "x": 1108,
+        "y": 319
+      },
+      "metadata": {
+        "productor": "",
+        "modelo": "",
+        "notas": ""
+      },
+      "interfaces": []
+    },
+    {
+      "id": "screen_854",
+      "type": "screen",
+      "name": "screen_854",
+      "position": {
+        "x": 995,
+        "y": 439
+      },
+      "metadata": {
+        "productor": "",
+        "modelo": "",
+        "notas": ""
+      },
+      "interfaces": []
+    },
+    {
+      "id": "pc_5587",
+      "type": "pc",
+      "name": "pc_5587",
+      "position": {
+        "x": 1118,
+        "y": 504
+      },
+      "metadata": {
+        "productor": "",
+        "modelo": "",
+        "notas": ""
+      },
+      "interfaces": []
+    },
+    {
+      "id": "pc_437",
+      "type": "pc",
+      "name": "pc_437",
+      "position": {
+        "x": 1236,
+        "y": 444
+      },
+      "metadata": {
+        "productor": "",
+        "modelo": "",
+        "notas": ""
+      },
+      "interfaces": []
+    },
+    {
+      "id": "text_629",
+      "type": "text",
+      "name": "text_629",
+      "position": {
+        "x": 969,
+        "y": 164
+      },
+      "text": "Área 3: red inalámbrica, derivada\ndel switch 2 del área 2.",
+      "metadata": {},
+      "_width": 201,
+      "_height": 38
     }
   ],
   "links": [
     {
       "id": "e372d3cd-e95f-4cff-9313-fae83dd1652a",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "patch_3897"
       },
@@ -391,7 +476,7 @@
     },
     {
       "id": "424ec76f-47f4-42e0-aec6-3726dc802aed",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "patch_3254"
       },
@@ -401,7 +486,7 @@
     },
     {
       "id": "42843c27-7322-4de9-847f-5ede79136a75",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "patch_4995"
       },
@@ -411,7 +496,7 @@
     },
     {
       "id": "f0e770be-823b-457e-ac5c-75c6a090639e",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "patch_1778"
       },
@@ -421,7 +506,7 @@
     },
     {
       "id": "8c3bf187-329e-48b0-95c9-0acd1db05946",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_1666"
       },
@@ -431,7 +516,7 @@
     },
     {
       "id": "7d057f5a-1f4b-4715-9795-d922e79e6b36",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_980"
       },
@@ -441,7 +526,7 @@
     },
     {
       "id": "81e043d9-8757-4a34-bc59-add468940197",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_539"
       },
@@ -451,7 +536,7 @@
     },
     {
       "id": "a9c4f5b1-5b75-4f43-9cb7-c0aacf5bb492",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_1687"
       },
@@ -461,7 +546,7 @@
     },
     {
       "id": "3c43ef4c-e86f-4776-ac1e-a2774e630397",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_5194"
       },
@@ -471,7 +556,7 @@
     },
     {
       "id": "c87e4644-ab9e-46bc-96b3-e1277b5dcf06",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_8901"
       },
@@ -481,7 +566,7 @@
     },
     {
       "id": "8cce41bf-04d8-4340-abd7-e70d4d9c5221",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_7406"
       },
@@ -491,7 +576,7 @@
     },
     {
       "id": "16e5c588-2c57-4d90-8416-a625ad8e656d",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_7259"
       },
@@ -501,7 +586,7 @@
     },
     {
       "id": "dd4566e2-5d74-4923-a3d5-1bfeacf37b0b",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_8452"
       },
@@ -511,7 +596,7 @@
     },
     {
       "id": "31e94d99-1c07-42ec-8e35-476d8b505857",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_5137"
       },
@@ -521,7 +606,7 @@
     },
     {
       "id": "1b7cbe8b-162d-4b99-84f6-519f2a91eac2",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_5613"
       },
@@ -531,7 +616,7 @@
     },
     {
       "id": "b9337478-342a-4826-863d-d3508830f941",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_4917"
       },
@@ -541,7 +626,7 @@
     },
     {
       "id": "e74dffe9-4485-4d0a-837f-e2c2b2fd2f1a",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_2177"
       },
@@ -551,7 +636,7 @@
     },
     {
       "id": "61c4040c-579c-48f8-a918-02b72ee6eae2",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "pc_3420"
       },
@@ -561,7 +646,7 @@
     },
     {
       "id": "97f894c0-9a2e-4347-8795-95ea88dd525a",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "switch_9998"
       },
@@ -571,7 +656,7 @@
     },
     {
       "id": "4b448e93-560d-4fb9-bba0-eab90ea37181",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "switch_4444"
       },
@@ -581,7 +666,7 @@
     },
     {
       "id": "de69ed21-6277-4239-bd3d-8b856445f4c5",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "switch_8605"
       },
@@ -591,7 +676,7 @@
     },
     {
       "id": "790749d2-1681-403e-b0b2-4ce9e3c53038",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "switch_6760"
       },
@@ -601,7 +686,7 @@
     },
     {
       "id": "3a88c93d-a6c8-446a-bd99-e2a2e14c1414",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "router_928"
       },
@@ -611,7 +696,7 @@
     },
     {
       "id": "d6667d33-3a52-44b1-9d04-d1d4597e27d7",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "router_9275"
       },
@@ -621,7 +706,7 @@
     },
     {
       "id": "56a46b9c-a4df-4726-bcc1-47c92f10403a",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "router_9275"
       },
@@ -631,12 +716,52 @@
     },
     {
       "id": "586f66ce-c82f-4eaa-b58b-3a0fc7d5ece2",
-      "type": "ethernet",
+      "type": "wired",
       "from": {
         "nodeId": "router_9275"
       },
       "to": {
         "nodeId": "router_7202"
+      }
+    },
+    {
+      "id": "1240e13b-6426-44d6-9f72-9947e96c3f56",
+      "type": "wired",
+      "from": {
+        "nodeId": "switch_6760"
+      },
+      "to": {
+        "nodeId": "ap_1331"
+      }
+    },
+    {
+      "id": "bd5f34ee-ed91-497c-b8a7-bde8309c0407",
+      "type": "wireless",
+      "from": {
+        "nodeId": "screen_854"
+      },
+      "to": {
+        "nodeId": "ap_1331"
+      }
+    },
+    {
+      "id": "778624d0-9323-40f4-b754-14fd38fce64d",
+      "type": "wireless",
+      "from": {
+        "nodeId": "pc_5587"
+      },
+      "to": {
+        "nodeId": "ap_1331"
+      }
+    },
+    {
+      "id": "e1a0eedb-c8a8-4e32-822c-04ce56370cc8",
+      "type": "wireless",
+      "from": {
+        "nodeId": "pc_437"
+      },
+      "to": {
+        "nodeId": "ap_1331"
       }
     }
   ]

@@ -496,13 +496,65 @@ function drawLinks() {
             const off = (i - (ls.length - 1) / 2) * gap;
             const ox = ux * off;
             const oy = uy * off;
-            ctx.beginPath();
-            ctx.moveTo(f.position.x + 25 + ox, f.position.y + 25 + oy);
-            ctx.lineTo(t.position.x + 25 + ox, t.position.y + 25 + oy);
-            ctx.strokeStyle = "black";
-            ctx.stroke();
+
+            if (l.type === "wireless") {
+                drawWavyLine(ctx,
+                    f.position.x + 25 + ox,
+                    f.position.y + 25 + oy,
+                    t.position.x + 25 + ox,
+                    t.position.y + 25 + oy
+                );
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(f.position.x + 25 + ox, f.position.y + 25 + oy);
+                ctx.lineTo(t.position.x + 25 + ox, t.position.y + 25 + oy);
+                ctx.strokeStyle = "black";
+                ctx.stroke();
+            }
         });
     }
+}
+
+function drawWavyLine(ctx, x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+
+    // perpendicular (normal)
+    const nx = -uy;
+    const ny = ux;
+
+    const amplitude = 5;
+    const wavelength = 20;
+    const step = 2;
+
+    ctx.beginPath();
+
+    for (let i = 0; i <= len; i += step) {
+        const x = x1 + ux * i;
+        const y = y1 + uy * i;
+
+        // senoide pura
+        const wave = Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
+
+        const px = x + nx * wave;
+        const py = y + ny * wave;
+
+        if (i === 0) {
+            ctx.moveTo(px, py);
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.strokeStyle = getColor("--color-link-drawing");
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 }
 
 function drawPreview() {
@@ -515,7 +567,7 @@ function drawPreview() {
         ctx.restore();
     }
 
-    if (currentTool === "link" && linkStart) {
+    if (["link-wired", "link-wireless"].includes(currentTool) && linkStart) {
         ctx.beginPath();
         ctx.moveTo(linkStart.position.x + 25, linkStart.position.y + 25);
         ctx.lineTo(lastMouseX, lastMouseY);
@@ -583,7 +635,7 @@ function updateCursor() {
         return;
     }
 
-    if (currentTool === "link") {
+    if (["link-wired", "link-wireless"].includes(currentTool)) {
         canvas.style.cursor = "crosshair";
         return;
     }
@@ -733,18 +785,24 @@ canvas.addEventListener("mousedown", (e) => {
         return;
     }
 
-    if (currentTool === "link") {
+    if (["link-wired", "link-wireless"].includes(currentTool)) {
         if (!node) return;
 
         if (!linkStart) {
             linkStart = node;
         } else if (node !== linkStart) {
+
+            const type = currentTool === "link-wireless"
+                ? "wireless"
+                : "wired";
+
             db.links.push({
                 id: uuid(),
-                type: "ethernet",
+                type,
                 from: { nodeId: linkStart.id },
                 to: { nodeId: node.id }
             });
+
             linkStart = null;
         }
 
@@ -911,7 +969,7 @@ canvas.addEventListener("wheel", (e) => {
 
 canvas.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    if (currentTool === "link" && linkStart) {
+    if (["link-wired", "link-wireless"].includes(currentTool) && linkStart) {
         linkStart = null;
         requestRender();
     }
