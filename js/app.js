@@ -129,17 +129,6 @@ function getMousePos(evt) {
     return screenToWorld(x, y);
 }
 
-function downloadBlob(blob, filename) {
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-
-    a.href = url;
-    a.download = filename;
-    a.click();
-
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 // =====================
 // SELECCIÓN Y DETECCIÓN
 // =====================
@@ -1460,8 +1449,7 @@ async function exportFile(compressed = false) {
     }
 
     const ext = compressed ? "json.gz" : "json";
-
-    downloadBlob(blob, `network.${ext}`);
+    await saveBlob(blob, `network.${ext}`);
 }
 
 function exportPNG() {
@@ -1479,8 +1467,44 @@ function exportPNG() {
     tempCtx.drawImage(canvas, 0, 0);
 
     tempCanvas.toBlob(blob => {
-        downloadBlob(blob, "network.png");
+        saveBlob(blob, "network.png");
     });
+}
+
+async function saveBlob(blob, defaultName) {
+    if ('showSaveFilePicker' in window) {
+        // Método no disponible para algunos navegadores (Firefox, Safari)
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: defaultName,
+                types: [
+                    {
+                        description: 'Archivos',
+                        accept: { 'application/octet-stream': [`.${defaultName.split('.').pop()}`] }
+                    }
+                ]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                console.log('El guardado fue cancelado por el usuario.');
+            } else {
+                console.error('Error guardando archivo:', err);
+                alert('Ocurrió un error al guardar el archivo.');
+            }
+        }
+    } else {
+        // Por defecto, descarga automática
+        const a = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = defaultName;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
 }
 
 function triggerImport() {

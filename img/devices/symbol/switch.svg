@@ -1,1 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 77 39" fill="#fff" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="#A" x=".5" y=".5"/><symbol id="A" overflow="visible"><g stroke="#fff" stroke-linejoin="miter" fill="#126d99" stroke-width=".787"><path d="M56.662 36.594v-18.1H.394v18.1h56.268z"/><path d="M0 18.494L22.822 0h52.334L56.268 18.494H0zm56.662 18.887L75.156 16.92V0L56.662 18.494v18.887z"/></g><path d="M33.053 13.772l-1.181.787H18.101l-1.574 1.574-3.935-1.574 7.87-2.361-1.574 1.574h14.166zm11.018-7.083L42.89 7.869H29.118l-1.574 1.18-3.935-1.574 7.87-1.967-1.574 1.18h14.166zm-8.657 4.722l1.18-.787H50.76l1.18-1.574 3.935 1.574-7.476 2.361 1.18-1.574H35.414zm7.476-7.083l1.181-.787h13.772l1.574-1.574 3.935 1.967-7.87 1.967 1.574-1.574H42.89z" stroke="none"/></symbol></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 77 77"
+   fill="#ffffff"
+   fill-rule="evenodd"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="switch.svg"
+   width="77"
+   height="77"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="3.6579178"
+     inkscape:cx="-19.683329"
+     inkscape:cy="45.517699"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
+  <use
+     xlink:href="#A"
+     x="0.5"
+     y="0.5"
+     id="use1"
+     transform="translate(0.49513117,19.273404)" />
+  <symbol
+     id="A"
+     overflow="visible">
+    <g
+       stroke="#ffffff"
+       stroke-linejoin="miter"
+       fill="#126d99"
+       stroke-width="0.787"
+       id="g2">
+      <path
+         d="m 56.662,36.594 v -18.1 H 0.394 v 18.1 z"
+         id="path1" />
+      <path
+         d="M 0,18.494 22.822,0 H 75.156 L 56.268,18.494 Z M 56.662,37.381 75.156,16.92 V 0 L 56.662,18.494 Z"
+         id="path2" />
+    </g>
+    <path
+       d="m 33.053,13.772 -1.181,0.787 H 18.101 l -1.574,1.574 -3.935,-1.574 7.87,-2.361 -1.574,1.574 H 33.054 Z M 44.071,6.689 42.89,7.869 H 29.118 l -1.574,1.18 -3.935,-1.574 7.87,-1.967 -1.574,1.18 h 14.166 z m -8.657,4.722 1.18,-0.787 H 50.76 l 1.18,-1.574 3.935,1.574 -7.476,2.361 1.18,-1.574 z M 42.89,4.328 44.071,3.541 h 13.772 l 1.574,-1.574 3.935,1.967 -7.87,1.967 1.574,-1.574 H 42.89 Z"
+       stroke="none"
+       id="path3" />
+  </symbol>
+</svg>

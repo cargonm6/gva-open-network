@@ -1,1 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 59 53" fill="#fff" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><style><![CDATA[.B{stroke:#fff}.C{stroke-linejoin:miter}.D{fill:#0f73a0}.E{stroke-width:.787}.F{fill:#0b719f}.G{stroke-linecap:square}]]></style><use xlink:href="#A" x=".5" y=".5"/><symbol id="A" overflow="visible"><path d="M49.573 44.459v-9.443H0v9.443h49.573z" class="B C D E"/><path d="M34.229 40.131h12.59z" stroke="none" class="F"/><path d="M34.229 40.131h12.59" fill="none" class="B C E G"/><path d="M34.229 39.737h12.59z" stroke="none" class="F"/><g class="B C E"><path d="M34.229 39.737h12.59" fill="none" class="G"/><g class="D"><path d="M57.835 35.409v-8.262l-8.262 7.869v9.443l8.262-9.049zM40.917 51.933v-1.967l4.328-6.295v3.934l-4.328 4.328z"/><path d="M40.917 49.966v1.967H1.18v-1.967h39.737z"/><path d="M40.917 49.966H1.18l4.328-6.295h39.737l-4.328 6.295zm16.918-22.819H8.262L0 35.016h49.573l8.262-7.869z"/><path d="M42.885 30.295V5.508H9.049v24.787h33.836z"/></g></g><use xlink:href="#C" stroke="none" class="D"/><g class="B C E"><use xlink:href="#C" fill="none"/><path d="M48.786 0H14.557L9.049 5.508h33.836L48.786 0z" class="D"/><path d="M48.787 25.18V0l-5.901 5.508v24.787l5.901-5.115z" class="F"/></g></symbol><defs ><path id="C" d="M11.798 11.023c0-2.754 2.361-3.148 2.361-3.148h22.819c3.148 0 3.148 3.148 3.148 3.148v14.164c0 1.574-2.754 2.361-2.754 2.361H14.552c-1.967 0-2.754-2.361-2.754-2.361z"/></defs></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 59 59"
+   fill="#ffffff"
+   fill-rule="evenodd"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="pc.svg"
+   width="59"
+   height="59"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="7.6132076"
+     inkscape:cx="29.553903"
+     inkscape:cy="34.610905"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg12" />
+  <style
+     id="style1"><![CDATA[.B{stroke:#fff}.C{stroke-linejoin:miter}.D{fill:#0f73a0}.E{stroke-width:.787}.F{fill:#0b719f}.G{stroke-linecap:square}]]></style>
+  <use
+     xlink:href="#A"
+     x="0.5"
+     y="0.5"
+     id="use1"
+     transform="translate(0.0825,3.0112908)" />
+  <symbol
+     id="A"
+     overflow="visible">
+    <path
+       d="M 49.573,44.459 V 35.016 H 0 v 9.443 z"
+       class="B C D E"
+       id="path1" />
+    <path
+       d="m 34.229,40.131 h 12.59 z"
+       stroke="none"
+       class="F"
+       id="path2" />
+    <path
+       d="m 34.229,40.131 h 12.59"
+       fill="none"
+       class="B C E G"
+       id="path3" />
+    <path
+       d="m 34.229,39.737 h 12.59 z"
+       stroke="none"
+       class="F"
+       id="path4" />
+    <g
+       class="B C E"
+       id="g10">
+      <path
+         d="m 34.229,39.737 h 12.59"
+         fill="none"
+         class="G"
+         id="path5" />
+      <g
+         class="D"
+         id="g9">
+        <path
+           d="m 57.835,35.409 v -8.262 l -8.262,7.869 v 9.443 L 57.835,35.41 Z M 40.917,51.933 v -1.967 l 4.328,-6.295 v 3.934 z"
+           id="path6" />
+        <path
+           d="m 40.917,49.966 v 1.967 H 1.18 v -1.967 z"
+           id="path7" />
+        <path
+           d="M 40.917,49.966 H 1.18 L 5.508,43.671 H 45.245 Z M 57.835,27.147 H 8.262 L 0,35.016 h 49.573 z"
+           id="path8" />
+        <path
+           d="M 42.885,30.295 V 5.508 H 9.049 v 24.787 z"
+           id="path9" />
+      </g>
+    </g>
+    <use
+       xlink:href="#C"
+       stroke="none"
+       class="D"
+       id="use10" />
+    <g
+       class="B C E"
+       id="g12">
+      <use
+         xlink:href="#C"
+         fill="none"
+         id="use11" />
+      <path
+         d="M 48.786,0 H 14.557 L 9.049,5.508 h 33.836 z"
+         class="D"
+         id="path11" />
+      <path
+         d="M 48.787,25.18 V 0 l -5.901,5.508 v 24.787 z"
+         class="F"
+         id="path12" />
+    </g>
+  </symbol>
+  <defs
+     id="defs12">
+    <path
+       id="C"
+       d="m 11.798,11.023 c 0,-2.754 2.361,-3.148 2.361,-3.148 h 22.819 c 3.148,0 3.148,3.148 3.148,3.148 v 14.164 c 0,1.574 -2.754,2.361 -2.754,2.361 h -22.82 c -1.967,0 -2.754,-2.361 -2.754,-2.361 z" />
+  </defs>
+</svg>
