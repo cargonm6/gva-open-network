@@ -24,6 +24,7 @@
     /* Textos */
     --color-textarea-bg: #ffffaa;
     --color-link-drawing: #3498db;
+    --color-link-wan: #db3434;
     --color-area-border: gray;
     --color-alert: red;
     --color-success: green;
@@ -165,6 +166,7 @@ h5:not(:first-child) {
     padding: 10px;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
 }
 
 #toolbar button {

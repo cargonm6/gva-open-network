@@ -16,7 +16,7 @@
       "id": "area_6420",
       "name": "Área 2",
       "position": {
-        "x": 537,
+        "x": 535.9,
         "y": 238
       },
       "size": {
@@ -25,15 +25,15 @@
       }
     },
     {
-      "id": "area_2366",
-      "name": "Área 3",
+      "id": "area_1755",
+      "name": "Red doméstica",
       "position": {
-        "x": 960,
-        "y": 238
+        "x": 71.27483879652004,
+        "y": 54.28748924880006
       },
       "size": {
-        "width": 346,
-        "height": 351
+        "width": 197.10000000000002,
+        "height": 95.10000000000001
       }
     }
   ],
@@ -221,45 +221,6 @@
       "interfaces": []
     },
     {
-      "id": "pc_1687",
-      "type": "pc",
-      "name": "pc_1687",
-      "position": {
-        "x": 756,
-        "y": 447
-      },
-      "metadata": {
-        "area": "Ninguna"
-      },
-      "interfaces": []
-    },
-    {
-      "id": "pc_8901",
-      "type": "pc",
-      "name": "pc_8901",
-      "position": {
-        "x": 812,
-        "y": 512
-      },
-      "metadata": {
-        "area": "Ninguna"
-      },
-      "interfaces": []
-    },
-    {
-      "id": "pc_5194",
-      "type": "pc",
-      "name": "pc_5194",
-      "position": {
-        "x": 875,
-        "y": 447
-      },
-      "metadata": {
-        "area": "Ninguna"
-      },
-      "interfaces": []
-    },
-    {
       "id": "pc_5613",
       "type": "pc",
       "name": "pc_5613",
@@ -368,8 +329,8 @@
       "type": "text",
       "name": "text_2052",
       "position": {
-        "x": 72,
-        "y": 170
+        "x": 69.79999999999998,
+        "y": 183.2
       },
       "text": "Área 1: red con dos switches\ny diferentes patch panels a los que\nse conectan los equipos.",
       "metadata": {},
@@ -381,21 +342,21 @@
       "type": "text",
       "name": "text_1141",
       "position": {
-        "x": 676,
-        "y": 166
+        "x": 738.7,
+        "y": 182.5
       },
-      "text": "Área 2: red con dos switches\na los que se conectan los equipos.",
+      "text": "Área 2: red con dos switches\na los que se conectan los equipos.\nIncluye una red inalámbrica.",
       "metadata": {},
-      "_width": 194,
-      "_height": 38
+      "_width": 207,
+      "_height": 52
     },
     {
       "id": "ap_1331",
       "type": "ap",
       "name": "ap_1331",
       "position": {
-        "x": 1108,
-        "y": 319
+        "x": 808.8000000000001,
+        "y": 398.2
       },
       "metadata": {
         "productor": "",
@@ -409,8 +370,8 @@
       "type": "screen",
       "name": "screen_854",
       "position": {
-        "x": 995,
-        "y": 439
+        "x": 742,
+        "y": 491.80000000000007
       },
       "metadata": {
         "productor": "",
@@ -424,8 +385,8 @@
       "type": "pc",
       "name": "pc_5587",
       "position": {
-        "x": 1118,
-        "y": 504
+        "x": 877.0999999999999,
+        "y": 493.00000000000006
       },
       "metadata": {
         "productor": "",
@@ -435,12 +396,27 @@
       "interfaces": []
     },
     {
-      "id": "pc_437",
+      "id": "router_6300",
+      "type": "router",
+      "name": "Edge router",
+      "position": {
+        "x": 204.3,
+        "y": 55.80000000000001
+      },
+      "metadata": {
+        "productor": "",
+        "modelo": "",
+        "notas": ""
+      },
+      "interfaces": []
+    },
+    {
+      "id": "pc_3211",
       "type": "pc",
-      "name": "pc_437",
+      "name": "pc_local",
       "position": {
-        "x": 1236,
-        "y": 444
+        "x": 76.4,
+        "y": 83.4
       },
       "metadata": {
         "productor": "",
@@ -450,17 +426,19 @@
       "interfaces": []
     },
     {
-      "id": "text_629",
-      "type": "text",
-      "name": "text_629",
+      "id": "cloud_1494",
+      "type": "cloud",
+      "name": "Internet",
       "position": {
-        "x": 969,
-        "y": 164
+        "x": 370,
+        "y": 55
       },
-      "text": "Área 3: red inalámbrica, derivada\ndel switch 2 del área 2.",
-      "metadata": {},
-      "_width": 201,
-      "_height": 38
+      "metadata": {
+        "productor": "",
+        "modelo": "",
+        "notas": ""
+      },
+      "interfaces": []
     }
   ],
   "links": [
@@ -532,36 +510,6 @@
       },
       "to": {
         "nodeId": "switch_8605"
-      }
-    },
-    {
-      "id": "a9c4f5b1-5b75-4f43-9cb7-c0aacf5bb492",
-      "type": "wired",
-      "from": {
-        "nodeId": "pc_1687"
-      },
-      "to": {
-        "nodeId": "switch_6760"
-      }
-    },
-    {
-      "id": "3c43ef4c-e86f-4776-ac1e-a2774e630397",
-      "type": "wired",
-      "from": {
-        "nodeId": "pc_5194"
-      },
-      "to": {
-        "nodeId": "switch_6760"
-      }
-    },
-    {
-      "id": "c87e4644-ab9e-46bc-96b3-e1277b5dcf06",
-      "type": "wired",
-      "from": {
-        "nodeId": "pc_8901"
-      },
-      "to": {
-        "nodeId": "switch_6760"
       }
     },
     {
@@ -755,13 +703,33 @@
       }
     },
     {
-      "id": "e1a0eedb-c8a8-4e32-822c-04ce56370cc8",
-      "type": "wireless",
+      "id": "ac17400c-1967-4d45-8fac-d174bfe9bed2",
+      "type": "wired",
       "from": {
-        "nodeId": "pc_437"
+        "nodeId": "pc_3211"
       },
       "to": {
-        "nodeId": "ap_1331"
+        "nodeId": "router_6300"
+      }
+    },
+    {
+      "id": "cc8801f5-d971-4272-9be7-273acafba688",
+      "type": "wan",
+      "from": {
+        "nodeId": "router_6300"
+      },
+      "to": {
+        "nodeId": "cloud_1494"
+      }
+    },
+    {
+      "id": "389f1c9b-f7df-4308-a85d-9f6856d97b1b",
+      "type": "wan",
+      "from": {
+        "nodeId": "cloud_1494"
+      },
+      "to": {
+        "nodeId": "router_7202"
       }
     }
   ]

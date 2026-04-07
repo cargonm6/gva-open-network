@@ -493,15 +493,32 @@ function drawLinks() {
                     t.position.x + 25 + ox,
                     t.position.y + 25 + oy
                 );
+            } else if (l.type === "wan") {
+                drawZigzagLine(ctx,
+                    f.position.x + 25 + ox,
+                    f.position.y + 25 + oy,
+                    t.position.x + 25 + ox,
+                    t.position.y + 25 + oy
+                );
             } else {
-                ctx.beginPath();
-                ctx.moveTo(f.position.x + 25 + ox, f.position.y + 25 + oy);
-                ctx.lineTo(t.position.x + 25 + ox, t.position.y + 25 + oy);
-                ctx.strokeStyle = "black";
-                ctx.stroke();
+                drawStraightLine(ctx,
+                    f.position.x + 25 + ox,
+                    f.position.y + 25 + oy,
+                    t.position.x + 25 + ox,
+                    t.position.y + 25 + oy
+                );
             }
         });
     }
+}
+
+function drawStraightLine(ctx, x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 }
 
 function drawWavyLine(ctx, x1, y1, x2, y2) {
@@ -546,6 +563,44 @@ function drawWavyLine(ctx, x1, y1, x2, y2) {
     ctx.stroke();
 }
 
+function drawZigzagLine(ctx, x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+
+    if (len === 0) return;
+
+    const B = 5;
+    const A = len * 0.5 + B;
+
+    // Vector unitario de la línea
+    const ux = dx / len;
+    const uy = dy / len;
+
+    // Vector perpendicular (rotar 90°)
+    const px = -uy;
+    const py = ux;
+
+    // Primer punto desviado: desde x1,y1 a distancia A con desviación B
+    const xA = x1 + ux * A + px * B;
+    const yA = y1 + uy * A + py * B;
+
+    // Tercer punto desviado: desde x2,y2 hacia la mitad + A, desviación opuesta
+    const xC = x2 - ux * A + px * (-B);
+    const yC = y2 - uy * A + py * (-B);
+
+    // Comenzamos a dibujar
+    ctx.beginPath();
+    ctx.moveTo(x1, y1); // inicio
+    ctx.lineTo(xA, yA); // primer segmento
+    ctx.lineTo(xC, yC); // segundo segmento (conecta los extremos)
+    ctx.lineTo(x2, y2); // tercer segmento hasta el final
+
+    ctx.strokeStyle = getColor("--color-link-wan");
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+}
+
 function drawPreview() {
     const icon = getActiveCursorIcon();
 
@@ -556,7 +611,7 @@ function drawPreview() {
         ctx.restore();
     }
 
-    if (["link-wired", "link-wireless"].includes(currentTool) && linkStart) {
+    if (["link-wired", "link-wireless", "link-wan"].includes(currentTool) && linkStart) {
         ctx.beginPath();
         ctx.moveTo(linkStart.position.x + 25, linkStart.position.y + 25);
         ctx.lineTo(lastMouseX, lastMouseY);
@@ -619,12 +674,12 @@ function updateCursor() {
         }
     }
 
-    if (["router", "switch", "pc", "patch", "screen", "ap", "area"].includes(currentTool)) {
+    if (["router", "switch", "pc", "patch", "cloud", "screen", "ap", "area"].includes(currentTool)) {
         canvas.style.cursor = "crosshair";
         return;
     }
 
-    if (["link-wired", "link-wireless"].includes(currentTool)) {
+    if (["link-wired", "link-wireless", "link-wan"].includes(currentTool)) {
         canvas.style.cursor = "crosshair";
         return;
     }
@@ -647,7 +702,7 @@ function getActiveCursorIcon() {
         return icons[cloneMode.type];
     }
 
-    if (["router", "switch", "pc", "patch", "screen", "ap", "area"].includes(currentTool)) {
+    if (["router", "switch", "pc", "patch", "cloud", "screen", "ap", "area"].includes(currentTool)) {
         return icons[currentTool];
     }
 
@@ -762,7 +817,7 @@ canvas.addEventListener("mousedown", (e) => {
         return;
     }
 
-    if (["router", "switch", "pc", "patch", "screen", "ap"].includes(currentTool)) {
+    if (["router", "switch", "pc", "patch", "cloud", "screen", "ap"].includes(currentTool)) {
         createNode(currentTool, x - 25, y - 25);
         requestRender();
         return;
@@ -774,16 +829,20 @@ canvas.addEventListener("mousedown", (e) => {
         return;
     }
 
-    if (["link-wired", "link-wireless"].includes(currentTool)) {
+    if (["link-wired", "link-wireless", "link-wan"].includes(currentTool)) {
         if (!node) return;
 
         if (!linkStart) {
             linkStart = node;
         } else if (node !== linkStart) {
 
-            const type = currentTool === "link-wireless"
-                ? "wireless"
-                : "wired";
+            let type = "wired";
+
+            if (currentTool === "link-wireless") {
+                type = "wireless";
+            } else if (currentTool === "link-wan") {
+                type = "wan";
+            }
 
             db.links.push({
                 id: uuid(),
@@ -958,7 +1017,7 @@ canvas.addEventListener("wheel", (e) => {
 
 canvas.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    if (["link-wired", "link-wireless"].includes(currentTool) && linkStart) {
+    if (["link-wired", "link-wireless", "link-wan"].includes(currentTool) && linkStart) {
         linkStart = null;
         requestRender();
     }
@@ -1633,6 +1692,7 @@ function loadIconSet(setName) {
         pc: loadIcon(`img/devices/${setName}/pc.svg`),
         ap: loadIcon(`img/devices/${setName}/ap.svg`),
         patch: loadIcon(`img/devices/${setName}/patch.svg`),
+        cloud: loadIcon(`img/devices/${setName}/cloud.svg`),
         screen: loadIcon(`img/devices/${setName}/screen.svg`),
         area: loadIcon(`img/devices/symbol/area.svg`)
     };
