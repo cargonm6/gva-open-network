@@ -135,9 +135,9 @@ function getMousePos(evt) {
 
 function getNodeAt(x, y) {
     return db.nodes.find(n => {
-        const w = n._width || 50;
+        const w = n._width || node_w;
         // fallback al tamaño fijo
-        const h = n._height || 50;
+        const h = n._height || node_h;
         return x >= n.position.x && x <= n.position.x + w &&
             y >= n.position.y && y <= n.position.y + h;
     });
@@ -183,10 +183,10 @@ function getLinkAt(x, y) {
             const ox = ux * offset;
             const oy = uy * offset;
 
-            const x1 = from.position.x + 25 + ox;
-            const y1 = from.position.y + 25 + oy;
-            const x2 = to.position.x + 25 + ox;
-            const y2 = to.position.y + 25 + oy;
+            const x1 = from.position.x + node_w / 2 + ox;
+            const y1 = from.position.y + node_h / 2 + oy;
+            const x2 = to.position.x + node_w / 2 + ox;
+            const y2 = to.position.y + node_h / 2 + oy;
 
             const denom = ((x2 - x1) ** 2 + (y2 - y1) ** 2);
             if (denom === 0) continue;
@@ -358,6 +358,8 @@ function updateTextNodeSize(n) {
 // =====================
 
 const root = document.documentElement;
+const node_w = 50;
+const node_h = 50;
 
 function getColor(variable) {
     return getComputedStyle(root).getPropertyValue(variable).trim();
@@ -370,6 +372,9 @@ function render() {
 
     // Apply world transform
     applyTransform();
+
+    // Rejilla
+    if (gridEnabled) drawGrid();
 
     // Draw scene
     db.areas.forEach(drawArea);
@@ -424,15 +429,15 @@ function drawNodeBase(n) {
     const icon = icons[n.type];
 
     if (icon && icon.complete) {
-        ctx.drawImage(icon, n.position.x, n.position.y, 50, 50);
+        ctx.drawImage(icon, n.position.x, n.position.y, node_w, node_h);
     } else {
         ctx.fillStyle = getColor("--color-link-drawing");
-        ctx.fillRect(n.position.x, n.position.y, 50, 50);
+        ctx.fillRect(n.position.x, n.position.y, node_w, node_h);
     }
 
     if (n === selectedNode) {
         ctx.strokeStyle = getColor("--color-alert");
-        ctx.strokeRect(n.position.x, n.position.y, 50, 50);
+        ctx.strokeRect(n.position.x, n.position.y, node_w, node_h);
     }
 
     ctx.restore();
@@ -488,24 +493,24 @@ function drawLinks() {
 
             if (l.type === "wireless") {
                 drawWavyLine(ctx,
-                    f.position.x + 25 + ox,
-                    f.position.y + 25 + oy,
-                    t.position.x + 25 + ox,
-                    t.position.y + 25 + oy
+                    f.position.x + node_w / 2 + ox,
+                    f.position.y + node_h / 2 + oy,
+                    t.position.x + node_w / 2 + ox,
+                    t.position.y + node_h / 2 + oy
                 );
             } else if (l.type === "wan") {
                 drawZigzagLine(ctx,
-                    f.position.x + 25 + ox,
-                    f.position.y + 25 + oy,
-                    t.position.x + 25 + ox,
-                    t.position.y + 25 + oy
+                    f.position.x + node_w / 2 + ox,
+                    f.position.y + node_h / 2 + oy,
+                    t.position.x + node_w / 2 + ox,
+                    t.position.y + node_h / 2 + oy
                 );
             } else {
                 drawStraightLine(ctx,
-                    f.position.x + 25 + ox,
-                    f.position.y + 25 + oy,
-                    t.position.x + 25 + ox,
-                    t.position.y + 25 + oy
+                    f.position.x + node_w / 2 + ox,
+                    f.position.y + node_h / 2 + oy,
+                    t.position.x + node_w / 2 + ox,
+                    t.position.y + node_h / 2 + oy
                 );
             }
         });
@@ -607,13 +612,13 @@ function drawPreview() {
     if (icon && icon.complete) {
         ctx.save();
         ctx.globalAlpha = 0.5;
-        ctx.drawImage(icon, lastMouseX - 12, lastMouseY - 12, 25, 25);
+        ctx.drawImage(icon, lastMouseX - 12, lastMouseY - 12, node_w / 2, node_h / 2);
         ctx.restore();
     }
 
     if (["link-wired", "link-wireless", "link-wan"].includes(currentTool) && linkStart) {
         ctx.beginPath();
-        ctx.moveTo(linkStart.position.x + 25, linkStart.position.y + 25);
+        ctx.moveTo(linkStart.position.x + node_w / 2, linkStart.position.y + node_h / 2);
         ctx.lineTo(lastMouseX, lastMouseY);
         ctx.strokeStyle = getColor("--color-link-drawing");
         ctx.setLineDash([5, 5]);
@@ -642,6 +647,8 @@ function drawTextWithOutline(text, x, y, align = "left", outlineColor = "white")
 // =====================
 // CURSOR Y GUI (UX)
 // =====================
+
+const tool_devices = ["router", "switch", "ap", "hub", "pc", "server", "screen", "patch", "cloud"];
 
 function updateCursor() {
     if (isPanning) {
@@ -674,7 +681,7 @@ function updateCursor() {
         }
     }
 
-    if (["router", "switch", "pc", "patch", "cloud", "screen", "ap", "area"].includes(currentTool)) {
+    if (tool_devices.includes(currentTool) || currentTool == "area") {
         canvas.style.cursor = "crosshair";
         return;
     }
@@ -702,7 +709,7 @@ function getActiveCursorIcon() {
         return icons[cloneMode.type];
     }
 
-    if (["router", "switch", "pc", "patch", "cloud", "screen", "ap", "area"].includes(currentTool)) {
+    if (tool_devices.includes(currentTool) || currentTool == "area") {
         return icons[currentTool];
     }
 
@@ -740,6 +747,85 @@ document.addEventListener("click", (e) => {
         actions[action](btn);
     }
 });
+
+// =====================
+// FORZADO A REJILLA
+// =====================
+
+let gridEnabled = false;
+
+function toggleGrid() {
+    const toggleGridButton = document.getElementById("toggleGrid");
+    gridEnabled = !gridEnabled;
+
+    if (gridEnabled) {
+        toggleGridButton.querySelector("img").src = `img/buttons/tools/grid-off.svg`;
+        toggleGridButton.querySelector("span").textContent = "Quitar rejilla";
+    }
+    else {
+        toggleGridButton.querySelector("img").src = `img/buttons/tools/grid-on.svg`;
+        toggleGridButton.querySelector("span").textContent = "Forzar a rejilla";
+    }
+
+    requestRender();
+}
+
+function drawGrid() {
+    const stepX = node_w;
+    const stepY = node_h;
+
+    const width = canvas.width / dpr / view.scale;
+    const height = canvas.height / dpr / view.scale;
+
+    const startX = -view.offsetX / view.scale;
+    const startY = -view.offsetY / view.scale;
+
+    ctx.save();
+
+    ctx.strokeStyle = getColor("--color-canvas-grid");
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    // líneas verticales
+    for (let x = Math.floor(startX / stepX) * stepX; x < startX + width; x += stepX) {
+        ctx.moveTo(x, startY);
+        ctx.lineTo(x, startY + height);
+    }
+
+    // líneas horizontales
+    for (let y = Math.floor(startY / stepY) * stepY; y < startY + height; y += stepY) {
+        ctx.moveTo(startX, y);
+        ctx.lineTo(startX + width, y);
+    }
+
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+// function snapToGrid(x, y) {
+//     if (!gridEnabled) return { x, y };
+
+//     return {
+//         x: Math.round(x / node_w) * node_w,
+//         y: Math.round(y / node_h) * node_h
+//     };
+// }
+
+function snapToGrid(x, y) {
+    if (!gridEnabled) return { x, y };
+
+    const threshold = 10;
+
+    const snapX = Math.round(x / node_w) * node_w;
+    const snapY = Math.round(y / node_h) * node_h;
+
+    return {
+        x: Math.abs(snapX - x) < threshold ? snapX : x,
+        y: Math.abs(snapY - y) < threshold ? snapY : y
+    };
+}
 
 // =====================
 // HERRAMIENTAS
@@ -782,11 +868,14 @@ canvas.addEventListener("mousedown", (e) => {
     if (cloneMode) {
         const { x, y } = getMousePos(e);
 
-        const newNode = cloneNode(
-            cloneMode,
-            x - 25,
-            y - 25
-        );
+        // const newNode = cloneNode(
+        //     cloneMode,
+        //     x - node_w / 2,
+        //     y - node_h / 2
+        // );
+
+        const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
+        const newNode = cloneNode(cloneMode, snapped.x, snapped.y);
 
         selectedNode = newNode;
 
@@ -817,8 +906,12 @@ canvas.addEventListener("mousedown", (e) => {
         return;
     }
 
-    if (["router", "switch", "pc", "patch", "cloud", "screen", "ap"].includes(currentTool)) {
-        createNode(currentTool, x - 25, y - 25);
+    if (tool_devices.includes(currentTool)) {
+        // createNode(currentTool, x - node_w / 2, y - node_h / 2);
+
+        const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
+        createNode(currentTool, snapped.x, snapped.y);
+
         requestRender();
         return;
     }
@@ -905,8 +998,8 @@ canvas.addEventListener("mousemove", (e) => {
     if (isPanning) {
         view.offsetX += e.movementX;
         view.offsetY += e.movementY;
-        updateCursor();
         requestRender();
+        updateCursor();
         return;
     }
 
@@ -947,13 +1040,27 @@ canvas.addEventListener("mousemove", (e) => {
     // =========================
     // DRAG NODE
     // =========================
+    // if (draggingNode) {
+    //     draggingNode.position.x = x - draggingOffset.x;
+    //     draggingNode.position.y = y - draggingOffset.y;
+
+    //     updateInspector(draggingNode);
+    //     requestRender();
+    //     updateCursor();
+    //     return;
+    // }
+
     if (draggingNode) {
-        draggingNode.position.x = x - draggingOffset.x;
-        draggingNode.position.y = y - draggingOffset.y;
+        let nx = x - draggingOffset.x;
+        let ny = y - draggingOffset.y;
+
+        const snapped = snapToGrid(nx, ny);
+
+        draggingNode.position.x = snapped.x;
+        draggingNode.position.y = snapped.y;
 
         updateInspector(draggingNode);
         requestRender();
-        updateCursor();
         return;
     }
 
@@ -1689,15 +1796,15 @@ function loadIconSet(setName) {
     icons = {
         router: loadIcon(`img/devices/${setName}/router.svg`),
         switch: loadIcon(`img/devices/${setName}/switch.svg`),
-        pc: loadIcon(`img/devices/${setName}/pc.svg`),
         ap: loadIcon(`img/devices/${setName}/ap.svg`),
+        hub: loadIcon(`img/devices/${setName}/hub.svg`),
+        pc: loadIcon(`img/devices/${setName}/pc.svg`),
+        server: loadIcon(`img/devices/${setName}/server.svg`),
+        screen: loadIcon(`img/devices/${setName}/screen.svg`),
         patch: loadIcon(`img/devices/${setName}/patch.svg`),
         cloud: loadIcon(`img/devices/${setName}/cloud.svg`),
-        screen: loadIcon(`img/devices/${setName}/screen.svg`),
         area: loadIcon(`img/devices/symbol/area.svg`)
     };
-
-    console.log(icons.router);
 
     requestRender();
 }

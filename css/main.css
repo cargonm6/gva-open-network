@@ -5,6 +5,7 @@
     --color-toolbar-bg: #A8C7D8;       /* Azul pastel suave para sidebar */
     --color-inspector-bg: #F5F7FA;     /* Crema muy claro, contraste suave */
     --color-canvas-border: #D0E1F2;    /* Azul muy suave para bordes de canvas */
+    --color-canvas-grid: #ddf;
 
     /* Text / Foreground */
     --color-topbar-text: #FFFFFF;      /* Blanco sobre topbar azul */
@@ -44,12 +45,13 @@ body {
 }
 
 h5 {
-    margin-bottom: 10px;
+    margin: 10px 0 10px 0;
     width: 100%;
     text-align: center;
 }
 
 h5:not(:first-child) {
+    margin-top: 0;
     border-top: 1px solid var(--color-topbar-text);
     padding-top: 10px;
 }
@@ -172,10 +174,18 @@ h5:not(:first-child) {
 #toolbar button {
     width: 100%;
     margin-bottom: 5px;
+
     display: flex;
     align-items: center;
     gap: 8px;
+
     padding: 5px 10px;
+
+    background-color: var(--color-btn-bg);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
     white-space: nowrap;
     min-width: 130px;
 }
@@ -189,10 +199,16 @@ img.btn-icon,
 }
 
 /* botón activo */
-.tool-btn.active {
-    background-color: var(--color-btn-active-bg);
+button.tool-btn.active {
+    background: var(--color-btn-active-bg) !important;
     color: var(--color-topbar-text);
-    border: 2px solid var(--color-btn-active-border);
+    outline: 2px solid var(--color-btn-active-border);
+    outline-offset: -2px;
+}
+
+.dropdown-content button.tool-btn.active {
+    background: var(--color-btn-active-bg) !important;
+    color: var(--color-topbar-text);
 }
 
 /* Dropdown dentro de toolbar */

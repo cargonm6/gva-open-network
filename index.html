@@ -77,14 +77,17 @@
                     <img src="img/devices/symbol/router.svg" class="btn-icon">Intermedios ▾
                 </button>
                 <div class="dropdown-content">
-                    <button data-action="tool" data-tool="router">
+                    <button class="tool-btn" data-action="tool" data-tool="router">
                         <img src="img/devices/symbol/router.svg" class="btn-icon">Router
                     </button>
-                    <button data-action="tool" data-tool="switch">
+                    <button class="tool-btn" data-action="tool" data-tool="switch">
                         <img src="img/devices/symbol/switch.svg" class="btn-icon">Switch
                     </button>
-                    <button data-action="tool" data-tool="ap">
+                    <button class="tool-btn" data-action="tool" data-tool="ap">
                         <img src="img/devices/symbol/ap.svg" class="btn-icon">Punto de acceso
+                    </button>
+                    <button class="tool-btn" data-action="tool" data-tool="hub">
+                        <img src="img/devices/symbol/hub.svg" class="btn-icon">Hub
                     </button>
                 </div>
             </div>
@@ -94,10 +97,13 @@
                     <img src="img/devices/symbol/pc.svg" class="btn-icon">Terminales ▾
                 </button>
                 <div class="dropdown-content">
-                    <button data-action="tool" data-tool="pc">
+                    <button class="tool-btn" data-action="tool" data-tool="pc">
                         <img src="img/devices/symbol/pc.svg" class="btn-icon">PC
                     </button>
-                    <button data-action="tool" data-tool="screen">
+                    <button class="tool-btn" data-action="tool" data-tool="server">
+                        <img src="img/devices/symbol/server.svg" class="btn-icon">Servidor
+                    </button>
+                    <button class="tool-btn" data-action="tool" data-tool="screen">
                         <img src="img/devices/symbol/screen.svg" class="btn-icon">Pantalla
                     </button>
                 </div>
@@ -108,10 +114,10 @@
                     <img src="img/devices/symbol/patch.svg" class="btn-icon">Estructura ▾
                 </button>
                 <div class="dropdown-content">
-                    <button data-action="tool" data-tool="patch">
+                    <button class="tool-btn" data-action="tool" data-tool="patch">
                         <img src="img/devices/symbol/patch.svg" class="btn-icon">Patch panel
                     </button>
-                    <button data-action="tool" data-tool="cloud">
+                    <button class="tool-btn" data-action="tool" data-tool="cloud">
                         <img src="img/devices/symbol/cloud.svg" class="btn-icon">Nube
                     </button>
                 </div>
@@ -125,13 +131,13 @@
                     Enlace ▾
                 </button>
                 <div class="dropdown-content">
-                    <button data-action="tool" data-tool="link-wired">
+                    <button class="tool-btn" data-action="tool" data-tool="link-wired">
                         <img src="img/buttons/link/cable.svg" class="btn-icon">Ethernet
                     </button>
-                    <button data-action="tool" data-tool="link-wireless">
+                    <button class="tool-btn" data-action="tool" data-tool="link-wireless">
                         <img src="img/buttons/link/wireless.svg" class="btn-icon">Inalámbrico
                     </button>
-                    <button data-action="tool" data-tool="link-wan">
+                    <button class="tool-btn" data-action="tool" data-tool="link-wan">
                         <img src="img/buttons/link/wan.svg" class="btn-icon">WAN
                     </button>
                 </div>
@@ -177,6 +183,11 @@
 
                 </div>
             </div>
+
+            <button class="tool-btn" id="toggleGrid" onclick="toggleGrid()">
+                <img src="img/buttons/tools/grid-on.svg" class="btn-icon">
+                <span>Forzar a rejilla</span>
+            </button>
 
             <p>Zoom: <span id="zoomLabel">100%</span></p>
             <input id="zoomSlider" type="range" min="0" max="1" step="0.01" value="0.5">
