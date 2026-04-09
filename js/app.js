@@ -732,6 +732,7 @@ const actions = {
     "export-json": () => exportFile(false),
     "export-gzip": () => exportFile(true),
     "export-png": () => exportPNG(),
+    "export-txt": () => generarArbol(db),
 
     import: () => triggerImport(),
 
