@@ -114,15 +114,23 @@ h5:not(:first-child) {
     min-width: 120px;
 }
 
+.dropbtn::after {
+    content: "▾";
+    margin-left: auto;
+    /* empuja el símbolo al final */
+    font-size: 12px;
+}
+
 .dropdown-content {
     display: none;
     position: absolute;
     top: 100%;
     left: 0;
     background-color: var(--color-dropdown-bg);
-    min-width: 170px;
+    min-width: max-content;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border-radius: 6px;
+    border: 1px solid var(--color-canvas-border);
     z-index: 999;
     padding: 4px 0;
 }
@@ -155,8 +163,8 @@ h5:not(:first-child) {
 /* ===================== CONTENEDOR PRINCIPAL ===================== */
 #container {
     display: flex;
+    flex-direction: row;   /* 🔥 horizontal */
     height: calc(100vh - 40px);
-    overflow: hidden;
 }
 
 /* ===================== TOOLBAR ===================== */
@@ -230,12 +238,13 @@ button.tool-btn.active {
     /* ✅ toma solo el ancho del contenido */
     min-width: 100%;
     /* opcional: al menos igual al botón */
-    box-shadow: none;
+    /* box-shadow: none; */
     background: var(--color-dropdown-bg);
     /* asegúrate que contraste */
     border-radius: 6px;
     flex-direction: column;
     z-index: 999;
+    margin-top: -5px;
 }
 
 #toolbar p {
@@ -246,7 +255,10 @@ button.tool-btn.active {
 /* ===================== CANVAS ===================== */
 canvas {
     flex: 1;
-    min-width: 0;
+    /* 🔥 ocupa todo el espacio disponible */
+    width: 100%;
+    min-height: 0;
+    /* ⚠️ importante en flex */
     border: 1px solid var(--color-canvas-border);
     cursor: pointer;
 }
@@ -306,10 +318,34 @@ canvas {
     outline: none;
 }
 
+#resizer {
+    display: none;
+}
+
 @media (max-width: 1024px) {
     #container {
         flex-direction: column;
-        height: auto;
+        height: 100vh;
+        /* 🔥 CLAVE */
+    }
+
+    #resizer {
+        display: block;
+        height: 10px;
+        background: #ccc;
+        cursor: row-resize;
+        flex: 0 0 10px;
+        order: 3;
+    }
+
+    #resizer::before {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: #888;
+        margin: 3px auto;
+        border-radius: 2px;
     }
 
     #topbar {
@@ -338,6 +374,10 @@ canvas {
     #topbar img.btn-icon {
         width: 30px;
         height: 30px;
+    }
+
+    #topbar .dropbtn {
+        display: none;
     }
 
     #toolbar {
@@ -381,11 +421,13 @@ canvas {
         display: none;
     }
 
-    #toolbar .dropdown .tool-btn.dropbtn {
+    #toolbar .dropdown .tool-btn.dropbtn,
+    #topbar .dropdown .dropbtn {
         display: none;
     }
 
-    #toolbar .dropdown .dropdown-content {
+    #toolbar .dropdown .dropdown-content,
+    #topbar .dropdown .dropdown-content {
         display: flex;
         flex-direction: row;
         gap: 5px;
@@ -393,18 +435,19 @@ canvas {
         padding: 0;
         background: transparent;
         box-shadow: none;
+        border: none;
+        margin: inherit;
     }
 
     canvas {
-        width: 100%;
-        height: calc(100vh - 50px - 180px);
+        flex: 1;
         order: 2;
     }
 
     #inspector {
         width: 100%;
-        height: 180px;
-        order: 3;
+        flex: 0 0 250px;
+        order: 4;
         overflow-y: auto;
         border-top: 1px solid #ccc;
         padding: 5px;

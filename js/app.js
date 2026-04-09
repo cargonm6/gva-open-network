@@ -27,14 +27,14 @@ function requestRender() {
 
 function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
-
-    dpr = window.devicePixelRatio || 1;
+    const dpr = window.devicePixelRatio || 1;
 
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // ctx.setTransform(1, 0, 0, 1, 0, 0);
+    // ctx.scale(dpr, dpr);
 
     requestRender();
 }
@@ -1249,6 +1249,43 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
     clearInspector();
     requestRender();
 }
+
+// =====================
+// INSPECTOR (RESIZE)
+// =====================
+
+const resizer = document.getElementById("resizer");
+const inspector = document.getElementById("inspector");
+
+resizer.addEventListener("touchstart", (e) => {
+    isDragging = true;
+}, { passive: true });
+
+// 👉 mover
+window.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+
+    e.preventDefault(); // 🔥 evita scroll
+
+    const touch = e.touches[0];
+    const screenHeight = window.innerHeight;
+
+    const newHeight = screenHeight - touch.clientY;
+
+    const min = 120;
+    const max = screenHeight * 0.7;
+
+    const clamped = Math.max(min, Math.min(max, newHeight));
+
+    inspector.style.flex = `0 0 ${clamped}px`;
+    resizeCanvas();
+
+}, { passive: false });
+
+
+window.addEventListener("touchend", () => {
+    isDragging = false;
+});
 
 // =====================
 // INSPECTOR (NODOS)
