@@ -656,30 +656,36 @@
       "id": "56a46b9c-a4df-4726-bcc1-47c92f10403a",
       "type": "wired",
       "from": {
-        "nodeId": "router_9275"
+        "nodeId": "router_9275",
+        "port": "123"
       },
       "to": {
-        "nodeId": "router_928"
+        "nodeId": "router_928",
+        "port": "123"
       }
     },
     {
       "id": "586f66ce-c82f-4eaa-b58b-3a0fc7d5ece2",
       "type": "wired",
       "from": {
-        "nodeId": "router_9275"
+        "nodeId": "router_9275",
+        "port": "123"
       },
       "to": {
-        "nodeId": "router_7202"
+        "nodeId": "router_7202",
+        "port": "123"
       }
     },
     {
       "id": "1240e13b-6426-44d6-9f72-9947e96c3f56",
       "type": "wired",
       "from": {
-        "nodeId": "switch_6760"
+        "nodeId": "switch_6760",
+        "port": "123"
       },
       "to": {
-        "nodeId": "ap_1331"
+        "nodeId": "ap_1331",
+        "port": "123"
       }
     },
     {
