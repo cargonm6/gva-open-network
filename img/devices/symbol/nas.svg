@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 47.958001 47.958"
+   fill="#ffffff"
+   fill-rule="evenodd"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg104"
+   sodipodi:docname="nas.svg"
+   width="47.958"
+   height="47.958"
+   inkscape:version="1.2.2 (1:1.2.2+202305151915+b0a8486541)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview106"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="15.479167"
+     inkscape:cx="5.3943472"
+     inkscape:cy="24.032301"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg104" />
+  <style
+     id="style2"><![CDATA[.B{fill:none}.C{stroke-width:.787}.D{stroke:none}.E{stroke:#fff}.F{stroke-linecap:square}.G{fill:#000}.H{stroke-linejoin:miter}.I{fill:#0e6f9c}]]></style>
+  <use
+     xlink:href="#A"
+     x="0.5"
+     y="0.5"
+     id="use4"
+     transform="translate(7.2770024)" />
+  <symbol
+     id="A"
+     overflow="visible"
+     transform="translate(0.48550238,0.05649304)">
+    <g
+       fill="#0c6d9c"
+       class="D"
+       id="g12">
+      <path
+         d="M 24.388,7.474 H 0 v 38.942 h 24.388 z"
+         id="path6" />
+      <use
+         xlink:href="#C"
+         id="use8" />
+      <path
+         d="M 24.388,7.474 31.862,0 Z"
+         id="path10" />
+    </g>
+    <g
+       class="C E H"
+       id="g26">
+      <use
+         xlink:href="#D"
+         class="B F"
+         id="use14" />
+      <use
+         xlink:href="#C"
+         class="I"
+         id="use16" />
+      <g
+         class="B"
+         id="g24">
+        <use
+           xlink:href="#D"
+           class="F"
+           id="use18" />
+        <use
+           xlink:href="#C"
+           id="use20" />
+        <path
+           d="M 24.388,7.474 31.862,0"
+           class="F"
+           id="path22" />
+      </g>
+    </g>
+    <g
+       class="D"
+       id="g38">
+      <g
+         fill="#0c6d9c"
+         id="g34">
+        <path
+           d="M 24.388,7.474 H 0 v 38.942 h 24.388 z"
+           id="path28" />
+        <use
+           xlink:href="#C"
+           id="use30" />
+        <path
+           d="M 24.388,7.474 31.862,0 Z"
+           id="path32" />
+      </g>
+      <path
+         d="M 24.388,7.474 H 0 v 38.942 h 24.388 z"
+         class="I"
+         id="path36" />
+    </g>
+    <g
+       class="C E H"
+       id="g44">
+      <use
+         xlink:href="#D"
+         class="B F"
+         id="use40" />
+      <use
+         xlink:href="#C"
+         class="I"
+         id="use42" />
+    </g>
+    <path
+       d="M 24.388,7.474 31.862,0 Z"
+       class="D"
+       id="path46" />
+    <g
+       class="E"
+       id="g58">
+      <g
+         class="B C H"
+         id="g54">
+        <use
+           xlink:href="#D"
+           class="F"
+           id="use48" />
+        <use
+           xlink:href="#C"
+           id="use50" />
+        <path
+           d="M 24.388,7.474 31.862,0"
+           class="F"
+           id="path52" />
+      </g>
+      <use
+         xlink:href="#E"
+         class="B C"
+         id="use56" />
+    </g>
+    <use
+       xlink:href="#F"
+       class="D G"
+       id="use60" />
+    <use
+       xlink:href="#F"
+       class="B C E"
+       id="use62" />
+    <use
+       xlink:href="#G"
+       class="D G"
+       id="use64" />
+    <g
+       class="B C E"
+       id="g70">
+      <use
+         xlink:href="#G"
+         id="use66" />
+      <use
+         xlink:href="#E"
+         y="11.801"
+         id="use68" />
+    </g>
+    <use
+       xlink:href="#F"
+       y="11.8"
+       class="D G"
+       id="use72" />
+    <use
+       xlink:href="#F"
+       y="11.8"
+       class="B C E"
+       id="use74" />
+    <use
+       xlink:href="#G"
+       y="11.8"
+       class="D G"
+       id="use76" />
+    <g
+       class="B C E"
+       id="g82">
+      <use
+         xlink:href="#G"
+         y="11.8"
+         id="use78" />
+      <use
+         xlink:href="#E"
+         y="23.601"
+         id="use80" />
+    </g>
+    <use
+       xlink:href="#F"
+       y="23.601"
+       class="D G"
+       id="use84" />
+    <use
+       xlink:href="#F"
+       y="23.601"
+       class="B C E"
+       id="use86" />
+    <use
+       xlink:href="#G"
+       y="23.601"
+       class="D G"
+       id="use88" />
+    <g
+       class="B C E"
+       id="g94">
+      <use
+         xlink:href="#G"
+         y="23.601"
+         id="use90" />
+      <path
+         d="m 8.654,13.767 h 7.474 M 8.654,25.568 h 7.474 m -7.474,11.8 h 7.474"
+         id="path92" />
+    </g>
+  </symbol>
+  <defs
+     id="defs102">
+    <path
+       id="C"
+       d="m 24.388,46.416 7.474,-7.867 V 0 H 7.867 L 0,7.474 h 24.388 z" />
+    <path
+       id="D"
+       d="M 24.388,7.474 H 0 v 38.942 h 24.388" />
+    <path
+       id="E"
+       d="M 20.848,18.881 V 12.194 H 4.327 v 6.687 z" />
+    <path
+       id="F"
+       d="m 10.222,15.347 c 0,1.18 -0.787,1.967 -1.573,1.967 -1.18,0 -1.967,-0.787 -1.967,-1.967 0,-0.787 0.787,-1.573 1.967,-1.573 0.787,0 1.573,0.787 1.573,1.573 z" />
+    <path
+       id="G"
+       d="m 17.696,15.347 c 0,1.18 -0.787,1.967 -1.573,1.967 -0.786,0 -1.573,-0.787 -1.573,-1.967 0,-0.787 0.787,-1.573 1.573,-1.573 0.786,0 1.573,0.787 1.573,1.573 z" />
+  </defs>
+</svg>

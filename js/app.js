@@ -648,7 +648,7 @@ function drawTextWithOutline(text, x, y, align = "left", outlineColor = "white")
 // CURSOR Y GUI (UX)
 // =====================
 
-const tool_devices = ["router", "switch", "ap", "hub", "pc", "server", "screen", "patch", "cloud"];
+const tool_devices = ["router", "switch", "ap", "hub", "pc", "server", "screen", "printer", "nas", "patch", "cloud"];
 
 function updateCursor() {
     if (isPanning) {
@@ -1838,6 +1838,8 @@ function loadIconSet(setName) {
         hub: loadIcon(`img/devices/${setName}/hub.svg`),
         pc: loadIcon(`img/devices/${setName}/pc.svg`),
         server: loadIcon(`img/devices/${setName}/server.svg`),
+        nas: loadIcon(`img/devices/${setName}/nas.svg`),
+        printer: loadIcon(`img/devices/${setName}/printer.svg`),
         screen: loadIcon(`img/devices/${setName}/screen.svg`),
         patch: loadIcon(`img/devices/${setName}/patch.svg`),
         cloud: loadIcon(`img/devices/${setName}/cloud.svg`),

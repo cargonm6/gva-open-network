@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 68.594002 68.594002"
+   fill="#ffffff"
+   fill-rule="evenodd"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg29"
+   sodipodi:docname="printer.svg"
+   width="68.594002"
+   height="68.594002"
+   inkscape:version="1.2.2 (1:1.2.2+202305151915+b0a8486541)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs33" />
+  <sodipodi:namedview
+     id="namedview31"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="19.15942"
+     inkscape:cx="34.99584"
+     inkscape:cy="13.570348"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg29" />
+  <style
+     id="style2"><![CDATA[.B{fill:#0f73a0}.C{stroke:#fff}.D{stroke-linejoin:miter}.E{stroke-width:.787}.F{stroke-linecap:square}]]></style>
+  <use
+     xlink:href="#A"
+     x="0.5"
+     y="0.5"
+     id="use4"
+     transform="translate(-2.4563642e-4,20.738113)" />
+  <symbol
+     id="A"
+     overflow="visible"
+     transform="translate(0.44999304,0.05649304)">
+    <g
+       class="B C D E"
+       id="g10">
+      <path
+         d="M 0,25.563 V 5.506 h 43.654 v 20.057 z"
+         id="path6" />
+      <path
+         d="M 43.654,25.563 V 5.506 H 0 L 5.506,0 H 49.16 v 19.664 z"
+         id="path8" />
+    </g>
+    <path
+       d="M 43.654,5.506 49.16,0 Z"
+       stroke="none"
+       class="B"
+       id="path12" />
+    <path
+       d="M 43.654,5.506 49.16,0"
+       fill="none"
+       class="C D E F"
+       id="path14" />
+    <path
+       d="M 43.654,20.057 H 0 Z"
+       stroke="none"
+       class="B"
+       id="path16" />
+    <path
+       d="M 43.654,20.057 H 0"
+       fill="none"
+       class="C D E F"
+       id="path18" />
+    <path
+       d="m 49.16,14.551 -5.506,5.506 z"
+       stroke="none"
+       class="B"
+       id="path20" />
+    <g
+       class="C D E"
+       id="g26">
+      <path
+         d="m 49.16,14.551 -5.506,5.506"
+         fill="none"
+         class="F"
+         id="path22" />
+      <path
+         d="M 67.251,3.933 61.745,9.832 43.654,16.125 49.16,10.226 67.251,3.934 Z"
+         class="B"
+         id="path24" />
+    </g>
+  </symbol>
+</svg>

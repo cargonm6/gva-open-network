@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   viewBox="0 0 81 81"
+   viewBox="0 0 80 80"
    fill="#ffffff"
    fill-rule="evenodd"
    stroke="#000000"
    stroke-linecap="round"
    stroke-linejoin="round"
    version="1.1"
-   id="svg22"
+   id="svg257"
    sodipodi:docname="server.svg"
-   width="81"
-   height="81"
-   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   width="80"
+   height="80"
+   inkscape:version="1.2.2 (1:1.2.2+202305151915+b0a8486541)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
-     id="namedview22"
+     id="namedview259"
      pagecolor="#ffffff"
      bordercolor="#000000"
      borderopacity="0.25"
@@ -26,187 +26,322 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="6.1111111"
-     inkscape:cx="31.009091"
-     inkscape:cy="31.5"
-     inkscape:window-width="1360"
-     inkscape:window-height="697"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     showgrid="false"
+     inkscape:zoom="9.1728395"
+     inkscape:cx="25.019515"
+     inkscape:cy="40.009421"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg22" />
+     inkscape:current-layer="svg257" />
+  <style
+     id="style137"><![CDATA[.B{fill:#96e652}.C{fill:#cc584c}.D{fill:#3b4950}.E{fill:#f8e96c}]]></style>
   <use
      xlink:href="#A"
      x="0.5"
      y="0.5"
-     id="use1"
-     transform="translate(10,2.346875e-4)" />
+     id="use139"
+     transform="translate(15)" />
   <symbol
      id="A"
-     overflow="visible">
+     overflow="visible"
+     transform="translate(-0.5,-0.5)">
     <g
        stroke="none"
-       id="g3">
+       id="g251">
       <path
-         d="M 0.359,48.708 30,30.803 59.82,48.898 30.179,66.803 Z"
-         fill="#90a4ae"
-         id="path1" />
-      <path
-         d="M 0,61.659 30.18,79.945 V 66.802 L 0.359,48.707 Q 0,48.897 0,49.278 Z"
-         fill="#b0bec5"
-         id="path2" />
-      <path
-         d="M 29.82,79.184 V 67.564 Q 30,66.421 30.898,65.85 L 59.102,48.898 Q 60,48.517 60,49.469 V 61.85 q 0,0.571 -0.898,1.143 L 30.898,79.869 Q 29.82,80.326 29.82,79.183 Z"
+         d="M 0,15 25,30 50,15 25,0 Z"
          fill="#eceff1"
-         id="path3" />
-    </g>
-    <path
-       d="M 33.593,71.565 48.862,62.422"
-       fill="none"
-       stroke-linejoin="miter"
-       id="path4" />
-    <g
-       stroke="none"
-       id="g10">
+         id="path141" />
       <path
-         d="m 50.838,62.5 v -3.121 l 0.491,0.312 v 3.121 z"
-         fill="#e53935"
-         id="path5" />
-      <use
-         xlink:href="#C"
-         fill="#f44336"
-         id="use5" />
-      <use
-         xlink:href="#D"
-         fill="#ef5350"
-         id="use6" />
-      <path
-         d="m 55.334,59.834 v -3.121 l 0.491,0.312 v 3.121 z"
-         fill="#43a047"
-         id="path6" />
-      <use
-         xlink:href="#C"
-         x="4.4959998"
-         y="-2.6659999"
-         fill="#4caf50"
-         id="use7" />
-      <use
-         xlink:href="#D"
-         x="4.4959998"
-         y="-2.6670001"
-         fill="#66bb6a"
-         id="use8" />
-      <path
-         d="M 0.359,33.47 30,15.565 59.82,33.66 30.179,51.565 Z"
-         fill="#90a4ae"
-         id="path8" />
-      <path
-         d="M 0,46.421 30.18,64.707 V 51.564 L 0.359,33.469 Q 0,33.659 0,34.04 Z"
-         fill="#b0bec5"
-         id="path9" />
-      <path
-         d="M 29.82,63.946 V 52.326 Q 30,51.183 30.898,50.612 L 59.101,33.66 q 0.898,-0.381 0.898,0.571 v 12.381 q 0,0.571 -0.898,1.143 L 30.898,64.631 Q 29.82,65.088 29.82,63.945 Z"
-         fill="#eceff1"
-         id="path10" />
-    </g>
-    <path
-       d="M 33.593,56.327 48.862,47.184"
-       fill="none"
-       stroke-linejoin="miter"
-       id="path11" />
-    <g
-       stroke="none"
-       id="g17">
-      <path
-         d="m 50.838,47.262 v -3.121 l 0.491,0.312 v 3.121 z"
-         fill="#e53935"
-         id="path12" />
-      <use
-         xlink:href="#C"
-         y="-15.238"
-         fill="#f44336"
-         id="use12" />
-      <use
-         xlink:href="#D"
-         y="-15.239"
-         fill="#ef5350"
-         id="use13" />
-      <path
-         d="m 55.334,44.595 v -3.121 l 0.491,0.312 v 3.121 z"
-         fill="#43a047"
-         id="path13" />
-      <use
-         xlink:href="#C"
-         x="4.4959998"
-         y="-17.903999"
-         fill="#4caf50"
-         id="use14" />
-      <use
-         xlink:href="#D"
-         x="4.4959998"
-         y="-17.905001"
-         fill="#66bb6a"
-         id="use15" />
-      <path
-         d="M 0.359,17.905 30,0 59.82,18.095 30.179,36 Z"
+         d="M 0,15 25,30 V 80 L 0,65 Z"
          fill="#cfd8dc"
-         id="path15" />
+         id="path143" />
       <path
-         d="M 0,30.857 30.18,49.143 V 36 L 0.359,17.905 Q 0,18.095 0,18.476 Z"
-         fill="#b0bec5"
-         id="path16" />
+         d="M 50,65 25,80 V 30 L 50,15 Z"
+         fill="#37474f"
+         id="path145" />
       <path
-         d="M 29.82,48.381 V 36.761 Q 30,35.618 30.898,35.047 L 59.102,18.095 Q 60,17.714 60,18.666 v 12.381 q 0,0.571 -0.898,1.143 L 30.898,49.066 Q 29.82,49.523 29.82,48.38 Z"
+         d="m 22.222,32.396 v 5.417 L 1.984,25.625 v -5.417 z"
+         class="D"
+         id="path147" />
+      <use
+         xlink:href="#C"
+         class="B"
+         id="use149" />
+      <use
+         xlink:href="#C"
+         x="14.191"
+         y="8.5319996"
+         class="C"
+         id="use151" />
+      <use
+         xlink:href="#C"
+         x="-2.4760001"
+         y="-1.666"
+         class="B"
+         id="use153" />
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="-0.84299999"
+         id="use155" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="0.83399999"
+         class="B"
+         id="use157" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="7.7090001"
+         class="C"
+         id="use159" />
+      <path
+         d="m 22.222,38.646 v 5.417 L 1.984,31.875 v -5.417 z"
+         class="D"
+         id="path161" />
+      <use
+         xlink:href="#C"
+         y="6.25"
+         class="E"
+         id="use163" />
+      <use
+         xlink:href="#C"
+         x="14.191"
+         y="14.782"
+         class="C"
+         id="use165" />
+      <use
+         xlink:href="#C"
+         x="-2.4760001"
+         y="4.5830002"
+         class="B"
+         id="use167" />
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="5.4070001"
+         id="use169" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="7.0840001"
+         class="E"
+         id="use171" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="13.959"
+         class="C"
+         id="use173" />
+      <path
+         d="m 22.222,44.896 v 5.417 L 1.984,38.125 v -5.417 z"
+         class="D"
+         id="path175" />
+      <use
+         xlink:href="#C"
+         y="12.5"
+         class="E"
+         id="use177" />
+      <use
+         xlink:href="#C"
+         x="14.191"
+         y="21.032"
+         class="C"
+         id="use179" />
+      <use
+         xlink:href="#C"
+         x="-2.4760001"
+         y="10.834"
+         class="B"
+         id="use181" />
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="11.657"
+         id="use183" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="13.334"
+         class="B"
+         id="use185" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="20.209"
+         class="C"
+         id="use187" />
+      <path
+         d="m 22.222,51.146 v 5.417 L 1.984,44.375 v -5.417 z"
+         class="D"
+         id="path189" />
+      <use
+         xlink:href="#C"
+         y="18.75"
+         class="B"
+         id="use191" />
+      <use
+         xlink:href="#C"
+         x="14.191"
+         y="27.282"
+         class="C"
+         id="use193" />
+      <use
+         xlink:href="#C"
+         x="-2.4760001"
+         y="17.084"
+         class="E"
+         id="use195" />
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="17.907"
+         id="use197" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="19.584"
+         class="B"
+         id="use199" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="26.459"
+         class="C"
+         id="use201" />
+      <path
+         d="m 22.222,57.396 v 5.417 L 1.984,50.625 v -5.417 z"
+         class="D"
+         id="path203" />
+      <use
+         xlink:href="#C"
+         y="25"
+         fill="#1e88e5"
+         id="use205" />
+      <use
+         xlink:href="#C"
+         x="14.191"
+         y="33.532001"
+         class="C"
+         id="use207" />
+      <use
+         xlink:href="#C"
+         x="-2.4760001"
+         y="23.333"
+         class="B"
+         id="use209" />
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="24.157"
+         id="use211" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="25.834"
+         class="B"
+         id="use213" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="32.709"
+         class="C"
+         id="use215" />
+      <path
+         d="m 22.222,63.646 v 5.417 L 1.984,56.875 v -5.417 z"
+         class="D"
+         id="path217" />
+      <use
+         xlink:href="#C"
+         y="31.25"
+         class="B"
+         id="use219" />
+      <g
+         class="C"
+         id="g225">
+        <use
+           xlink:href="#C"
+           x="14.191"
+           y="39.782001"
+           id="use221" />
+        <use
+           xlink:href="#C"
+           x="-2.4760001"
+           y="29.584"
+           id="use223" />
+      </g>
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="30.407"
+         id="use227" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="32.083"
+         class="B"
+         id="use229" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="38.958"
+         class="C"
+         id="use231" />
+      <path
+         d="m 22.222,70.105 v 5.417 L 1.984,63.334 v -5.417 z"
+         class="D"
+         id="path233" />
+      <g
+         class="C"
+         id="g239">
+        <use
+           xlink:href="#C"
+           y="37.708"
+           id="use235" />
+        <use
+           xlink:href="#C"
+           x="14.191"
+           y="46.240002"
+           id="use237" />
+      </g>
+      <use
+         xlink:href="#C"
+         x="-2.4760001"
+         y="36.042"
+         class="B"
+         id="use241" />
+      <use
+         xlink:href="#C"
+         x="-1.1900001"
+         y="36.865002"
+         id="use243" />
+      <use
+         xlink:href="#C"
+         x="1.294"
+         y="38.542"
+         class="B"
+         id="use245" />
+      <use
+         xlink:href="#C"
+         x="12.699"
+         y="45.417"
+         class="C"
+         id="use247" />
+      <path
+         d="m 32.584,38.102 v 3.323 L 45,33.948 v -3.323 z m 0,5.25 v 3.323 L 45,39.198 v -3.323 z m 0,5.25 v 3.323 L 45,44.448 v -3.323 z m 0,5.25 v 3.323 L 45,49.698 v -3.323 z m 0,5.25 v 3.323 L 45,54.948 v -3.323 z"
          fill="#eceff1"
-         id="path17" />
-    </g>
-    <path
-       d="M 33.593,40.762 48.862,31.619"
-       fill="none"
-       stroke-linejoin="miter"
-       id="path18" />
-    <g
-       stroke="none"
-       id="g22">
-      <path
-         d="m 50.838,31.697 v -3.121 l 0.491,0.312 v 3.121 z"
-         fill="#e53935"
-         id="path19" />
-      <use
-         xlink:href="#C"
-         y="-30.802"
-         fill="#f44336"
-         id="use19" />
-      <use
-         xlink:href="#D"
-         y="-30.802999"
-         fill="#ef5350"
-         id="use20" />
-      <path
-         d="M 55.334,29.031 V 25.91 l 0.491,0.312 v 3.121 z"
-         fill="#43a047"
-         id="path20" />
-      <use
-         xlink:href="#C"
-         x="4.4959998"
-         y="-33.469002"
-         fill="#4caf50"
-         id="use21" />
-      <use
-         xlink:href="#D"
-         x="4.4959998"
-         y="-33.470001"
-         fill="#66bb6a"
-         id="use22" />
+         id="path249" />
     </g>
   </symbol>
   <defs
-     id="defs22">
+     id="defs255">
     <path
        id="C"
-       d="m 53.369,57.85 -2.531,1.529 0.491,0.312 2.558,-1.534 z" />
-    <path
-       id="D"
-       d="m 53.887,61.261 v -3.103 l -2.558,1.534 v 3.121 z" />
+       d="M 5.929,24.661 Q 5.505,24.437 5.454,24.946 5.42,25.54 5.906,25.793 6.279,25.938 6.342,25.564 6.404,24.97 5.929,24.662 Z" />
   </defs>
 </svg>
