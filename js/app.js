@@ -27,27 +27,18 @@ function requestRender() {
 
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
+  dpr = window.devicePixelRatio || 1;
 
   canvas.width = rect.width * dpr;
   canvas.height = rect.height * dpr;
-
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  // ctx.setTransform(1, 0, 0, 1, 0, 0);
-  // ctx.scale(dpr, dpr);
 
   requestRender();
 }
 
 function applyTransform() {
-  ctx.setTransform(
-    dpr * view.scale,
-    0,
-    0,
-    dpr * view.scale,
-    dpr * view.offsetX,
-    dpr * view.offsetY
-  );
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.translate(view.offsetX, view.offsetY);
+  ctx.scale(view.scale, view.scale);
 }
 
 window.addEventListener("resize", resizeCanvas);
@@ -134,11 +125,55 @@ function getMousePos(evt) {
 // SELECCIÓN Y DETECCIÓN
 // =====================
 
+// Mapa de nodos
+
+let nodeMap = new Map();
+
+function rebuildNodeMap() {
+  nodeMap.clear();
+  db.nodes.forEach(n => nodeMap.set(n.id, n));
+}
+
+function getNode(id) {
+  return nodeMap.get(id);
+}
+
+// Mapa de áreas
+
+let areaMap = new Map();
+
+function rebuildAreaMap() {
+  areaMap.clear();
+  db.areas.forEach(a => areaMap.set(a.id, a));
+}
+
+function getArea(id) {
+  return areaMap.get(id);
+}
+
+// Mapa de enlaces
+
+let linkGroups = new Map();
+
+function rebuildLinkGroups() {
+  linkGroups.clear();
+
+  for (const link of db.links) {
+    const key = [link.from.nodeId, link.to.nodeId].sort().join("_");
+
+    if (!linkGroups.has(key)) {
+      linkGroups.set(key, []);
+    }
+
+    linkGroups.get(key).push(link);
+  }
+}
+
+
+
 function getNodeAt(x, y) {
   return db.nodes.find((n) => {
-    const w = n._width || node_w;
-    // fallback al tamaño fijo
-    const h = n._height || node_h;
+    const { w, h } = getNodeSize(n);
     return (
       x >= n.position.x &&
       x <= n.position.x + w &&
@@ -159,26 +194,12 @@ function getAreaAt(x, y) {
 }
 
 function getLinkAt(x, y) {
-  const groups = {};
-  db.links.forEach((link) => {
-    const key = [link.from.nodeId, link.to.nodeId].sort().join("_");
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(link);
-  });
-
-  for (const key in groups) {
-    const links = groups[key];
-    const from = db.nodes.find((n) => n.id === links[0].from.nodeId);
-    const to = db.nodes.find((n) => n.id === links[0].to.nodeId);
+  for (const links of linkGroups.values()) {
+    const from = nodeMap.get(links[0].from.nodeId);
+    const to = nodeMap.get(links[0].to.nodeId);
     if (!from || !to) continue;
 
-    const dx = to.position.x - from.position.x;
-    const dy = to.position.y - from.position.y;
-    const len = Math.sqrt(dx * dx + dy * dy);
-    if (len === 0) continue;
-
-    const ux = -dy / len;
-    const uy = dx / len;
+    const { ux, uy } = getLinkGeometry(from, to);
     const gap = 10;
 
     for (let i = 0; i < links.length; i++) {
@@ -187,10 +208,13 @@ function getLinkAt(x, y) {
       const ox = ux * offset;
       const oy = uy * offset;
 
-      const x1 = from.position.x + node_w / 2 + ox;
-      const y1 = from.position.y + node_h / 2 + oy;
-      const x2 = to.position.x + node_w / 2 + ox;
-      const y2 = to.position.y + node_h / 2 + oy;
+      const { w: fw, h: fh } = getNodeSize(from);
+      const { w: tw, h: th } = getNodeSize(to);
+
+      const x1 = from.position.x + fw / 2 + ox;
+      const y1 = from.position.y + fh / 2 + oy;
+      const x2 = to.position.x + tw / 2 + ox;
+      const y2 = to.position.y + th / 2 + oy;
 
       const denom = (x2 - x1) ** 2 + (y2 - y1) ** 2;
       if (denom === 0) continue;
@@ -200,7 +224,9 @@ function getLinkAt(x, y) {
 
       const px = x1 + t * (x2 - x1);
       const py = y1 + t * (y2 - y1);
-      if (Math.sqrt((x - px) ** 2 + (y - py) ** 2) < 6) return link;
+
+      const dist2 = (x - px) ** 2 + (y - py) ** 2;
+      if (dist2 < 36) return link;
     }
   }
   return null;
@@ -236,6 +262,8 @@ function createNode(type, x, y) {
     },
     interfaces: [],
   });
+
+  rebuildNodeMap();
 }
 
 function createArea(x, y) {
@@ -247,6 +275,8 @@ function createArea(x, y) {
     position: { x, y },
     size: { width: 150, height: 100 },
   });
+
+  rebuildAreaMap();
 }
 
 function createTextNode(x, y, content = "Nuevo texto") {
@@ -262,8 +292,11 @@ function createTextNode(x, y, content = "Nuevo texto") {
   };
 
   db.nodes.push(node);
+
+  rebuildNodeMap();
+
   updateTextNodeSize(node);
-  return node; // 👈 IMPORTANTE
+  return node;
 }
 
 function cloneNode(node, x, y) {
@@ -272,14 +305,15 @@ function cloneNode(node, x, y) {
   const newNode = structuredClone(node);
 
   newNode.id = id;
-  newNode.name = id;
+  // newNode.name = id;
   newNode.position = { x, y };
 
-  // importante: evitar referencias compartidas
   delete newNode._width;
   delete newNode._height;
 
   db.nodes.push(newNode);
+
+  rebuildNodeMap();
 
   return newNode;
 }
@@ -476,23 +510,11 @@ function drawNodeLabel(n) {
 }
 
 function drawLinks() {
-  const groups = {};
-
-  db.links.forEach((l) => {
-    const k = [l.from.nodeId, l.to.nodeId].sort().join("_");
-    if (!groups[k]) groups[k] = [];
-    groups[k].push(l);
-  });
-  for (const k in groups) {
-    const ls = groups[k];
-    const f = db.nodes.find((n) => n.id === ls[0].from.nodeId);
-    const t = db.nodes.find((n) => n.id === ls[0].to.nodeId);
+  for (const ls of linkGroups.values()) {
+    const f = nodeMap.get(ls[0].from.nodeId);
+    const t = nodeMap.get(ls[0].to.nodeId);
     if (!f || !t) continue;
-    const dx = t.position.x - f.position.x;
-    const dy = t.position.y - f.position.y;
-    const len = Math.sqrt(dx * dx + dy * dy);
-    const ux = -dy / len;
-    const uy = dx / len;
+    const { ux, uy } = getLinkGeometry(f, t);
     const gap = 10;
     ls.forEach((l, i) => {
       const isSelected = selectedLink && selectedLink.id === l.id;
@@ -536,7 +558,7 @@ function drawStraightLine(ctx, x1, y1, x2, y2, isSelected = false) {
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
-  ctx.strokeStyle = ctx.strokeStyle = isSelected
+  ctx.strokeStyle = isSelected
     ? getColor("--color-alert")
     : "black";
   ctx.lineWidth = 1.5;
@@ -620,7 +642,7 @@ function drawZigzagLine(ctx, x1, y1, x2, y2, isSelected = false) {
   ctx.lineTo(xC, yC); // segundo segmento (conecta los extremos)
   ctx.lineTo(x2, y2); // tercer segmento hasta el final
 
-  ctx.strokeStyle = ctx.strokeStyle = isSelected
+  ctx.strokeStyle = isSelected
     ? getColor("--color-alert")
     : getColor("--color-link-wan");
   ctx.lineWidth = 1.5;
@@ -633,6 +655,9 @@ function drawPreview() {
   if (icon && icon.complete) {
     ctx.save();
     ctx.globalAlpha = 0.5;
+
+    // const screen = worldToScreen(lastMouseX, lastMouseY);
+
     ctx.drawImage(
       icon,
       lastMouseX - 12,
@@ -640,6 +665,7 @@ function drawPreview() {
       node_w / 2,
       node_h / 2
     );
+
     ctx.restore();
   }
 
@@ -686,6 +712,13 @@ function drawTextWithOutline(
 // =====================
 // CURSOR Y GUI (UX)
 // =====================
+
+function getNodeSize(n) {
+  return {
+    w: n._width ?? node_w,
+    h: n._height ?? node_h
+  };
+}
 
 const tool_devices = [
   "router",
@@ -785,7 +818,7 @@ const actions = {
   "export-json": () => exportFile(false),
   "export-gzip": () => exportFile(true),
   "export-png": () => exportPNG(),
-  "export-txt": () => generarArbol(db),
+  "export-txt": () => exportTXT(db),
 
   import: () => triggerImport(),
 
@@ -805,6 +838,18 @@ document.addEventListener("click", (e) => {
 // =====================
 // REPRESENTAR PUERTOS
 // =====================
+
+function getLinkGeometry(from, to) {
+  const dx = to.position.x - from.position.x;
+  const dy = to.position.y - from.position.y;
+  const len = Math.hypot(dx, dy);
+
+  if (len === 0) {
+    return { dx: 0, dy: 0, len: 0, ux: 0, uy: 0 };
+  }
+
+  return { dx, dy, len, ux: -dy / len, uy: dx / len, };
+}
 
 let showLinkPorts = true;
 
@@ -830,26 +875,12 @@ function togglePorts() {
 function drawPorts() {
   if (!showLinkPorts) return;
 
-  const groups = {};
-
-  db.links.forEach((link) => {
-    const key = [link.from.nodeId, link.to.nodeId].sort().join("_");
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(link);
-  });
-
-  for (const links of Object.values(groups)) {
-    const from = db.nodes.find((n) => n.id === links[0].from.nodeId);
-    const to = db.nodes.find((n) => n.id === links[0].to.nodeId);
+  for (const links of linkGroups.values()) {
+    const from = nodeMap.get(links[0].from.nodeId);
+    const to = nodeMap.get(links[0].to.nodeId);
     if (!from || !to) continue;
 
-    const dx = to.position.x - from.position.x;
-    const dy = to.position.y - from.position.y;
-    const len = Math.hypot(dx, dy);
-    if (len === 0) continue;
-
-    const ux = -dy / len;
-    const uy = dx / len;
+    const { ux, uy } = getLinkGeometry(from, to);
 
     const gap = 10;
 
@@ -875,14 +906,15 @@ function drawPorts() {
 }
 
 function getNodePortPosition(from, to) {
-  const w = from._width ?? node_w;
-  const h = from._height ?? node_h;
+  const { w, h } = getNodeSize(from);
 
   const cx = from.position.x + w / 2;
   const cy = from.position.y + h / 2;
 
-  const tx = to.position.x + node_w / 2;
-  const ty = to.position.y + node_h / 2;
+  const { w: tw, h: th } = getNodeSize(to);
+
+  const tx = to.position.x + tw / 2;
+  const ty = to.position.y + th / 2;
 
   let dx = tx - cx;
   let dy = ty - cy;
@@ -1036,7 +1068,7 @@ function snapToGrid(x, y) {
 // HERRAMIENTAS
 // =====================
 
-function toggleTool(tool, button) {
+function toggleTool(tool) {
   cloneMode = null;
 
   // Si haces click en la misma tool
@@ -1071,13 +1103,6 @@ function clearTool() {
 canvas.addEventListener("mousedown", (e) => {
   if (cloneMode) {
     const { x, y } = getMousePos(e);
-
-    // const newNode = cloneNode(
-    //     cloneMode,
-    //     x - node_w / 2,
-    //     y - node_h / 2
-    // );
-
     const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
     const newNode = cloneNode(cloneMode, snapped.x, snapped.y);
 
@@ -1148,6 +1173,8 @@ canvas.addEventListener("mousedown", (e) => {
         to: { nodeId: node.id },
       });
 
+      rebuildLinkGroups();
+
       linkStart = null;
     }
 
@@ -1169,6 +1196,9 @@ canvas.addEventListener("mousedown", (e) => {
     selectedNode = null;
     selectedArea = null;
     selectedLink = null;
+    isDragging = false;
+    draggingNode = null;
+    draggingArea = null;
     clearInspector();
 
     resizingArea = area;
@@ -1207,10 +1237,14 @@ canvas.addEventListener("mousedown", (e) => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
+
+  if (draggingNode || draggingArea || resizing || isPanning) {
+    requestRender();
+  }
+
   if (isPanning) {
     view.offsetX += e.movementX;
     view.offsetY += e.movementY;
-    requestRender();
     updateCursor();
     return;
   }
@@ -1249,19 +1283,6 @@ canvas.addEventListener("mousemove", (e) => {
     }
   }
 
-  // =========================
-  // DRAG NODE
-  // =========================
-  // if (draggingNode) {
-  //     draggingNode.position.x = x - draggingOffset.x;
-  //     draggingNode.position.y = y - draggingOffset.y;
-
-  //     updateInspector(draggingNode);
-  //     requestRender();
-  //     updateCursor();
-  //     return;
-  // }
-
   if (draggingNode) {
     let nx = x - draggingOffset.x;
     let ny = y - draggingOffset.y;
@@ -1272,7 +1293,6 @@ canvas.addEventListener("mousemove", (e) => {
     draggingNode.position.y = snapped.y;
 
     updateInspector(draggingNode);
-    requestRender();
     return;
   }
 
@@ -1283,7 +1303,6 @@ canvas.addEventListener("mousemove", (e) => {
     draggingArea.position.x = x - draggingOffset.x;
     draggingArea.position.y = y - draggingOffset.y;
 
-    requestRender();
     updateCursor();
     return;
   }
@@ -1295,10 +1314,11 @@ canvas.addEventListener("mousemove", (e) => {
     const newW = x - resizingArea.position.x;
     const newH = y - resizingArea.position.y;
 
-    resizingArea.size.width = Math.max(10, newW);
-    resizingArea.size.height = Math.max(10, newH);
+    const snapped = snapToGrid(newW, newH);
 
-    requestRender();
+    resizingArea.size.width = Math.max(10, snapped.x);
+    resizingArea.size.height = Math.max(10, snapped.y);
+
     updateCursor();
     return;
   }
@@ -1306,7 +1326,7 @@ canvas.addEventListener("mousemove", (e) => {
   // =========================
   // hover normal
   // =========================
-  requestRender();
+  // requestRender();
   updateCursor();
 });
 
@@ -1449,16 +1469,19 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
     db.links = db.links.filter(
       (l) => l.from.nodeId !== node.id && l.to.nodeId !== node.id
     );
+    rebuildNodeMap();
   }
 
   // BORRAR LINK
   if (link) {
     db.links = db.links.filter((l) => l.id !== link.id);
+    rebuildLinkGroups();
   }
 
   // BORRAR AREA
   if (area) {
     db.areas = db.areas.filter((a) => a.id !== area.id);
+    rebuildAreaMap();
   }
 
   selectedNode = null;
@@ -1649,7 +1672,7 @@ function handleMetaKeyDown(e, nodeId, key) {
 }
 
 function saveNodeMetadataField(nodeId, key) {
-  const node = db.nodes.find((n) => n.id === nodeId);
+  const node = nodeMap.get(nodeId);
   if (!node) return;
 
   const el = document.getElementById(`meta_${key}`);
@@ -1660,7 +1683,7 @@ function saveNodeMetadataField(nodeId, key) {
 }
 
 function deleteMetadataKey(nodeId, key) {
-  const node = db.nodes.find((n) => n.id === nodeId);
+  const node = nodeMap.get(nodeId);
   if (!node || !node.metadata) return;
 
   const confirmDelete = confirm(`¿Eliminar la clave "${key}"?`);
@@ -1678,7 +1701,7 @@ function handleNewMetaKey(e, nodeId) {
     const key = input.value.trim();
     if (!key) return;
 
-    const node = db.nodes.find((n) => n.id === nodeId);
+    const node = nodeMap.get(nodeId);
     if (!node) return;
 
     if (!node.metadata) node.metadata = {};
@@ -1716,7 +1739,7 @@ function saveNodeId(oldId) {
   }
 
   // Guardar nuevo ID
-  const node = db.nodes.find((n) => n.id === oldId);
+  const node = nodeMap.get(oldId);
   node.id = newId;
   node.name = newId;
   db.links.forEach((l) => {
@@ -1730,12 +1753,14 @@ function saveNodeId(oldId) {
   error.textContent = "✔ Guardado correctamente";
   error.style.color = getColor("--color-success");
 
+  rebuildNodeMap();
+  rebuildLinkGroups();
   requestRender();
 }
 
 function saveNodeName(nodeId) {
   const input = document.getElementById("nodeNameInput");
-  const node = db.nodes.find((n) => n.id === nodeId);
+  const node = nodeMap.get(nodeId);
   if (!node || !input.value.trim()) return;
 
   node.name = input.value.trim();
@@ -1744,7 +1769,7 @@ function saveNodeName(nodeId) {
 
 function saveNodeText(nodeId) {
   const input = document.getElementById("nodeTextInput");
-  const node = db.nodes.find((n) => n.id === nodeId);
+  const node = nodeMap.get(nodeId);
   if (!node) return;
 
   node.text = input.value;
@@ -1786,25 +1811,36 @@ function saveAreaId(oldId) {
   const input = document.getElementById("areaIdInput");
   const error = document.getElementById("areaErrorMsg");
   const newId = input.value.trim();
+
   if (!newId) {
     error.textContent = "El ID no puede estar vacío";
+    error.style.color = getColor("--color-alert");
     return;
   }
+
   if (db.areas.some((a) => a.id === newId && a.id !== oldId)) {
     error.textContent = "Ya existe un área con ese ID";
+    error.style.color = getColor("--color-alert");
     return;
   }
-  const area = db.areas.find((a) => a.id === oldId);
+
+  const area = getArea(oldId);
   area.id = newId;
+
+  rebuildAreaMap();
+
   error.textContent = "✔ Guardado correctamente";
   error.style.color = "green";
+
   requestRender();
 }
 
 function saveAreaName(areaId) {
   const input = document.getElementById("areaNameInput");
-  const area = db.areas.find((a) => a.id === areaId);
+  const area = getArea(areaId);
+
   area.name = input.value.trim();
+
   requestRender();
 }
 
@@ -1813,8 +1849,8 @@ function saveAreaName(areaId) {
 // =====================
 
 function updateLinkInspector(link) {
-  const fromNode = db.nodes.find((n) => n.id === link.from.nodeId);
-  const toNode = db.nodes.find((n) => n.id === link.to.nodeId);
+  const fromNode = nodeMap.get(link.from.nodeId);
+  const toNode = nodeMap.get(link.to.nodeId);
 
   const div = document.getElementById("props");
 
@@ -1947,26 +1983,6 @@ async function exportFile(compressed = false) {
   await saveBlob(blob, `${baseName}.${ext}`);
 }
 
-function exportPNG() {
-  const tempCanvas = document.createElement("canvas");
-  const tempCtx = tempCanvas.getContext("2d");
-
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
-
-  // Fondo blanco
-  tempCtx.fillStyle = "white";
-  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-  // Copiar el canvas original encima
-  tempCtx.drawImage(canvas, 0, 0);
-
-  const baseName = db.filename?.trim() || "untitled";
-  tempCanvas.toBlob((blob) => {
-    saveBlob(blob, `${baseName}.png`);
-  });
-}
-
 async function saveBlob(blob, defaultName) {
   if ("showSaveFilePicker" in window) {
     // Método no disponible para algunos navegadores (Firefox, Safari)
@@ -2029,11 +2045,19 @@ async function importFile(file) {
     if (isGzip) {
       db = await decompressJSON(new Blob([buffer]));
 
+      rebuildNodeMap();
+      rebuildAreaMap();
+      rebuildLinkGroups();
+
       if (!db.filename) { db.filename = ""; }
       updateFilenameUI()
     } else {
       const text = new TextDecoder().decode(buffer);
       db = JSON.parse(text);
+
+      rebuildNodeMap();
+      rebuildAreaMap();
+      rebuildLinkGroups();
 
       if (!db.filename) { db.filename = ""; }
       updateFilenameUI()
@@ -2065,6 +2089,77 @@ async function decompressJSON(blob) {
   } catch (err) {
     throw new Error("Archivo comprimido inválido o corrupto");
   }
+}
+
+async function exportTXT(data) {
+  const { nodes, links } = data;
+
+  const nodeMap = {};
+  nodes.forEach(node => {
+    nodeMap[node.id] = { ...node, children: new Set() };
+  });
+
+  links.forEach(link => {
+    const from = link.from.nodeId;
+    const to = link.to.nodeId;
+    if (nodeMap[from] && nodeMap[to]) {
+      nodeMap[from].children.add(to);
+      nodeMap[to].children.add(from);
+    }
+  });
+
+  const visited = new Set();
+  const result = [];
+
+  function dfs(nodeId, prefix = "", isLast = true, isRoot = false) {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
+
+    const pointer = isRoot ? "" : (prefix + (isLast ? "└─ " : "├─ "));
+    result.push(pointer + nodeMap[nodeId].name + " (" + nodeMap[nodeId].type + ")");
+
+    const children = Array.from(nodeMap[nodeId].children).filter(id => !visited.has(id));
+    children.forEach((childId, index) => {
+      const lastChild = index === children.length - 1;
+      dfs(childId, prefix + (isLast ? "   " : "│  "), lastChild);
+    });
+  }
+
+  Object.keys(nodeMap).forEach(nodeId => {
+    if (!visited.has(nodeId) && nodeMap[nodeId].children.size > 0) {
+      dfs(nodeId, "", true, true); // raíz sin línea
+    }
+  });
+
+  Object.keys(nodeMap).forEach(nodeId => {
+    if (!visited.has(nodeId)) {
+      result.push(nodeMap[nodeId].name + " (" + nodeMap[nodeId].type + ")");
+    }
+  });
+
+  const blob = new Blob([result.join("\n")], { type: "text/plain" });
+  const baseName = db.filename?.trim() || "untitled";
+  await saveBlob(blob, `${baseName}.txt`);
+}
+
+function exportPNG() {
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+
+  tempCanvas.width = canvas.width;
+  tempCanvas.height = canvas.height;
+
+  // Fondo blanco
+  tempCtx.fillStyle = "white";
+  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+  // Copiar el canvas original encima
+  tempCtx.drawImage(canvas, 0, 0);
+
+  const baseName = db.filename?.trim() || "untitled";
+  tempCanvas.toBlob((blob) => {
+    saveBlob(blob, `${baseName}.png`);
+  });
 }
 
 // =====================
@@ -2104,6 +2199,10 @@ function clearAll() {
     areas: [],
     links: []
   };
+
+  rebuildNodeMap();
+  rebuildAreaMap();
+  rebuildLinkGroups();
 
   updateFilenameUI();
 
@@ -2180,6 +2279,11 @@ fetch("data/example.json")
   })
   .then((data) => {
     db = data;
+
+    rebuildNodeMap();
+    rebuildAreaMap();
+    rebuildLinkGroups();
+
     resetState();
     resetZoom();
     requestRender();
