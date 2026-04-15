@@ -59,7 +59,7 @@ resizeCanvas();
 // ESTADO GLOBAL
 // =====================
 
-let db = { areas: [], nodes: [], links: [] };
+let db = { filename: "", areas: [], nodes: [], links: [] };
 let currentTool = "select";
 
 let selectedNode = null;
@@ -1526,12 +1526,10 @@ function updateInspector(node) {
                 onkeydown="handleNodeIdKeyDown(event)"/><br><br>
 
             <label>Texto:</label><br>
-            <textarea id="nodeTextInput" rows="4" cols="20">${
-              node.text
-            }</textarea>
-            <button onclick="saveNodeText('${
-              node.id
-            }')">Guardar</button><br><br>
+            <textarea id="nodeTextInput" rows="4" cols="20">${node.text
+      }</textarea>
+            <button onclick="saveNodeText('${node.id
+      }')">Guardar</button><br><br>
 
             <b>X:</b> ${Math.round(node.position.x)}<br>
             <b>Y:</b> ${Math.round(node.position.y)}<br>
@@ -1573,10 +1571,9 @@ function updateInspector(node) {
 
     <span id="errorMsg" style="color:red;"></span>
 
-    ${
-      node.type !== "area" && node.type !== "text"
-        ? renderMetadataEditor(node)
-        : ""
+    ${node.type !== "area" && node.type !== "text"
+      ? renderMetadataEditor(node)
+      : ""
     }
 `;
 }
@@ -1825,15 +1822,13 @@ function updateLinkInspector(link) {
       <b>Tipo:</b> ${link.type}<br><br>
   
       <b>Origen:</b> ${fromNode ? fromNode.name : link.from.nodeId}<br>
-      <input id="fromPortInput" placeholder="Puerto" value="${
-        link.from?.port || ""
-      }"/>
+      <input id="fromPortInput" placeholder="Puerto" value="${link.from?.port || ""
+    }"/>
       <br>
   
       <b>Destino:</b> ${toNode ? toNode.name : link.to.nodeId}<br>
-      <input id="toPortInput" placeholder="Puerto" value="${
-        link.to?.port || ""
-      }"/>
+      <input id="toPortInput" placeholder="Puerto" value="${link.to?.port || ""
+    }"/>
   
       <br>
       <b>ID:</b> ${link.id}
@@ -1925,6 +1920,17 @@ zoomSlider.addEventListener("input", (e) => {
 // IMPORTAR Y EXPORTAR
 // =====================
 
+const filenameInput = document.getElementById("filenameInput");
+
+// cargar valor inicial
+function updateFilenameUI() {
+  filenameInput.value = db.filename || "";
+}
+
+filenameInput.addEventListener("input", () => {
+  db.filename = filenameInput.value.trim();
+});
+
 async function exportFile(compressed = false) {
   let blob;
 
@@ -1936,8 +1942,9 @@ async function exportFile(compressed = false) {
     });
   }
 
+  const baseName = db.filename?.trim() || "untitled";
   const ext = compressed ? "json.gz" : "json";
-  await saveBlob(blob, `network.${ext}`);
+  await saveBlob(blob, `${baseName}.${ext}`);
 }
 
 function exportPNG() {
@@ -1954,8 +1961,9 @@ function exportPNG() {
   // Copiar el canvas original encima
   tempCtx.drawImage(canvas, 0, 0);
 
+  const baseName = db.filename?.trim() || "untitled";
   tempCanvas.toBlob((blob) => {
-    saveBlob(blob, "network.png");
+    saveBlob(blob, `${baseName}.png`);
   });
 }
 
@@ -2020,9 +2028,15 @@ async function importFile(file) {
 
     if (isGzip) {
       db = await decompressJSON(new Blob([buffer]));
+
+      if (!db.filename) { db.filename = ""; }
+      updateFilenameUI()
     } else {
       const text = new TextDecoder().decode(buffer);
       db = JSON.parse(text);
+
+      if (!db.filename) { db.filename = ""; }
+      updateFilenameUI()
     }
 
     resetState();
@@ -2083,9 +2097,16 @@ canvas.addEventListener("drop", (e) => {
 function clearAll() {
   if (!confirm("¿Estás seguro de que quieres borrar todos los elementos?"))
     return;
-  db.nodes = [];
-  db.areas = [];
-  db.links = [];
+
+  db = {
+    filename: "",
+    nodes: [],
+    areas: [],
+    links: []
+  };
+
+  updateFilenameUI();
+
   resetState();
   requestRender();
 }
@@ -2181,6 +2202,8 @@ function init() {
   ).src = `img/devices/${savedIconSet}/router.svg`;
 
   resetZoom();
+
+  updateFilenameUI();
 
   clearInspector();
   updateCursor();

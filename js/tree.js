@@ -51,5 +51,6 @@ async function generarArbol(data, filename = "arbol_red.txt") {
 
     // 6️⃣ Descargar el resultado como archivo .txt
     const blob = new Blob([result.join("\n")], { type: "text/plain" });
-    await saveBlob(blob, `network.txt`);
+    const baseName = db.filename?.trim() || "untitled";
+    await saveBlob(blob, `${baseName}.txt`);
 }
