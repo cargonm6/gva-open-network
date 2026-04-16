@@ -89,8 +89,6 @@ function uuid() {
 }
 
 function generateUniqueId(type, collection) {
-  // type: prefijo del ID ("router", "area", etc.)
-  // collection: array de elementos donde validar la unicidad (db.nodes o db.areas)
   let id;
   do {
     id = `${type}_${Math.floor(Math.random() * 10000)}`;
@@ -250,19 +248,34 @@ function isOnResizeHandle(area, x, y) {
 function createNode(type, x, y) {
   const id = generateUniqueId(type, db.nodes);
 
-  db.nodes.push({
-    id,
-    type,
-    name: id,
-    position: { x, y },
-    metadata: {
-      productor: "",
-      modelo: "",
-      notas: "",
-    },
-    interfaces: [],
-  });
+  let node = null;
 
+  if (type === "north") {
+    node = {
+      id,
+      type,
+      name: "",
+      position: { x, y },
+      angle: 0
+    }
+  }
+
+  else {
+    node = {
+      id,
+      type,
+      name: id,
+      position: { x, y },
+      metadata: {
+        productor: "",
+        modelo: "",
+        notas: "",
+      },
+      interfaces: []
+    }
+  }
+
+  db.nodes.push(node);
   rebuildNodeMap();
 }
 
@@ -305,7 +318,6 @@ function cloneNode(node, x, y) {
   const newNode = structuredClone(node);
 
   newNode.id = id;
-  // newNode.name = id;
   newNode.position = { x, y };
 
   delete newNode._width;
@@ -332,7 +344,6 @@ function openTextEditor(node) {
   textEditor.style.display = "block";
   textEditor.value = node.text;
 
-  // posición en pantalla (IMPORTANTE: considerar zoom/pan)
   const screen = worldToScreen(node.position.x, node.position.y);
 
   textEditor.style.left = rect.left + screen.x + "px";
@@ -363,9 +374,9 @@ function updateTextNodeSize(n) {
 
   ctx.font = font;
 
-  const paddingX = 20; // horizontal
-  const paddingY = 10; // vertical
-  const strokeComp = 4; // compensar borde
+  const paddingX = 20;
+  const paddingY = 10;
+  const strokeComp = 4;
 
   const lines = n.text.split("\n");
 
@@ -401,17 +412,13 @@ function getColor(variable) {
 }
 
 function render() {
-  // Reset transform + clear
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Apply world transform
   applyTransform();
 
-  // Rejilla
   if (gridEnabled) drawGrid();
 
-  // Draw scene
   db.areas.forEach(drawArea);
   drawLinks();
   db.nodes.forEach(drawNodeBase);
@@ -423,7 +430,6 @@ function render() {
 
   drawPreview();
 
-  // Reset for UI overlays future
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
@@ -451,6 +457,27 @@ function drawAreaLabel(a) {
 
 function drawNodeBase(n) {
   ctx.save();
+
+  if (n.type === "north") {
+    const icon = icons[n.type];
+
+    const { w, h } = getNodeSize(n);
+    const cx = n.position.x + w / 2;
+    const cy = n.position.y + h / 2;
+
+    ctx.translate(cx, cy);
+    ctx.rotate((n.angle || 0) * Math.PI / 180);
+
+    ctx.drawImage(icon, -w / 2, -h / 2, w, h);
+
+    if (n === selectedNode) {
+      ctx.strokeStyle = getColor("--color-alert");
+      ctx.strokeRect(-w / 2, -h / 2, w, h);
+    }
+
+    ctx.restore();
+    return;
+  }
 
   if (n.type === "text") {
     const width = n._width || 100;
@@ -575,7 +602,6 @@ function drawWavyLine(ctx, x1, y1, x2, y2, isSelected = false) {
   const ux = dx / len;
   const uy = dy / len;
 
-  // perpendicular (normal)
   const nx = -uy;
   const ny = ux;
 
@@ -589,7 +615,6 @@ function drawWavyLine(ctx, x1, y1, x2, y2, isSelected = false) {
     const x = x1 + ux * i;
     const y = y1 + uy * i;
 
-    // senoide pura
     const wave = Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
 
     const px = x + nx * wave;
@@ -619,28 +644,23 @@ function drawZigzagLine(ctx, x1, y1, x2, y2, isSelected = false) {
   const B = 5;
   const A = len * 0.5 + B;
 
-  // Vector unitario de la línea
   const ux = dx / len;
   const uy = dy / len;
 
-  // Vector perpendicular (rotar 90°)
   const px = -uy;
   const py = ux;
 
-  // Primer punto desviado: desde x1,y1 a distancia A con desviación B
   const xA = x1 + ux * A + px * B;
   const yA = y1 + uy * A + py * B;
 
-  // Tercer punto desviado: desde x2,y2 hacia la mitad + A, desviación opuesta
   const xC = x2 - ux * A + px * -B;
   const yC = y2 - uy * A + py * -B;
 
-  // Comenzamos a dibujar
   ctx.beginPath();
-  ctx.moveTo(x1, y1); // inicio
-  ctx.lineTo(xA, yA); // primer segmento
-  ctx.lineTo(xC, yC); // segundo segmento (conecta los extremos)
-  ctx.lineTo(x2, y2); // tercer segmento hasta el final
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(xA, yA);
+  ctx.lineTo(xC, yC);
+  ctx.lineTo(x2, y2);
 
   ctx.strokeStyle = isSelected
     ? getColor("--color-alert")
@@ -655,8 +675,6 @@ function drawPreview() {
   if (icon && icon.complete) {
     ctx.save();
     ctx.globalAlpha = 0.5;
-
-    // const screen = worldToScreen(lastMouseX, lastMouseY);
 
     ctx.drawImage(
       icon,
@@ -732,6 +750,7 @@ const tool_devices = [
   "nas",
   "patch",
   "cloud",
+  "north"
 ];
 
 function updateCursor() {
@@ -930,7 +949,7 @@ function getNodePortPosition(from, to) {
   const bx = cx + ux * radius;
   const by = cy + uy * radius;
 
-  const maxInfluenceDistance = radius * 3; // ajustable
+  const maxInfluenceDistance = radius * 3;
 
   let t = len / maxInfluenceDistance;
 
@@ -956,7 +975,6 @@ function drawPortBox(text, x, y) {
   const w = textWidth + paddingX * 2;
   const h = 18;
 
-  // 🔥 fondo más visible
   ctx.fillStyle = "rgba(255,255,255,0.95)";
   ctx.strokeStyle = "#111";
   ctx.lineWidth = 1;
@@ -969,7 +987,6 @@ function drawPortBox(text, x, y) {
   ctx.fill();
   ctx.stroke();
 
-  // texto
   ctx.fillStyle = "#000";
   ctx.fillText(text, x, y);
 
@@ -1016,7 +1033,6 @@ function drawGrid() {
 
   ctx.beginPath();
 
-  // líneas verticales
   for (
     let x = Math.floor(startX / stepX) * stepX;
     x < startX + width;
@@ -1026,7 +1042,6 @@ function drawGrid() {
     ctx.lineTo(x, startY + height);
   }
 
-  // líneas horizontales
   for (
     let y = Math.floor(startY / stepY) * stepY;
     y < startY + height;
@@ -1040,15 +1055,6 @@ function drawGrid() {
 
   ctx.restore();
 }
-
-// function snapToGrid(x, y) {
-//     if (!gridEnabled) return { x, y };
-
-//     return {
-//         x: Math.round(x / node_w) * node_w,
-//         y: Math.round(y / node_h) * node_h
-//     };
-// }
 
 function snapToGrid(x, y) {
   if (!gridEnabled) return { x, y };
@@ -1071,7 +1077,6 @@ function snapToGrid(x, y) {
 function toggleTool(tool) {
   cloneMode = null;
 
-  // Si haces click en la misma tool
   if (currentTool === tool) {
     if (tool === "select") return;
 
@@ -1083,7 +1088,6 @@ function toggleTool(tool) {
     return;
   }
 
-  // Cambiar tool
   currentTool = tool;
   setActiveToolButton(tool);
 
@@ -1137,10 +1141,15 @@ canvas.addEventListener("mousedown", (e) => {
   }
 
   if (tool_devices.includes(currentTool)) {
-    // createNode(currentTool, x - node_w / 2, y - node_h / 2);
+    let nx = x - node_w / 2;
+    let ny = y - node_h / 2;
 
-    const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
-    createNode(currentTool, snapped.x, snapped.y);
+    if (gridEnabled) {
+      nx = Math.round(nx / node_w) * node_w;
+      ny = Math.round(ny / node_h) * node_h;
+    }
+
+    createNode(currentTool, nx, ny);
 
     requestRender();
     return;
@@ -1184,7 +1193,21 @@ canvas.addEventListener("mousedown", (e) => {
 
   if (currentTool === "text") {
     const node = createTextNode(x, y - 10);
+
+    node._isNewText = true;
+
+    selectedNode = null;
+    selectedArea = null;
+    selectedLink = null;
+
+    draggingNode = null;
+    draggingArea = null;
+    isDragging = false;
+    mouseDownPos = null;
+    clearInspector();
+
     requestRender();
+
     setTimeout(() => {
       openTextEditor(node);
     }, 0);
@@ -1192,7 +1215,6 @@ canvas.addEventListener("mousedown", (e) => {
   }
 
   if (area && isOnResizeHandle(area, x, y)) {
-    // 🔥 limpiar selección para evitar drag
     selectedNode = null;
     selectedArea = null;
     selectedLink = null;
@@ -1238,20 +1260,17 @@ canvas.addEventListener("mousedown", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
 
-  if (draggingNode || draggingArea || resizing || isPanning) {
-    requestRender();
-  }
+  const { x, y } = getMousePos(e);
+  lastMouseX = x;
+  lastMouseY = y;
 
   if (isPanning) {
     view.offsetX += e.movementX;
     view.offsetY += e.movementY;
     updateCursor();
+    requestRender();
     return;
   }
-
-  const { x, y } = getMousePos(e);
-  lastMouseX = x;
-  lastMouseY = y;
 
   // =========================
   // detectar intención de drag
@@ -1293,6 +1312,7 @@ canvas.addEventListener("mousemove", (e) => {
     draggingNode.position.y = snapped.y;
 
     updateInspector(draggingNode);
+    requestRender();
     return;
   }
 
@@ -1304,6 +1324,7 @@ canvas.addEventListener("mousemove", (e) => {
     draggingArea.position.y = y - draggingOffset.y;
 
     updateCursor();
+    requestRender();
     return;
   }
 
@@ -1320,13 +1341,11 @@ canvas.addEventListener("mousemove", (e) => {
     resizingArea.size.height = Math.max(10, snapped.y);
 
     updateCursor();
+    requestRender();
     return;
   }
 
-  // =========================
-  // hover normal
-  // =========================
-  // requestRender();
+  requestRender();
   updateCursor();
 });
 
@@ -1390,12 +1409,35 @@ document.addEventListener("keydown", (e) => {
   const isTyping =
     el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
 
-  // ✅ Caso especial: cerrar editor con Enter
   if (isTyping) {
     if (e.key === "Enter" && !e.shiftKey) {
       textEditor.blur();
       e.preventDefault();
+      return;
     }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+
+      if (editingTextNode) {
+        if (editingTextNode._isNewText) {
+          db.nodes = db.nodes.filter(n => n.id !== editingTextNode.id);
+          rebuildNodeMap();
+        } else {
+          editingTextNode.text = textEditor.dataset.originalText || editingTextNode.text;
+          updateTextNodeSize(editingTextNode);
+        }
+
+        editingTextNode = null;
+      }
+
+      textEditor.style.display = "none";
+      textEditor.blur();
+
+      requestRender();
+      return;
+    }
+
     return;
   }
 
@@ -1447,7 +1489,6 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
   let area = selectedArea;
   let link = selectedLink;
 
-  // Si viene por coordenadas (click con tool delete)
   if (x !== null && y !== null) {
     node = getNodeAt(x, y);
     if (!node) link = getLinkAt(x, y);
@@ -1463,7 +1504,6 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
     if (!ok) return;
   }
 
-  // BORRAR NODO
   if (node) {
     db.nodes = db.nodes.filter((n) => n.id !== node.id);
     db.links = db.links.filter(
@@ -1472,13 +1512,11 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
     rebuildNodeMap();
   }
 
-  // BORRAR LINK
   if (link) {
     db.links = db.links.filter((l) => l.id !== link.id);
     rebuildLinkGroups();
   }
 
-  // BORRAR AREA
   if (area) {
     db.areas = db.areas.filter((a) => a.id !== area.id);
     rebuildAreaMap();
@@ -1506,13 +1544,12 @@ resizer.addEventListener(
   { passive: true }
 );
 
-// 👉 mover
 window.addEventListener(
   "touchmove",
   (e) => {
     if (!isDragging) return;
 
-    e.preventDefault(); // 🔥 evita scroll
+    e.preventDefault();
 
     const touch = e.touches[0];
     const screenHeight = window.innerHeight;
@@ -1560,6 +1597,27 @@ function updateInspector(node) {
     return;
   }
 
+  if (node.type === "north") {
+    const div = document.getElementById("props");
+
+    div.innerHTML = `
+    <label>ID:</label><br>
+    <input value="${node.id}" disabled><br><br>
+
+    <label>Nombre:</label><br>
+    <input id="nodeNameInput" value="${node.name}" 
+    onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
+
+    <label>Ángulo (grados):</label><br>
+    <input id="northAngleInput" value="${node.angle || 0}">
+    <button onclick="saveNorthAngle('${node.id}')">Aplicar</button><br><br>
+
+    <b>X:</b> ${Math.round(node.position.x)}<br>
+    <b>Y:</b> ${Math.round(node.position.y)}<br>
+  `;
+    return;
+  }
+
   let areaName = "Ninguna";
   for (const a of db.areas) {
     if (
@@ -1601,6 +1659,20 @@ function updateInspector(node) {
 `;
 }
 
+function saveNorthAngle(nodeId) {
+  const node = nodeMap.get(nodeId);
+  if (!node) return;
+
+  const input = document.getElementById("northAngleInput");
+  let angle = parseFloat(input.value);
+
+  if (isNaN(angle)) angle = 0;
+
+  node.angle = angle;
+
+  requestRender();
+}
+
 function renderMetadataEditor(node) {
   if (!node.metadata) node.metadata = {};
 
@@ -1609,11 +1681,9 @@ function renderMetadataEditor(node) {
   Object.entries(node.metadata).forEach(([key, value]) => {
     const inputId = `meta_${key}`;
 
-    // botón de eliminar
     const deleteButton = `<button style="color:red;" onclick="deleteMetadataKey('${node.id}', '${key}')">X</button>`;
 
     if (typeof value === "string" && value.length > 40) {
-      // textarea para textos largos
       html += `
                 <label>${key}:</label> ${deleteButton}<br>
                 <textarea id="${inputId}" rows="3"
@@ -1630,7 +1700,6 @@ function renderMetadataEditor(node) {
     }
   });
 
-  // añadir nuevo campo
   html += `
         <hr>
         <input id="newMetaKey" placeholder="Agregar clave (Enter)" 
@@ -1644,9 +1713,9 @@ function renderMetadataEditor(node) {
 function handleNodeIdKeyDown(e) {
   if (e.key === "Enter") {
     e.preventDefault();
-    const oldId = e.target.dataset.oldid; // <-- tomar siempre el último ID válido
+    const oldId = e.target.dataset.oldid;
     saveNodeId(oldId);
-    e.target.blur(); // perder foco como confirmación
+    e.target.blur();
   }
 }
 
@@ -1654,17 +1723,16 @@ function handleNodeNameKeyDown(e, nodeId) {
   if (e.key === "Enter") {
     e.preventDefault();
     saveNodeName(nodeId);
-    e.target.blur(); // perder foco como confirmación
+    e.target.blur();
   }
 }
 
 function handleMetaKeyDown(e, nodeId, key) {
   if (e.key === "Enter") {
     if (e.target.tagName === "TEXTAREA" && !e.ctrlKey) {
-      // Para textarea, Enter solo inserta línea
       return;
     }
-    e.preventDefault(); // evitar salto de línea o submit
+    e.preventDefault();
     saveNodeMetadataField(nodeId, key);
 
     e.target.blur();
@@ -1690,8 +1758,8 @@ function deleteMetadataKey(nodeId, key) {
   if (!confirmDelete) return;
 
   delete node.metadata[key];
-  updateInspector(node); // refresca el panel
-  requestRender(); // opcional, refresca canvas
+  updateInspector(node);
+  requestRender();
 }
 
 function handleNewMetaKey(e, nodeId) {
@@ -1722,23 +1790,20 @@ function saveNodeId(oldId) {
   const error = document.getElementById("errorMsg");
   const newId = input.value.trim();
 
-  // Vacío
   if (!newId) {
     error.textContent = "El ID no puede estar vacío";
     error.style.color = getColor("--color-alert");
-    input.value = input.dataset.oldid; // restaurar valor anterior
+    input.value = input.dataset.oldid;
     return;
   }
 
-  // Ya existe
   if (db.nodes.some((n) => n.id === newId && n.id !== oldId)) {
     error.textContent = "Ya existe un dispositivo con ese ID";
     error.style.color = getColor("--color-alert");
-    input.value = input.dataset.oldid; // restaurar valor anterior
+    input.value = input.dataset.oldid;
     return;
   }
 
-  // Guardar nuevo ID
   const node = nodeMap.get(oldId);
   node.id = newId;
   node.name = newId;
@@ -1747,7 +1812,6 @@ function saveNodeId(oldId) {
     if (l.to.nodeId === oldId) l.to.nodeId = newId;
   });
 
-  // Actualizar data-oldid para la próxima validación
   input.dataset.oldid = newId;
 
   error.textContent = "✔ Guardado correctamente";
@@ -1870,7 +1934,6 @@ function updateLinkInspector(link) {
       <b>ID:</b> ${link.id}
     `;
 
-  // Eventos para guardar al pulsar Enter
   document
     .getElementById("fromPortInput")
     .addEventListener("keydown", (e) => handlePortInput(e, link, "from"));
@@ -1929,7 +1992,6 @@ function resetZoom() {
 
 function sliderToZoom(v) {
   return Math.pow(2, (v - 0.5) * 2);
-  // 0 → 0.5x | 0.5 → 1x | 1 → 2x
 }
 
 function zoomToSlider(z) {
@@ -1958,7 +2020,6 @@ zoomSlider.addEventListener("input", (e) => {
 
 const filenameInput = document.getElementById("filenameInput");
 
-// cargar valor inicial
 function updateFilenameUI() {
   filenameInput.value = db.filename || "";
 }
@@ -2011,7 +2072,6 @@ async function saveBlob(blob, defaultName) {
       }
     }
   } else {
-    // Por defecto, descarga automática
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
     a.href = url;
@@ -2127,7 +2187,7 @@ async function exportTXT(data) {
 
   Object.keys(nodeMap).forEach(nodeId => {
     if (!visited.has(nodeId) && nodeMap[nodeId].children.size > 0) {
-      dfs(nodeId, "", true, true); // raíz sin línea
+      dfs(nodeId, "", true, true);
     }
   });
 
@@ -2149,11 +2209,9 @@ function exportPNG() {
   tempCanvas.width = canvas.width;
   tempCanvas.height = canvas.height;
 
-  // Fondo blanco
   tempCtx.fillStyle = "white";
   tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-  // Copiar el canvas original encima
   tempCtx.drawImage(canvas, 0, 0);
 
   const baseName = db.filename?.trim() || "untitled";
@@ -2169,7 +2227,6 @@ function exportPNG() {
 canvas.addEventListener("dragover", (e) => {
   e.preventDefault();
   canvas.style.border = "2px dashed blue";
-  // efecto visual opcional
 });
 
 canvas.addEventListener("dragleave", (e) => {
@@ -2246,6 +2303,7 @@ function loadIconSet(setName) {
     patch: loadIcon(`img/devices/${setName}/patch.svg`),
     cloud: loadIcon(`img/devices/${setName}/cloud.svg`),
     area: loadIcon(`img/devices/symbol/area.svg`),
+    north: loadIcon(`img/buttons/link/north.svg`)
   };
 
   requestRender();
