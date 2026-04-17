@@ -50,7 +50,13 @@ resizeCanvas();
 // ESTADO GLOBAL
 // =====================
 
-let db = { filename: "", areas: [], nodes: [], links: [] };
+let db = {
+  filename: "",
+  networks: {
+    network: { nodes: [], areas: [], links: [] }
+  },
+  activeNetwork: "network"
+};
 let currentTool = "select";
 
 let selectedNode = null;
@@ -79,6 +85,91 @@ let panStart = { x: 0, y: 0 };
 let cursorIcon = null;
 let lastMouseX = 0;
 let lastMouseY = 0;
+
+function getCurrentNetwork() {
+  return db.networks[db.activeNetwork];
+}
+
+function getNodes() {
+  return getCurrentNetwork().nodes;
+}
+
+function getAreas() {
+  return getCurrentNetwork().areas;
+}
+
+function getLinks() {
+  return getCurrentNetwork().links;
+}
+
+function updateNetworkSelector() {
+  const select = document.getElementById("networkSelector");
+  select.innerHTML = "";
+
+  Object.keys(db.networks).forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    if (name === db.activeNetwork) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+
+document.getElementById("networkSelector").addEventListener("change", (e) => {
+  db.activeNetwork = e.target.value;
+
+  rebuildNodeMap();
+  rebuildAreaMap();
+  rebuildLinkGroups();
+
+  resetState();
+  requestRender();
+});
+
+function createNetwork() {
+  const name = prompt("Nombre de la red:");
+  if (!name) return;
+
+  if (db.networks[name]) {
+    alert("Ya existe una red con ese nombre");
+    return;
+  }
+
+  db.networks[name] = {
+    nodes: [],
+    areas: [],
+    links: []
+  };
+
+  db.activeNetwork = name;
+
+  updateNetworkSelector();
+  rebuildNodeMap(); rebuildAreaMap(); rebuildLinkGroups();
+
+  resetState();
+  requestRender();
+}
+
+function deleteNetwork() {
+  const keys = Object.keys(db.networks);
+
+  if (keys.length <= 1) {
+    alert("Debe existir al menos una red");
+    return;
+  }
+
+  if (!confirm("¿Eliminar la red actual?")) return;
+
+  delete db.networks[db.activeNetwork];
+
+  db.activeNetwork = Object.keys(db.networks)[0];
+
+  updateNetworkSelector();
+  rebuildNodeMap(); rebuildAreaMap(); rebuildLinkGroups();
+
+  resetState();
+  requestRender();
+}
 
 // =====================
 // UTILIDADES GENERALES
@@ -129,7 +220,7 @@ let nodeMap = new Map();
 
 function rebuildNodeMap() {
   nodeMap.clear();
-  db.nodes.forEach(n => nodeMap.set(n.id, n));
+  getNodes().forEach(n => nodeMap.set(n.id, n));
 }
 
 function getNode(id) {
@@ -142,7 +233,7 @@ let areaMap = new Map();
 
 function rebuildAreaMap() {
   areaMap.clear();
-  db.areas.forEach(a => areaMap.set(a.id, a));
+  getAreas().forEach(a => areaMap.set(a.id, a));
 }
 
 function getArea(id) {
@@ -156,7 +247,7 @@ let linkGroups = new Map();
 function rebuildLinkGroups() {
   linkGroups.clear();
 
-  for (const link of db.links) {
+  for (const link of getLinks()) {
     const key = [link.from.nodeId, link.to.nodeId].sort().join("_");
 
     if (!linkGroups.has(key)) {
@@ -170,7 +261,7 @@ function rebuildLinkGroups() {
 
 
 function getNodeAt(x, y) {
-  return db.nodes.find((n) => {
+  return getNodes().find((n) => {
     const { w, h } = getNodeSize(n);
     return (
       x >= n.position.x &&
@@ -182,7 +273,7 @@ function getNodeAt(x, y) {
 }
 
 function getAreaAt(x, y) {
-  return db.areas.find(
+  return getAreas().find(
     (a) =>
       x >= a.position.x &&
       x <= a.position.x + a.size.width &&
@@ -246,7 +337,7 @@ function isOnResizeHandle(area, x, y) {
 // =====================
 
 function createNode(type, x, y) {
-  const id = generateUniqueId(type, db.nodes);
+  const id = generateUniqueId(type, getNodes());
 
   let node = null;
 
@@ -257,6 +348,28 @@ function createNode(type, x, y) {
       name: "",
       position: { x, y },
       angle: 0
+    }
+  }
+
+  else if (type === "image") {
+    node = {
+      id,
+      name: "",
+      type,
+      position: { x, y },
+      size: { width: 150, height: 150 },
+      data: ""
+    }
+  }
+
+  else if (type === "cloud") {
+    node = {
+      id,
+      type,
+      name: id,
+      position: { x, y },
+      link: "",
+      interfaces: []
     }
   }
 
@@ -275,14 +388,58 @@ function createNode(type, x, y) {
     }
   }
 
-  db.nodes.push(node);
+  getNodes().push(node);
   rebuildNodeMap();
+  return node;
+}
+
+function loadImageToNode(file, node) {
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const img = new Image();
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // 🔥 reducción de tamaño (importante)
+      const maxSize = 800;
+      let w = img.width;
+      let h = img.height;
+
+      if (w > h && w > maxSize) {
+        h *= maxSize / w;
+        w = maxSize;
+      } else if (h > maxSize) {
+        w *= maxSize / h;
+        h = maxSize;
+      }
+
+      canvas.width = w;
+      canvas.height = h;
+
+      ctx.drawImage(img, 0, 0, w, h);
+
+      // 🔥 compresión moderna
+      const webp = canvas.toDataURL("image/webp", 0.7);
+
+      node.data = webp;
+      node.size = { width: w, height: h };
+
+      requestRender();
+    };
+
+    img.src = e.target.result;
+  };
+
+  reader.readAsDataURL(file);
 }
 
 function createArea(x, y) {
-  const id = generateUniqueId("area", db.areas);
+  const id = generateUniqueId("area", getAreas());
 
-  db.areas.push({
+  getAreas().push({
     id,
     name: id,
     position: { x, y },
@@ -293,7 +450,7 @@ function createArea(x, y) {
 }
 
 function createTextNode(x, y, content = "Nuevo texto") {
-  const id = generateUniqueId("text", db.nodes);
+  const id = generateUniqueId("text", getNodes());
 
   const node = {
     id,
@@ -304,7 +461,7 @@ function createTextNode(x, y, content = "Nuevo texto") {
     metadata: {},
   };
 
-  db.nodes.push(node);
+  getNodes().push(node);
 
   rebuildNodeMap();
 
@@ -313,7 +470,7 @@ function createTextNode(x, y, content = "Nuevo texto") {
 }
 
 function cloneNode(node, x, y) {
-  const id = generateUniqueId(node.type, db.nodes);
+  const id = generateUniqueId(node.type, getNodes());
 
   const newNode = structuredClone(node);
 
@@ -323,7 +480,7 @@ function cloneNode(node, x, y) {
   delete newNode._width;
   delete newNode._height;
 
-  db.nodes.push(newNode);
+  getNodes().push(newNode);
 
   rebuildNodeMap();
 
@@ -419,15 +576,21 @@ function render() {
 
   if (gridEnabled) drawGrid();
 
-  db.areas.forEach(drawArea);
-  drawLinks();
-  db.nodes.forEach(drawNodeBase);
+  getNodes()
+    .filter(n => n.type === "image")
+    .forEach(drawNodeBase);
 
-  db.areas.forEach(drawAreaLabel);
-  db.nodes.forEach(drawNodeLabel);
+  getAreas().forEach(drawArea);
+  drawLinks();
+
+  getNodes()
+    .filter(n => n.type !== "image")
+    .forEach(drawNodeBase);
+
+  getAreas().forEach(drawAreaLabel);
+  getNodes().forEach(drawNodeLabel);
 
   drawPorts();
-
   drawPreview();
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -455,6 +618,16 @@ function drawAreaLabel(a) {
   drawTextWithOutline(a.name, a.position.x + 5, a.position.y + 5);
 }
 
+function isOnImageResizeHandle(n, x, y) {
+  const size = 10;
+
+  return (
+    x >= n.position.x + n.size.width - size &&
+    x <= n.position.x + n.size.width &&
+    y >= n.position.y + n.size.height - size
+  );
+}
+
 function drawNodeBase(n) {
   ctx.save();
 
@@ -476,6 +649,28 @@ function drawNodeBase(n) {
     }
 
     ctx.restore();
+    return;
+  }
+
+  if (n.type === "image") {
+    const img = new Image();
+    img.src = n.data;
+
+    const w = n.size?.width || 150;
+    const h = n.size?.height || 150;
+
+    if (img.complete) {
+      ctx.drawImage(img, n.position.x, n.position.y, w, h);
+    } else {
+      ctx.fillStyle = "#ddd";
+      ctx.fillRect(n.position.x, n.position.y, w, h);
+    }
+
+    if (n === selectedNode) {
+      ctx.strokeStyle = getColor("--color-alert");
+      ctx.strokeRect(n.position.x, n.position.y, w, h);
+    }
+
     return;
   }
 
@@ -764,7 +959,7 @@ function updateCursor() {
     return;
   }
 
-  for (const area of db.areas) {
+  for (const area of getAreas()) {
     if (isOnResizeHandle(area, lastMouseX, lastMouseY)) {
       canvas.style.cursor = "se-resize";
       return;
@@ -838,8 +1033,13 @@ const actions = {
   "export-gzip": () => exportFile(true),
   "export-png": () => exportPNG(),
   "export-txt": () => exportTXT(db),
+  "sheet-import": () => triggerImportSheet(),
+  "sheet-add": () => createNetwork(),
+  "sheet-delete": () => deleteNetwork(),
+  "rename-sheet": () => renameCurrentNetwork(),
+  "image": () => triggerImportImage(),
 
-  import: () => triggerImport(),
+  import: () => triggerImportFile(),
 
   help: () => openHelp(),
 };
@@ -1104,6 +1304,8 @@ function clearTool() {
 // EVENT HANDLERS
 // =====================
 
+
+
 canvas.addEventListener("mousedown", (e) => {
   if (cloneMode) {
     const { x, y } = getMousePos(e);
@@ -1175,7 +1377,7 @@ canvas.addEventListener("mousedown", (e) => {
         type = "wan";
       }
 
-      db.links.push({
+      getLinks().push({
         id: uuid(),
         type,
         from: { nodeId: linkStart.id },
@@ -1270,6 +1472,16 @@ canvas.addEventListener("mousemove", (e) => {
     updateCursor();
     requestRender();
     return;
+  }
+
+  if (selectedNode?.type === "image" && resizing) {
+    const newW = x - selectedNode.position.x;
+    const newH = y - selectedNode.position.y;
+
+    selectedNode.size.width = Math.max(20, newW);
+    selectedNode.size.height = Math.max(20, newH);
+
+    requestRender();
   }
 
   // =========================
@@ -1396,6 +1608,16 @@ canvas.addEventListener("dblclick", (e) => {
   if (node && node.type === "text") {
     openTextEditor(node);
   }
+
+  if (node && node.type === "cloud" && node.link && db.networks[node.link]) {
+    db.activeNetwork = node.link;
+    updateNetworkSelector();
+    rebuildNodeMap(); rebuildAreaMap(); rebuildLinkGroups();
+
+    resetState();
+    requestRender();
+    return;
+  }
 });
 
 canvas.addEventListener("mouseleave", () => {
@@ -1421,7 +1643,8 @@ document.addEventListener("keydown", (e) => {
 
       if (editingTextNode) {
         if (editingTextNode._isNewText) {
-          db.nodes = db.nodes.filter(n => n.id !== editingTextNode.id);
+          const net = getCurrentNetwork();
+          net.nodes = net.nodes.filter(n => n.id !== editingTextNode.id);
           rebuildNodeMap();
         } else {
           editingTextNode.text = textEditor.dataset.originalText || editingTextNode.text;
@@ -1505,20 +1728,23 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
   }
 
   if (node) {
-    db.nodes = db.nodes.filter((n) => n.id !== node.id);
-    db.links = db.links.filter(
+    const net = getCurrentNetwork();
+    net.nodes = net.nodes.filter((n) => n.id !== node.id);
+    net.links = net.links.filter(
       (l) => l.from.nodeId !== node.id && l.to.nodeId !== node.id
     );
     rebuildNodeMap();
   }
 
   if (link) {
-    db.links = db.links.filter((l) => l.id !== link.id);
+    const net = getCurrentNetwork();
+    net.links = net.links.filter((l) => l.id !== link.id);
     rebuildLinkGroups();
   }
 
   if (area) {
-    db.areas = db.areas.filter((a) => a.id !== area.id);
+    const net = getCurrentNetwork();
+    net.areas = net.areas.filter((a) => a.id !== area.id);
     rebuildAreaMap();
   }
 
@@ -1618,8 +1844,68 @@ function updateInspector(node) {
     return;
   }
 
+  if (node.type === "image") {
+    const div = document.getElementById("props");
+
+    div.innerHTML = `
+    <label>ID:</label><br>
+    <input id="nodeIdInput" 
+       value="${node.id}" 
+       data-oldid="${node.id}"
+       onkeydown="handleNodeIdKeyDown(event)"/><br><br>
+
+    <b>Tipo:</b> ${node.type}<br>
+    <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
+    `;
+    return;
+  }
+
+  if (node.type === "cloud") {
+
+    const div = document.getElementById("props");
+    div.innerHTML = `
+        <label>ID:</label><br>
+        <input id="nodeIdInput" 
+          value="${node.id}" 
+          data-oldid="${node.id}"
+          onkeydown="handleNodeIdKeyDown(event)"/><br><br>
+
+        <label>Nombre:</label><br>
+        <input id="nodeNameInput" value="${node.name}" 
+          onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
+
+        <b>Tipo:</b> ${node.type}<br>
+        <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
+
+        <hr><b>Enlace a red</b><br>
+        <select id="cloudLinkSelect">
+          <option value="">-- Ninguno --</option>
+          ${Object.keys(db.networks).map(n => `
+            <option value="${n}" ${node.link === n ? "selected" : ""}>${n}</option>
+          `).join("")}
+        </select> 
+
+        <span id="errorMsg" style="color:red;"></span>
+
+      `;
+
+    setTimeout(() => {
+      const sel = document.getElementById("cloudLinkSelect");
+      if (!sel) return;
+
+      sel.addEventListener("change", () => {
+        if (sel.value === "") {
+          delete node.link;
+        } else {
+          node.link = sel.value;
+        }
+      });
+    }, 0);
+    return;
+  }
+
   let areaName = "Ninguna";
-  for (const a of db.areas) {
+  for (const a of getAreas()) {
     if (
       node.position.x >= a.position.x &&
       node.position.x <= a.position.x + a.size.width &&
@@ -1645,9 +1931,7 @@ function updateInspector(node) {
        onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
 
     <b>Tipo:</b> ${node.type}<br>
-    <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(
-    node.position.y
-  )})<br>
+    <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
     <b>Área:</b> ${areaName}<br><br>
 
     <span id="errorMsg" style="color:red;"></span>
@@ -1656,7 +1940,7 @@ function updateInspector(node) {
       ? renderMetadataEditor(node)
       : ""
     }
-`;
+  `;
 }
 
 function saveNorthAngle(nodeId) {
@@ -1797,7 +2081,7 @@ function saveNodeId(oldId) {
     return;
   }
 
-  if (db.nodes.some((n) => n.id === newId && n.id !== oldId)) {
+  if (getNodes().some((n) => n.id === newId && n.id !== oldId)) {
     error.textContent = "Ya existe un dispositivo con ese ID";
     error.style.color = getColor("--color-alert");
     input.value = input.dataset.oldid;
@@ -1807,7 +2091,7 @@ function saveNodeId(oldId) {
   const node = nodeMap.get(oldId);
   node.id = newId;
   node.name = newId;
-  db.links.forEach((l) => {
+  getLinks().forEach((l) => {
     if (l.from.nodeId === oldId) l.from.nodeId = newId;
     if (l.to.nodeId === oldId) l.to.nodeId = newId;
   });
@@ -1882,7 +2166,7 @@ function saveAreaId(oldId) {
     return;
   }
 
-  if (db.areas.some((a) => a.id === newId && a.id !== oldId)) {
+  if (getAreas().some((a) => a.id === newId && a.id !== oldId)) {
     error.textContent = "Ya existe un área con ese ID";
     error.style.color = getColor("--color-alert");
     return;
@@ -2039,7 +2323,7 @@ async function exportFile(compressed = false) {
     });
   }
 
-  const baseName = db.filename?.trim() || "untitled";
+  const baseName = db.filename?.trim() || "Sin nombre";
   const ext = compressed ? "json.gz" : "json";
   await saveBlob(blob, `${baseName}.${ext}`);
 }
@@ -2081,16 +2365,122 @@ async function saveBlob(blob, defaultName) {
   }
 }
 
-function triggerImport() {
+function triggerImportFile() {
   const input = document.getElementById("importFile");
   input.value = "";
   input.click();
+
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) importFile(file);
+  };
 }
 
-document.getElementById("importFile").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file) importFile(file);
-});
+function triggerImportImage() {
+  const input = document.getElementById("importImage");
+  input.value = "";
+  input.click();
+
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // posición donde quieras crearla
+      const x = 100;
+      const y = 100;
+      const node = createNode("image", x, y);
+      loadImageToNode(file, node);
+    }
+  };
+}
+
+function triggerImportSheet() {
+  console.log("aquí");
+  const input = document.getElementById("importFile");
+  input.value = "";
+
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) importAsNewSheet(file);
+  };
+
+  input.click();
+}
+
+function renameCurrentNetwork() {
+  const oldName = db.activeNetwork;
+  const net = db.networks[oldName];
+  if (!net) return;
+
+  const newName = prompt("Nuevo nombre de la hoja:", oldName);
+  if (!newName || newName.trim() === "") return;
+
+  const name = newName.trim();
+
+  if (db.networks[name]) {
+    alert("Ya existe una hoja con ese nombre");
+    return;
+  }
+
+  db.networks[name] = net;
+  delete db.networks[oldName];
+
+  db.activeNetwork = name;
+
+  for (const n of getNodes()) {
+    if (n.type === "cloud" && n.link === oldName) {
+      n.link = name;
+    }
+  }
+
+  // 4. UI + consistencia
+  updateNetworkSelector();
+  rebuildNodeMap();
+  rebuildAreaMap();
+  rebuildLinkGroups();
+  resetState();
+  requestRender();
+}
+
+function normalizeDB(data) {
+  // 🔥 Caso formato antiguo
+  if (!data.networks) {
+    return {
+      filename: data.filename || "",
+      networks: {
+        network: {
+          nodes: structuredClone(data.nodes || []),
+          areas: structuredClone(data.areas || []),
+          links: structuredClone(data.links || [])
+        }
+      },
+      activeNetwork: "network"
+    };
+  }
+
+  // 🔥 Caso formato nuevo (AQUÍ ESTABA EL BUG)
+  const networks = {};
+
+  for (const [name, net] of Object.entries(data.networks)) {
+    networks[name] = {
+      nodes: net.nodes || [],
+      areas: net.areas || [],
+      links: net.links || []
+    };
+  }
+
+  // 🔥 asegurar activeNetwork válido
+  let active = data.activeNetwork;
+
+  if (!active || !networks[active]) {
+    active = Object.keys(networks)[0];
+  }
+
+  return {
+    filename: data.filename || "",
+    networks,
+    activeNetwork: active
+  };
+}
 
 async function importFile(file) {
   try {
@@ -2098,35 +2488,124 @@ async function importFile(file) {
     const bytes = new Uint8Array(buffer);
 
     const isGzip =
-      file.name.endsWith(".gz") ||
-      file.name.endsWith(".gzip") ||
+      file.name?.endsWith(".gz") ||
+      file.name?.endsWith(".gzip") ||
       (bytes[0] === 0x1f && bytes[1] === 0x8b);
 
+    let data;
+
     if (isGzip) {
-      db = await decompressJSON(new Blob([buffer]));
-
-      rebuildNodeMap();
-      rebuildAreaMap();
-      rebuildLinkGroups();
-
-      if (!db.filename) { db.filename = ""; }
-      updateFilenameUI()
+      data = await decompressJSON(new Blob([buffer]));
     } else {
       const text = new TextDecoder().decode(buffer);
-      db = JSON.parse(text);
+      data = JSON.parse(text);
+    }
 
+    // Normalizar SIEMPRE
+    const importedDB = normalizeDB(data);
+
+    // 🔥 REEMPLAZO COMPLETO (sin merges raros)
+    db = {
+      filename: importedDB.filename || "",
+      networks: structuredClone(importedDB.networks),
+      activeNetwork:
+        importedDB.activeNetwork &&
+          importedDB.networks[importedDB.activeNetwork]
+          ? importedDB.activeNetwork
+          : Object.keys(importedDB.networks)[0]
+    };
+
+    updateFilenameUI();
+    updateNetworkSelector();
+
+    resetState();
+    setTimeout(() => {
       rebuildNodeMap();
       rebuildAreaMap();
       rebuildLinkGroups();
+      requestRender();
+    }, 0);
 
-      if (!db.filename) { db.filename = ""; }
-      updateFilenameUI()
-    }
-
-    resetState();
-    requestRender();
   } catch (err) {
     alert("Error importando archivo: " + err.message);
+  }
+}
+
+async function importAsNewSheet(file) {
+  try {
+
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    const isGzip =
+      file.name?.endsWith(".gz") ||
+      file.name?.endsWith(".gzip") ||
+      (bytes[0] === 0x1f && bytes[1] === 0x8b);
+
+    let data;
+
+    if (isGzip) {
+
+      data = await decompressJSON(new Blob([buffer]));
+
+    } else {
+
+      const text = new TextDecoder().decode(buffer);
+      data = JSON.parse(text);
+
+    }
+
+    const importedDB = normalizeDB(data);
+    const names = Object.keys(importedDB.networks);
+
+    if (names.length === 0) return;
+
+    let selected = names[0];
+
+    if (names.length > 1) {
+      const choice = prompt(
+        "Selecciona la hoja a importar:\n\n" +
+        names.join("\n")
+      );
+
+      if (!choice || !importedDB.networks[choice]) return;
+      selected = choice;
+    }
+
+    const source = importedDB.networks[selected];
+
+    console.log(db.networks);
+
+    let newName = selected;
+    let i = 1;
+
+    while (db.networks[newName]) {
+      newName = `${selected}_${i++}`;
+    }
+
+    // ✔ SOLO UNA ASIGNACIÓN
+    db.networks[newName] = structuredClone({
+      nodes: source.nodes || [],
+      areas: source.areas || [],
+      links: source.links || []
+    });
+
+    db.activeNetwork = newName;
+
+    updateNetworkSelector();
+
+    // 🔥 CRÍTICO: asegurar consistencia antes de rebuild
+    resetState();
+
+    // 🔥 reconstruir DESPUÉS de estado limpio
+    rebuildNodeMap();
+    rebuildAreaMap();
+    rebuildLinkGroups();
+
+    requestRender();
+
+  } catch (err) {
+    alert("Error importando hoja: " + err.message);
   }
 }
 
@@ -2152,53 +2631,80 @@ async function decompressJSON(blob) {
 }
 
 async function exportTXT(data) {
-  const { nodes, links } = data;
-
-  const nodeMap = {};
-  nodes.forEach(node => {
-    nodeMap[node.id] = { ...node, children: new Set() };
-  });
-
-  links.forEach(link => {
-    const from = link.from.nodeId;
-    const to = link.to.nodeId;
-    if (nodeMap[from] && nodeMap[to]) {
-      nodeMap[from].children.add(to);
-      nodeMap[to].children.add(from);
-    }
-  });
-
-  const visited = new Set();
   const result = [];
 
-  function dfs(nodeId, prefix = "", isLast = true, isRoot = false) {
-    if (visited.has(nodeId)) return;
-    visited.add(nodeId);
+  const networks = data.networks || {};
 
-    const pointer = isRoot ? "" : (prefix + (isLast ? "└─ " : "├─ "));
-    result.push(pointer + nodeMap[nodeId].name + " (" + nodeMap[nodeId].type + ")");
+  for (const [networkName, net] of Object.entries(networks)) {
+    result.push(`\n====================`);
+    result.push(`RED: ${networkName}`);
+    result.push(`====================\n`);
 
-    const children = Array.from(nodeMap[nodeId].children).filter(id => !visited.has(id));
-    children.forEach((childId, index) => {
-      const lastChild = index === children.length - 1;
-      dfs(childId, prefix + (isLast ? "   " : "│  "), lastChild);
+    const nodes = net.nodes || [];
+    const links = net.links || [];
+
+    if (!nodes.length) {
+      result.push("(vacía)\n");
+      continue;
+    }
+
+    const adjacency = {};
+    const nodeMap = {};
+
+    nodes.forEach(n => {
+      nodeMap[n.id] = n;
+      adjacency[n.id] = new Set();
     });
+
+    links.forEach(l => {
+      const a = l.from.nodeId;
+      const b = l.to.nodeId;
+      if (adjacency[a] && adjacency[b]) {
+        adjacency[a].add(b);
+        adjacency[b].add(a);
+      }
+    });
+
+    const visited = new Set();
+    let groupIndex = 1;
+
+    function bfs(startId) {
+      const queue = [startId];
+      const group = [];
+
+      visited.add(startId);
+
+      while (queue.length) {
+        const id = queue.shift();
+        group.push(id);
+
+        for (const n of adjacency[id] || []) {
+          if (!visited.has(n)) {
+            visited.add(n);
+            queue.push(n);
+          }
+        }
+      }
+
+      result.push(`-- Subred ${groupIndex++} --`);
+
+      for (const id of group) {
+        const n = nodeMap[id];
+        result.push(`${n.name} (${n.type})`);
+      }
+
+      result.push("");
+    }
+
+    for (const id of Object.keys(nodeMap)) {
+      if (!visited.has(id)) {
+        bfs(id);
+      }
+    }
   }
 
-  Object.keys(nodeMap).forEach(nodeId => {
-    if (!visited.has(nodeId) && nodeMap[nodeId].children.size > 0) {
-      dfs(nodeId, "", true, true);
-    }
-  });
-
-  Object.keys(nodeMap).forEach(nodeId => {
-    if (!visited.has(nodeId)) {
-      result.push(nodeMap[nodeId].name + " (" + nodeMap[nodeId].type + ")");
-    }
-  });
-
   const blob = new Blob([result.join("\n")], { type: "text/plain" });
-  const baseName = db.filename?.trim() || "untitled";
+  const baseName = db.filename?.trim() || "Sin nombre";
   await saveBlob(blob, `${baseName}.txt`);
 }
 
@@ -2214,7 +2720,7 @@ function exportPNG() {
 
   tempCtx.drawImage(canvas, 0, 0);
 
-  const baseName = db.filename?.trim() || "untitled";
+  const baseName = db.filename?.trim() || "Sin nombre";
   tempCanvas.toBlob((blob) => {
     saveBlob(blob, `${baseName}.png`);
   });
@@ -2252,14 +2758,18 @@ function clearAll() {
 
   db = {
     filename: "",
-    nodes: [],
-    areas: [],
-    links: []
+    networks: {
+      network: { nodes: [], areas: [], links: [] }
+    },
+    activeNetwork: "network"
   };
 
   rebuildNodeMap();
   rebuildAreaMap();
   rebuildLinkGroups();
+
+  updateNetworkSelector();
+  rebuildNodeMap(); rebuildAreaMap(); rebuildLinkGroups();
 
   updateFilenameUI();
 
@@ -2333,18 +2843,11 @@ function loadIcon(src) {
 fetch("data/example.json")
   .then((response) => {
     if (!response.ok) throw new Error("No se encontró example.json");
-    return response.json();
+    return response.blob();
   })
-  .then((data) => {
-    db = data;
-
-    rebuildNodeMap();
-    rebuildAreaMap();
-    rebuildLinkGroups();
-
-    resetState();
-    resetZoom();
-    requestRender();
+  .then((blob) => importFile(blob))
+  .then(() => {
+    updateNetworkSelector();
   })
   .catch((err) => {
     console.warn("No se pudo cargar example.json:", err.message);
@@ -2366,6 +2869,8 @@ function init() {
   resetZoom();
 
   updateFilenameUI();
+
+  updateNetworkSelector()
 
   clearInspector();
   updateCursor();

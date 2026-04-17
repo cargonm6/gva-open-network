@@ -16,48 +16,74 @@
     <div id="topbar">
         <img id="logo-img" src="img/logo.svg"><b id="logo">ONetMap</b>
 
-        <button data-action="new">
-            <img src="img/buttons/menu/new.svg" class="btn-icon">
-            <span>Nueva hoja</span>
-        </button>
-
         <div class="dropdown">
             <button class="dropbtn">
                 <img src="img/buttons/menu/floppy.svg" class="btn-icon">
-                <span>Exportar</span>
+                <span>Archivo</span>
             </button>
-
             <div class="dropdown-content">
+                <button data-action="new">
+                    <img src="img/buttons/menu/new.svg" class="btn-icon">
+                    <span>Nueva red</span>
+                </button>
+
+                <button data-action="import">
+                    <img src="img/buttons/menu/folder.svg" class="btn-icon">
+                    <span>Cargar red</span>
+                </button>
+
+                <hr>
 
                 <button data-action="export-json">
                     <img src="img/buttons/menu/json.svg" class="btn-icon">
-                    <span>Texto JSON</span>
+                    <span>Guardar como JSON</span>
                 </button>
 
                 <button data-action="export-gzip">
                     <img src="img/buttons/menu/zip.svg" class="btn-icon">
-                    <span>Comprimido GZIP</span>
+                    <span>Guardar como GZIP</span>
                 </button>
 
                 <button data-action="export-png">
                     <img src="img/buttons/menu/picture.svg" class="btn-icon">
-                    <span>Imagen PNG</span>
+                    <span>Exportar imagen PNG</span>
                 </button>
 
                 <button data-action="export-txt">
                     <img src="img/buttons/menu/tree.svg" class="btn-icon">
-                    <span>Árbol TXT</span>
+                    <span>Exportar árbol TXT</span>
                 </button>
-
             </div>
         </div>
 
-        <input id="filenameInput" placeholder="untitled" style="width:200px" />
+        <div class="dropdown">
+            <button class="dropbtn">
+                <img src="img/buttons/menu/sheets.svg" class="btn-icon">
+                <span>Hojas</span>
+            </button>
+            <div class="dropdown-content">
+                <button data-action="sheet-add">
+                    <img src="img/buttons/menu/sheet-plus.svg" class="btn-icon">
+                    <span>Añadir hoja</span>
+                </button>
 
-        <button data-action="import">
-            <img src="img/buttons/menu/folder.svg" class="btn-icon">
-            <span>Cargar archivo</span>
-        </button>
+                <button data-action="sheet-delete">
+                    <img src="img/buttons/menu/sheet-minus.svg" class="btn-icon">
+                    <span>Eliminar hoja</span>
+                </button>
+
+                <hr>
+
+                <button data-action="sheet-import">
+                    <img src="img/buttons/menu/sheet-import.svg" class="btn-icon">
+                    <span>Importar existente</span>
+                </button>
+                <button data-action="rename-sheet">
+                    <img src="img/buttons/menu/sheet-rename.svg" class="btn-icon">
+                    <span>Renombrar hoja</span>
+                </button>
+            </div>
+        </div>
 
         <button data-action="help">
             <img src="img/buttons/menu/help.svg" class="btn-icon">
@@ -65,6 +91,15 @@
         </button>
 
         <input type="file" id="importFile" accept=".json,.gz,.gzip" style="display:none;">
+
+        <input type="file" id="importImage" accept=".jpg,.jpeg,.png,.gif" style="display:none;">
+
+        <span>Archivo:&nbsp;</span>
+        <input id="filenameInput" placeholder="Sin nombre" style="width:200px" />
+
+        <span>Seleccionar hoja:&nbsp;</span>
+        <select id="networkSelector" class="dropbtn"></select>
+
     </div>
 
     <!-- ===================== -->
@@ -186,6 +221,10 @@
                     <button class="tool-btn" data-action="tool" data-tool="north">
                         <img src="img/buttons/link/north.svg" class="btn-icon">
                         <span>Norte</span>
+                    </button>
+                    <button data-action="image">
+                        <img src="img/buttons/link/north.svg" class="btn-icon">
+                        <span>Imagen</span>
                     </button>
                 </div>
             </div>
