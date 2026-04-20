@@ -358,6 +358,7 @@ function createNode(type, x, y) {
       type,
       position: { x, y },
       size: { width: 150, height: 150 },
+      opacity: 100,
       data: ""
     }
   }
@@ -426,6 +427,7 @@ function loadImageToNode(file, node) {
 
       node.data = webp;
       node.size = { width: w, height: h };
+      node.opacity = 100;
 
       requestRender();
     };
@@ -653,11 +655,19 @@ function drawNodeBase(n) {
   }
 
   if (n.type === "image") {
-    const img = new Image();
-    img.src = n.data;
+    if (!n._cachedImg) {
+      const img = new Image();
+      img.src = n.data;
+      n._cachedImg = img;
+    }
+
+    const img = n._cachedImg;
 
     const w = n.size?.width || 150;
     const h = n.size?.height || 150;
+
+    ctx.save();
+    ctx.globalAlpha = (n.opacity ?? 100) / 100;
 
     if (img.complete) {
       ctx.drawImage(img, n.position.x, n.position.y, w, h);
@@ -665,6 +675,8 @@ function drawNodeBase(n) {
       ctx.fillStyle = "#ddd";
       ctx.fillRect(n.position.x, n.position.y, w, h);
     }
+
+    ctx.restore();
 
     if (n === selectedNode) {
       ctx.strokeStyle = getColor("--color-alert");
@@ -927,6 +939,13 @@ function drawTextWithOutline(
 // =====================
 
 function getNodeSize(n) {
+  if (n.type === "image") {
+    return {
+      w: n.size?.width ?? 150,
+      h: n.size?.height ?? 150
+    };
+  }
+
   return {
     w: n._width ?? node_w,
     h: n._height ?? node_h
@@ -1114,11 +1133,21 @@ function drawPorts() {
       const t = getNodePortPosition(to, from);
 
       if (link.from?.port) {
-        drawPortBox(link.from.port, f.x + ox, f.y + oy);
+        drawPortBox(
+          link.from.port,
+          f.x + ox,
+          f.y + oy,
+          link.vlan
+        );
       }
 
       if (link.to?.port) {
-        drawPortBox(link.to.port, t.x + ox, t.y + oy);
+        drawPortBox(
+          link.to.port,
+          t.x + ox,
+          t.y + oy,
+          link.vlan
+        );
       }
     }
   }
@@ -1161,7 +1190,7 @@ function getNodePortPosition(from, to) {
   };
 }
 
-function drawPortBox(text, x, y) {
+function drawPortBox(text, x, y, vlan) {
   ctx.save();
 
   ctx.font = "bold 11px Arial";
@@ -1169,15 +1198,12 @@ function drawPortBox(text, x, y) {
   ctx.textBaseline = "middle";
 
   const paddingX = 8;
-  const paddingY = 4;
-
   const textWidth = ctx.measureText(text).width;
   const w = textWidth + paddingX * 2;
   const h = 18;
 
-  ctx.fillStyle = "rgba(255,255,255,0.95)";
+  ctx.fillStyle = getVlanColor(vlan);
   ctx.strokeStyle = "#111";
-  ctx.lineWidth = 1;
 
   ctx.beginPath();
   ctx.roundRect
@@ -1856,7 +1882,29 @@ function updateInspector(node) {
 
     <b>Tipo:</b> ${node.type}<br>
     <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
+
+    <label>Opacidad: <span id="opacityLabel">${node.opacity ?? 100}%</span></label><br>
+  <input 
+    id="opacitySlider" 
+    type="range" 
+    min="0" 
+    max="100" 
+    value="${node.opacity ?? 100}"
+  />
     `;
+    setTimeout(() => {
+      const slider = document.getElementById("opacitySlider");
+      const label = document.getElementById("opacityLabel");
+
+      if (!slider) return;
+
+      slider.addEventListener("input", () => {
+        node.opacity = parseInt(slider.value);
+        label.textContent = node.opacity + "%";
+        requestRender();
+      });
+    }, 0);
+
     return;
   }
 
@@ -2199,16 +2247,25 @@ function saveAreaName(areaId) {
 function updateLinkInspector(link) {
   const fromNode = nodeMap.get(link.from.nodeId);
   const toNode = nodeMap.get(link.to.nodeId);
+  const mode = link.vlan ? "ACCESS" : "TRUNK";
 
   const div = document.getElementById("props");
 
   div.innerHTML = `
       <b>Tipo:</b> ${link.type}<br><br>
+
+      <b>Modo:</b> ${mode}<br><br>
+
+      <label>VLAN:</label><br>
+      <input id="vlanInput" placeholder="1-4094 (vacío = trunk)" value="${link.vlan || ""}"/><br><br>
   
       <b>Origen:</b> ${fromNode ? fromNode.name : link.from.nodeId}<br>
       <input id="fromPortInput" placeholder="Puerto" value="${link.from?.port || ""
     }"/>
       <br>
+
+      <button onclick="swapLinkDirection('${link.id}')">↕ Intercambiar</button>
+    <br><br>
   
       <b>Destino:</b> ${toNode ? toNode.name : link.to.nodeId}<br>
       <input id="toPortInput" placeholder="Puerto" value="${link.to?.port || ""
@@ -2225,6 +2282,63 @@ function updateLinkInspector(link) {
   document
     .getElementById("toPortInput")
     .addEventListener("keydown", (e) => handlePortInput(e, link, "to"));
+
+  document
+    .getElementById("vlanInput")
+    .addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        let value = e.target.value.trim();
+
+        if (value === "") {
+          delete link.vlan; // TRUNK
+        } else {
+          const num = parseInt(value);
+
+          if (isNaN(num) || num < 1 || num > 4094) {
+            alert("VLAN inválida (1-4094)");
+            return;
+          }
+
+          link.vlan = num;
+        }
+
+        updateLinkInspector(link);
+        requestRender();
+      }
+    });
+}
+
+function getVlanColor(vlan) {
+  if (!vlan) return "#fff"; // trunk
+
+  const hue = (vlan * 47) % 360;
+  return `hsl(${hue}, 70%, 70%)`;
+}
+
+function swapLinkDirection(linkId) {
+  const link = getLinks().find(l => l.id === linkId);
+  if (!link) return;
+
+  // intercambiar nodos
+  const tempNode = link.from.nodeId;
+  link.from.nodeId = link.to.nodeId;
+  link.to.nodeId = tempNode;
+
+  // intercambiar puertos (si existen)
+  const tempPort = link.from?.port;
+  if (!link.from) link.from = {};
+  if (!link.to) link.to = {};
+
+  link.from.port = link.to.port;
+  link.to.port = tempPort;
+
+  rebuildLinkGroups();
+
+  // mantener seleccionado
+  selectedLink = link;
+
+  updateLinkInspector(link);
+  requestRender();
 }
 
 function handlePortInput(e, link, side) {
