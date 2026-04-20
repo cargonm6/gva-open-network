@@ -57,14 +57,14 @@ let db = {
   },
   activeNetwork: "network"
 };
-let currentTool = "select";
+// let currentTool = "select";
 
-let selectedNode = null;
-let selectedArea = null;
-let selectedLink = null;
+// let selectedNode = null;
+// let selectedArea = null;
+// let selectedLink = null;
 
-let draggingNode = null;
-let draggingArea = null;
+// let draggingNode = null;
+// let draggingArea = null;
 let draggingOffset = { x: 0, y: 0 };
 
 let resizingArea = null;
@@ -85,6 +85,33 @@ let panStart = { x: 0, y: 0 };
 let cursorIcon = null;
 let lastMouseX = 0;
 let lastMouseY = 0;
+
+const ui = {
+  tool: "select",
+
+  mode: "idle",
+  // idle | dragging_node | dragging_area | resizing_area | panning | linking | cloning | editing_text
+
+  pointer: {
+    x: 0,
+    y: 0,
+    downX: 0,
+    downY: 0,
+    dragging: false,
+  },
+
+  selection: {
+    node: null,
+    area: null,
+    link: null,
+  },
+
+  interaction: {
+    target: null, // node/area/link actual en interacción
+    linkStart: null,
+    cloneSource: null,
+  }
+};
 
 function getCurrentNetwork() {
   return db.networks[db.activeNetwork];
@@ -261,15 +288,32 @@ function rebuildLinkGroups() {
 
 
 function getNodeAt(x, y) {
-  return getNodes().find((n) => {
-    const { w, h } = getNodeSize(n);
-    return (
+  for (let i = getNodes().length - 1; i >= 0; i--) {
+    const n = getNodes()[i];
+
+    if (n.selectable === false || n.isBackground) continue;
+
+    let w, h;
+
+    if (n.type === "image") {
+      w = n.size?.width || 150;
+      h = n.size?.height || 150;
+    } else {
+      w = n._width || node_w;
+      h = n._height || node_h;
+    }
+
+    if (
       x >= n.position.x &&
       x <= n.position.x + w &&
       y >= n.position.y &&
       y <= n.position.y + h
-    );
-  });
+    ) {
+      return n;
+    }
+  }
+
+  return null;
 }
 
 function getAreaAt(x, y) {
@@ -605,7 +649,7 @@ function drawArea(a) {
   const { width, height } = a.size;
 
   ctx.strokeStyle =
-    a === selectedArea
+    a === ui.selection.area
       ? getColor("--color-alert")
       : getColor("--color-area-border");
   ctx.strokeRect(x, y, width, height);
@@ -645,7 +689,7 @@ function drawNodeBase(n) {
 
     ctx.drawImage(icon, -w / 2, -h / 2, w, h);
 
-    if (n === selectedNode) {
+    if (n === ui.selection.node) {
       ctx.strokeStyle = getColor("--color-alert");
       ctx.strokeRect(-w / 2, -h / 2, w, h);
     }
@@ -678,7 +722,7 @@ function drawNodeBase(n) {
 
     ctx.restore();
 
-    if (n === selectedNode) {
+    if (n === ui.selection.node) {
       ctx.strokeStyle = getColor("--color-alert");
       ctx.strokeRect(n.position.x, n.position.y, w, h);
     }
@@ -693,7 +737,7 @@ function drawNodeBase(n) {
     ctx.fillStyle = getColor("--color-textarea-bg");
     ctx.fillRect(n.position.x, n.position.y, width, height);
 
-    ctx.strokeStyle = n === selectedNode ? getColor("--color-alert") : "black";
+    ctx.strokeStyle = n === ui.selection.node ? getColor("--color-alert") : "black";
     ctx.strokeRect(n.position.x, n.position.y, width, height);
 
     ctx.restore();
@@ -709,7 +753,7 @@ function drawNodeBase(n) {
     ctx.fillRect(n.position.x, n.position.y, node_w, node_h);
   }
 
-  if (n === selectedNode) {
+  if (n === ui.selection.node) {
     ctx.strokeStyle = getColor("--color-alert");
     ctx.strokeRect(n.position.x, n.position.y, node_w, node_h);
   }
@@ -751,7 +795,7 @@ function drawLinks() {
     const { ux, uy } = getLinkGeometry(f, t);
     const gap = 10;
     ls.forEach((l, i) => {
-      const isSelected = selectedLink && selectedLink.id === l.id;
+      const isSelected = ui.selection.link && ui.selection.link.id === l.id;
       const off = (i - (ls.length - 1) / 2) * gap;
       const ox = ux * off;
       const oy = uy * off;
@@ -895,7 +939,7 @@ function drawPreview() {
   }
 
   if (
-    ["link-wired", "link-wireless", "link-wan"].includes(currentTool) &&
+    ["link-wired", "link-wireless", "link-wan"].includes(ui.tool) &&
     linkStart
   ) {
     ctx.beginPath();
@@ -955,6 +999,7 @@ function getNodeSize(n) {
 const tool_devices = [
   "router",
   "switch",
+  "switch3",
   "ap",
   "hub",
   "pc",
@@ -973,7 +1018,7 @@ function updateCursor() {
     return;
   }
 
-  if (draggingNode || draggingArea || resizing) {
+  if (ui.mode === "dragging_node" || ui.mode === "dragging_area" || resizing) {
     canvas.style.cursor = "move";
     return;
   }
@@ -990,7 +1035,7 @@ function updateCursor() {
     return;
   }
 
-  if (currentTool === "select") {
+  if (ui.tool === "select") {
     const node = getNodeAt(lastMouseX, lastMouseY);
     const link = getLinkAt(lastMouseX, lastMouseY);
     if (node || link) {
@@ -999,22 +1044,22 @@ function updateCursor() {
     }
   }
 
-  if (tool_devices.includes(currentTool) || currentTool == "area") {
+  if (tool_devices.includes(ui.tool) || ui.tool == "area") {
     canvas.style.cursor = "crosshair";
     return;
   }
 
-  if (["link-wired", "link-wireless", "link-wan"].includes(currentTool)) {
+  if (["link-wired", "link-wireless", "link-wan"].includes(ui.tool)) {
     canvas.style.cursor = "crosshair";
     return;
   }
 
-  if (currentTool === "text") {
+  if (ui.tool === "text") {
     canvas.style.cursor = "text";
     return;
   }
 
-  if (currentTool === "delete") {
+  if (ui.tool === "delete") {
     canvas.style.cursor = "not-allowed";
     return;
   }
@@ -1027,8 +1072,8 @@ function getActiveCursorIcon() {
     return icons[cloneMode.type];
   }
 
-  if (tool_devices.includes(currentTool) || currentTool == "area") {
-    return icons[currentTool];
+  if (tool_devices.includes(ui.tool) || ui.tool == "area") {
+    return icons[ui.tool];
   }
 
   return null;
@@ -1303,10 +1348,10 @@ function snapToGrid(x, y) {
 function toggleTool(tool) {
   cloneMode = null;
 
-  if (currentTool === tool) {
+  if (ui.tool === tool) {
     if (tool === "select") return;
 
-    currentTool = "select";
+    ui.tool = "select";
     setActiveToolButton("select");
 
     linkStart = null;
@@ -1314,7 +1359,7 @@ function toggleTool(tool) {
     return;
   }
 
-  currentTool = tool;
+  ui.tool = tool;
   setActiveToolButton(tool);
 
   linkStart = null;
@@ -1338,7 +1383,7 @@ canvas.addEventListener("mousedown", (e) => {
     const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
     const newNode = cloneNode(cloneMode, snapped.x, snapped.y);
 
-    selectedNode = newNode;
+    ui.selection.node = newNode;
 
     requestRender();
     return;
@@ -1363,12 +1408,12 @@ canvas.addEventListener("mousedown", (e) => {
   mouseDownPos = { x, y };
   isDragging = false;
 
-  if (currentTool === "delete") {
+  if (ui.tool === "delete") {
     deleteSelection({ x, y, confirmDelete: true });
     return;
   }
 
-  if (tool_devices.includes(currentTool)) {
+  if (tool_devices.includes(ui.tool)) {
     let nx = x - node_w / 2;
     let ny = y - node_h / 2;
 
@@ -1377,19 +1422,19 @@ canvas.addEventListener("mousedown", (e) => {
       ny = Math.round(ny / node_h) * node_h;
     }
 
-    createNode(currentTool, nx, ny);
+    createNode(ui.tool, nx, ny);
 
     requestRender();
     return;
   }
 
-  if (currentTool === "area") {
+  if (ui.tool === "area") {
     createArea(x - 75, y - 50);
     requestRender();
     return;
   }
 
-  if (["link-wired", "link-wireless", "link-wan"].includes(currentTool)) {
+  if (["link-wired", "link-wireless", "link-wan"].includes(ui.tool)) {
     if (!node) return;
 
     if (!linkStart) {
@@ -1397,9 +1442,9 @@ canvas.addEventListener("mousedown", (e) => {
     } else if (node !== linkStart) {
       let type = "wired";
 
-      if (currentTool === "link-wireless") {
+      if (ui.tool === "link-wireless") {
         type = "wireless";
-      } else if (currentTool === "link-wan") {
+      } else if (ui.tool === "link-wan") {
         type = "wan";
       }
 
@@ -1419,17 +1464,17 @@ canvas.addEventListener("mousedown", (e) => {
     return;
   }
 
-  if (currentTool === "text") {
+  if (ui.tool === "text") {
     const node = createTextNode(x, y - 10);
 
     node._isNewText = true;
 
-    selectedNode = null;
-    selectedArea = null;
-    selectedLink = null;
+    ui.selection.node = null;
+    ui.selection.area = null;
+    ui.selection.link = null;
 
-    draggingNode = null;
-    draggingArea = null;
+    ui.mode = "idle";
+    // draggingArea = null;
     isDragging = false;
     mouseDownPos = null;
     clearInspector();
@@ -1443,12 +1488,12 @@ canvas.addEventListener("mousedown", (e) => {
   }
 
   if (area && isOnResizeHandle(area, x, y)) {
-    selectedNode = null;
-    selectedArea = null;
-    selectedLink = null;
+    ui.selection.node = null;
+    ui.selection.area = null;
+    ui.selection.link = null;
     isDragging = false;
-    draggingNode = null;
-    draggingArea = null;
+    ui.mode = "idle";
+    // draggingArea = null;
     clearInspector();
 
     resizingArea = area;
@@ -1458,26 +1503,26 @@ canvas.addEventListener("mousedown", (e) => {
     return;
   }
 
-  if (currentTool === "select") {
+  if (ui.tool === "select") {
     if (node) {
-      selectedNode = node;
-      selectedArea = null;
-      selectedLink = null;
+      ui.selection.node = node;
+      ui.selection.area = null;
+      ui.selection.link = null;
       updateInspector(node);
     } else if (link) {
-      selectedLink = link;
-      selectedNode = null;
-      selectedArea = null;
+      ui.selection.link = link;
+      ui.selection.node = null;
+      ui.selection.area = null;
       updateLinkInspector(link);
     } else if (area) {
-      selectedArea = area;
-      selectedNode = null;
-      selectedLink = null;
+      ui.selection.area = area;
+      ui.selection.node = null;
+      ui.selection.link = null;
       updateAreaInspector(area);
     } else {
-      selectedNode = null;
-      selectedArea = null;
-      selectedLink = null;
+      ui.selection.node = null;
+      ui.selection.area = null;
+      ui.selection.link = null;
       clearInspector();
     }
 
@@ -1500,12 +1545,12 @@ canvas.addEventListener("mousemove", (e) => {
     return;
   }
 
-  if (selectedNode?.type === "image" && resizing) {
-    const newW = x - selectedNode.position.x;
-    const newH = y - selectedNode.position.y;
+  if (ui.selection.node?.type === "image" && resizing) {
+    const newW = x - ui.selection.node.position.x;
+    const newH = y - ui.selection.node.position.y;
 
-    selectedNode.size.width = Math.max(20, newW);
-    selectedNode.size.height = Math.max(20, newH);
+    ui.selection.node.size.width = Math.max(20, newW);
+    ui.selection.node.size.height = Math.max(20, newH);
 
     requestRender();
   }
@@ -1520,36 +1565,37 @@ canvas.addEventListener("mousemove", (e) => {
     if (Math.sqrt(dx * dx + dy * dy) > 3) {
       isDragging = true;
 
-      if (selectedNode) {
-        draggingNode = selectedNode;
+      if (ui.selection.node) {
+        ui.mode = "dragging_node";
 
         draggingOffset = {
-          x: x - selectedNode.position.x,
-          y: y - selectedNode.position.y,
+          x: x - ui.selection.node.position.x,
+          y: y - ui.selection.node.position.y,
         };
       }
 
-      if (selectedArea) {
-        draggingArea = selectedArea;
+      if (ui.selection.area) {
+        ui.mode = "dragging_area"
+        // draggingArea = ui.selection.area;
 
         draggingOffset = {
-          x: x - selectedArea.position.x,
-          y: y - selectedArea.position.y,
+          x: x - ui.selection.area.position.x,
+          y: y - ui.selection.area.position.y,
         };
       }
     }
   }
 
-  if (draggingNode) {
+  if (ui.mode === "dragging_node") {
     let nx = x - draggingOffset.x;
     let ny = y - draggingOffset.y;
 
     const snapped = snapToGrid(nx, ny);
 
-    draggingNode.position.x = snapped.x;
-    draggingNode.position.y = snapped.y;
+    ui.selection.node.position.x = snapped.x;
+    ui.selection.node.position.y = snapped.y;
 
-    updateInspector(draggingNode);
+    updateInspector(ui.selection.node);
     requestRender();
     return;
   }
@@ -1557,9 +1603,9 @@ canvas.addEventListener("mousemove", (e) => {
   // =========================
   // DRAG AREA
   // =========================
-  if (draggingArea) {
-    draggingArea.position.x = x - draggingOffset.x;
-    draggingArea.position.y = y - draggingOffset.y;
+  if (ui.mode === "dragging_area") {
+    ui.selection.area.position.x = x - draggingOffset.x;
+    ui.selection.area.position.y = y - draggingOffset.y;
 
     updateCursor();
     requestRender();
@@ -1590,8 +1636,8 @@ canvas.addEventListener("mousemove", (e) => {
 canvas.addEventListener("mouseup", () => {
   isPanning = false;
 
-  draggingNode = null;
-  draggingArea = null;
+  ui.mode = "idle";
+  // draggingArea = null;
   resizing = false;
   resizingArea = null;
 
@@ -1618,7 +1664,7 @@ canvas.addEventListener(
 canvas.addEventListener("contextmenu", (e) => {
   e.preventDefault();
   if (
-    ["link-wired", "link-wireless", "link-wan"].includes(currentTool) &&
+    ["link-wired", "link-wireless", "link-wan"].includes(ui.tool) &&
     linkStart
   ) {
     linkStart = null;
@@ -1695,9 +1741,9 @@ document.addEventListener("keydown", (e) => {
   // =========================
 
   if (e.ctrlKey && e.key.toLowerCase() === "c") {
-    if (selectedNode) {
-      cloneMode = selectedNode;
-      cursorIcon = icons[selectedNode.type] || null;
+    if (ui.selection.node) {
+      cloneMode = ui.selection.node;
+      cursorIcon = icons[ui.selection.node.type] || null;
       updateCursor();
       e.preventDefault();
     }
@@ -1722,7 +1768,7 @@ document.addEventListener("keydown", (e) => {
     toggleTool("delete", deleteButton);
 
     setTimeout(() => {
-      if (selectedNode || selectedArea) {
+      if (ui.selection.node || ui.selection.area) {
         deleteSelection({ confirmDelete: true });
       }
     }, 0);
@@ -1734,9 +1780,9 @@ document.addEventListener("keydown", (e) => {
 // =====================
 
 function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
-  let node = selectedNode;
-  let area = selectedArea;
-  let link = selectedLink;
+  let node = ui.selection.node;
+  let area = ui.selection.area;
+  let link = ui.selection.link;
 
   if (x !== null && y !== null) {
     node = getNodeAt(x, y);
@@ -1774,9 +1820,9 @@ function deleteSelection({ x = null, y = null, confirmDelete = true } = {}) {
     rebuildAreaMap();
   }
 
-  selectedNode = null;
-  selectedArea = null;
-  selectedLink = null;
+  ui.selection.node = null;
+  ui.selection.area = null;
+  ui.selection.link = null;
   clearInspector();
   requestRender();
 }
@@ -2335,7 +2381,7 @@ function swapLinkDirection(linkId) {
   rebuildLinkGroups();
 
   // mantener seleccionado
-  selectedLink = link;
+  ui.selection.link = link;
 
   updateLinkInspector(link);
   requestRender();
@@ -2892,13 +2938,13 @@ function clearAll() {
 }
 
 function resetState() {
-  selectedNode = null;
-  selectedArea = null;
-  selectedLink = null;
+  ui.selection.node = null;
+  ui.selection.area = null;
+  ui.selection.link = null;
   linkStart = null;
 
-  draggingNode = null;
-  draggingArea = null;
+  ui.mode = "idle";
+  // draggingArea = null;
   resizing = false;
   resizingArea = null;
 
@@ -2917,6 +2963,7 @@ function loadIconSet(setName) {
   icons = {
     router: loadIcon(`img/devices/${setName}/router.svg`),
     switch: loadIcon(`img/devices/${setName}/switch.svg`),
+    switch3: loadIcon(`img/devices/${setName}/switch3.svg`),
     ap: loadIcon(`img/devices/${setName}/ap.svg`),
     hub: loadIcon(`img/devices/${setName}/hub.svg`),
     pc: loadIcon(`img/devices/${setName}/pc.svg`),
@@ -2954,9 +3001,9 @@ function loadIcon(src) {
 // INICIALIZACIÓN
 // =====================
 
-fetch("data/example.json")
+fetch("data/example.json.gz")
   .then((response) => {
-    if (!response.ok) throw new Error("No se encontró example.json");
+    if (!response.ok) throw new Error("No se encontró example.json.gz");
     return response.blob();
   })
   .then((blob) => importFile(blob))
@@ -2964,11 +3011,11 @@ fetch("data/example.json")
     updateNetworkSelector();
   })
   .catch((err) => {
-    console.warn("No se pudo cargar example.json:", err.message);
+    console.warn("No se pudo cargar example.json.gz:", err.message);
   });
 
 function init() {
-  currentTool = "select";
+  ui.tool = "select";
 
   setActiveToolButton("select");
 
