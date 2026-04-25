@@ -1,0 +1,55 @@
+<template id="tpl-cloud">
+  <fieldset>
+    <legend>Identificación</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>ID:</td>
+        <td><input data-bind="id" disabled /></td>
+      </tr>
+      <tr>
+        <td>Nombre:</td>
+        <td><input data-bind="name" /></td>
+      </tr>
+      <tr>
+        <td>Tipo:</td>
+        <td><span data-bind="type"></span></td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <br>
+
+  <fieldset>
+    <legend>Posición</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>X:</td>
+        <td data-bind="x"></td>
+      </tr>
+      <tr>
+        <td>Y:</td>
+        <td data-bind="y"></td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <br>
+
+  <fieldset>
+    <legend>Red</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>Red:</td>
+        <td><select data-bind="networkSelect"></select></td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <br>
+
+  <div class="inspector-actions">
+    <button data-action="saveAll">Guardar</button>
+  </div>
+
+  <span data-bind="error" class="inspector-error"></span>
+</template>

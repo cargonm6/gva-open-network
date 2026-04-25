@@ -1,0 +1,213 @@
+/* =========================
+   CONTENEDOR GENERAL
+========================= */
+
+#inspector {
+    width: 250px;
+    flex: 0 0 250px;
+    background: var(--color-inspector-bg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+#inspector {
+    width: 250px;
+    flex: 0 0 250px;
+    background: var(--color-inspector-bg);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+}
+
+/* =========================
+   FIELDSETS (bloques)
+========================= */
+
+#inspector fieldset {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    padding: 8px;
+    background: rgba(255,255,255,0.02);
+}
+
+#inspector legend {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0 6px;
+    color: #666;
+}
+
+/* =========================
+   TABLAS (layout compacto)
+========================= */
+
+#inspector .inspector-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#inspector .inspector-table td {
+    padding: 4px 2px;
+    vertical-align: top;
+}
+
+/* etiquetas (columna izquierda) */
+#inspector .inspector-table td:first-child {
+    width: 35%;
+    color: #888;
+    font-size: 12px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+#inspector input[type="text"],
+#inspector input[type="number"],
+#inspector input[type="color"],
+#inspector input:not([type]) {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    outline: none;
+}
+
+#inspector input.inline {
+    width: auto;
+    display: inline;
+}
+
+#inspector input:focus {
+    border-color: #4a90e2;
+}
+
+/* checkbox alineado */
+#inspector input[type="checkbox"] {
+    transform: scale(0.9);
+    cursor: pointer;
+}
+
+#inspector textarea {
+    width: 100%;
+    min-height: 200px;
+    resize: vertical;
+    padding: 4px 6px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    outline: none;
+}
+
+/* =========================
+   BOTÓN
+========================= */
+
+#inspector button {
+    width: 100%;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    background: #4a90e2;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+#inspector button:hover {
+    background: #3a78c2;
+}
+
+/* =========================
+   METADATOS
+========================= */
+
+/* bloque completo */
+.meta-block {
+  margin-bottom: 10px;
+}
+
+/* key arriba */
+.meta-key {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+/* fila input + botón */
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* input ocupa todo */
+.meta-row input,
+.meta-row textarea {
+  flex: 1;
+}
+
+/* botón pequeño */
+.meta-delete {
+  width: auto !important;
+  padding: 2px 6px !important;
+  font-size: 11px;
+  background: #e05a5a;
+  border-radius: 3px;
+}
+
+.meta-delete:hover {
+  background: #c94a4a;
+}
+
+/* añadir */
+.meta-add {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.meta-add input {
+  flex: 1;
+}
+
+.meta-add button {
+  width: auto !important;
+  padding: 4px 10px;
+}
+
+/* =========================
+   ERRORES
+========================= */
+
+#areaErrorMsg {
+    font-size: 12px;
+    margin-top: 6px;
+    display: block;
+    min-height: 14px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+    #inspector {
+        width: 100%;
+        flex: 0 0 auto;
+        order: 4;
+        border-top: 1px solid rgba(0,0,0,0.1);
+        padding: 8px;
+    }
+}

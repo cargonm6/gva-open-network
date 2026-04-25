@@ -1,0 +1,49 @@
+<template id="tpl-link">
+    <fieldset>
+        <legend>Información</legend>
+        <div><b>ID:</b> <input data-bind="id" disabled /></div>
+        <div><b>Tipo:</b> <span data-bind="type"></span></div>
+        <div><b>Modo:</b> <span data-bind="mode"></span></div>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>VLAN</legend>
+        <input data-bind="vlan" placeholder="1-4094 (vacío = trunk)" />
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Conexión</legend>
+        <div><b>Origen:</b>&nbsp;<span data-bind="fromNode"></span></div>
+        <div><b>Puerto:</b>&nbsp;<input class="inline" data-bind="fromPort" placeholder="Puerto" /></div>
+
+        <br>
+
+        <div class="inspector-actions">
+            <button data-action="swap">↕ Intercambiar</button>
+        </div>
+
+        <br>
+
+        <div><b>Destino:</b>&nbsp;<span data-bind="toNode"></span></div>
+        <div><b>Puerto:</b>&nbsp;<input class="inline" data-bind="toPort" placeholder="Puerto" /></div>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>ID</legend>
+        <div data-bind="id"></div>
+    </fieldset>
+
+    <br>
+
+    <div class="inspector-actions">
+        <button data-action="saveAll">Guardar</button>
+    </div>
+
+    <span data-bind="error" class="inspector-error"></span>
+</template>

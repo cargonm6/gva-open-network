@@ -490,6 +490,7 @@ function createArea(x, y) {
     name: id,
     position: { x, y },
     size: { width: 150, height: 100 },
+    color: null,
   });
 
   rebuildAreaMap();
@@ -654,6 +655,11 @@ function drawArea(a) {
       : getColor("--color-area-border");
   ctx.strokeRect(x, y, width, height);
 
+  if (a.color) {
+    ctx.fillStyle = a.color;
+    ctx.fillRect(x, y, width, height);
+  }
+
   ctx.fillStyle = getColor("--color-alert");
   ctx.fillRect(x + width - 10, y + height - 10, 10, 10);
 
@@ -685,7 +691,7 @@ function drawNodeBase(n) {
     const cy = n.position.y + h / 2;
 
     ctx.translate(cx, cy);
-    ctx.rotate((n.angle || 0) * Math.PI / 180);
+    ctx.rotate((- n.angle || 0) * Math.PI / 180);
 
     ctx.drawImage(icon, -w / 2, -h / 2, w, h);
 
@@ -1450,7 +1456,7 @@ canvas.addEventListener("mousedown", (e) => {
       }
 
       getLinks().push({
-        id: uuid(),
+        id: generateUniqueId(type, getLinks()),
         type,
         from: { nodeId: linkStart.id },
         to: { nodeId: node.id },
@@ -1509,7 +1515,7 @@ canvas.addEventListener("mousedown", (e) => {
       ui.selection.node = node;
       ui.selection.area = null;
       ui.selection.link = null;
-      updateInspector(node);
+      updateNodeInspector(node);
     } else if (link) {
       ui.selection.link = link;
       ui.selection.node = null;
@@ -1596,7 +1602,7 @@ canvas.addEventListener("mousemove", (e) => {
     ui.selection.node.position.x = snapped.x;
     ui.selection.node.position.y = snapped.y;
 
-    updateInspector(ui.selection.node);
+    updateNodeInspector(ui.selection.node);
     requestRender();
     return;
   }
@@ -1870,135 +1876,59 @@ window.addEventListener("touchend", () => {
   isDragging = false;
 });
 
-// =====================
-// INSPECTOR (NODOS)
-// =====================
+function updateNodeInspector(node) {
+  const container = document.getElementById("props");
 
-function updateInspector(node) {
-  if (node.type === "text") {
-    const div = document.getElementById("props");
-    div.innerHTML = `
-            <label>ID:</label><br>
-            <input id="nodeIdInput" 
-                value="${node.id}" 
-                data-oldid="${node.id}"
-                onkeydown="handleNodeIdKeyDown(event)"/><br><br>
+  // SNAPSHOT
+  container._nodeSnapshot = {
+    id: node.id,
+    name: node.name,
+    angle: node.angle ?? 0,
+    text: node.text ?? "",
+    opacity: node.opacity ?? 100,
+    link: node.link ?? null,
+    metadata: JSON.stringify(node.metadata || {})
+  };
 
-            <label>Texto:</label><br>
-            <textarea id="nodeTextInput" rows="4" cols="20">${node.text
-      }</textarea>
-            <button onclick="saveNodeText('${node.id
-      }')">Guardar</button><br><br>
-
-            <b>X:</b> ${Math.round(node.position.x)}<br>
-            <b>Y:</b> ${Math.round(node.position.y)}<br>
-        `;
-    return;
+  // 🔥 Draft (solo cambia si nodo cambia)
+  if (container._nodeId !== node.id) {
+    container._metaDraft = structuredClone(node.metadata || {});
+    // container._nodeId = node.id;
   }
 
-  if (node.type === "north") {
-    const div = document.getElementById("props");
+  const tpl = templates[node.type] || templates.default;
+  if (!tpl) return console.error("Template no encontrado");
 
-    div.innerHTML = `
-    <label>ID:</label><br>
-    <input value="${node.id}" disabled><br><br>
+  const clone = tpl.content.cloneNode(true);
 
-    <label>Nombre:</label><br>
-    <input id="nodeNameInput" value="${node.name}" 
-    onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
+  // BIND BÁSICO
+  bind(clone, "id", node.id);
+  bind(clone, "name", node.name);
+  bind(clone, "type", node.type);
+  bind(clone, "x", Math.round(node.position.x));
+  bind(clone, "y", Math.round(node.position.y));
 
-    <label>Ángulo (grados):</label><br>
-    <input id="northAngleInput" value="${node.angle || 0}">
-    <button onclick="saveNorthAngle('${node.id}')">Aplicar</button><br><br>
+  if (node.type === "text") bind(clone, "text", node.text);
+  if (node.type === "north") bind(clone, "angle", node.angle || 0);
+  if (node.type === "image") bind(clone, "opacity", node.opacity ?? 100);
 
-    <b>X:</b> ${Math.round(node.position.x)}<br>
-    <b>Y:</b> ${Math.round(node.position.y)}<br>
-  `;
-    return;
-  }
-
-  if (node.type === "image") {
-    const div = document.getElementById("props");
-
-    div.innerHTML = `
-    <label>ID:</label><br>
-    <input id="nodeIdInput" 
-       value="${node.id}" 
-       data-oldid="${node.id}"
-       onkeydown="handleNodeIdKeyDown(event)"/><br><br>
-
-    <b>Tipo:</b> ${node.type}<br>
-    <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
-
-    <label>Opacidad: <span id="opacityLabel">${node.opacity ?? 100}%</span></label><br>
-  <input 
-    id="opacitySlider" 
-    type="range" 
-    min="0" 
-    max="100" 
-    value="${node.opacity ?? 100}"
-  />
-    `;
-    setTimeout(() => {
-      const slider = document.getElementById("opacitySlider");
-      const label = document.getElementById("opacityLabel");
-
-      if (!slider) return;
-
-      slider.addEventListener("input", () => {
-        node.opacity = parseInt(slider.value);
-        label.textContent = node.opacity + "%";
-        requestRender();
-      });
-    }, 0);
-
-    return;
-  }
-
+  // CLOUD
   if (node.type === "cloud") {
+    const select = clone.querySelector('[data-bind="networkSelect"]');
 
-    const div = document.getElementById("props");
-    div.innerHTML = `
-        <label>ID:</label><br>
-        <input id="nodeIdInput" 
-          value="${node.id}" 
-          data-oldid="${node.id}"
-          onkeydown="handleNodeIdKeyDown(event)"/><br><br>
-
-        <label>Nombre:</label><br>
-        <input id="nodeNameInput" value="${node.name}" 
-          onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
-
-        <b>Tipo:</b> ${node.type}<br>
-        <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
-
-        <hr><b>Enlace a red</b><br>
-        <select id="cloudLinkSelect">
-          <option value="">-- Ninguno --</option>
-          ${Object.keys(db.networks).map(n => `
-            <option value="${n}" ${node.link === n ? "selected" : ""}>${n}</option>
-          `).join("")}
-        </select> 
-
-        <span id="errorMsg" style="color:red;"></span>
-
-      `;
-
-    setTimeout(() => {
-      const sel = document.getElementById("cloudLinkSelect");
-      if (!sel) return;
-
-      sel.addEventListener("change", () => {
-        if (sel.value === "") {
-          delete node.link;
-        } else {
-          node.link = sel.value;
-        }
-      });
-    }, 0);
-    return;
+    if (select) {
+      select.innerHTML = `
+      <option value="">-- Ninguno --</option>
+      ${Object.keys(db.networks).map(n => `
+        <option value="${n}" ${node.link === n ? "selected" : ""}>
+          ${n}
+        </option>
+      `).join("")}
+    `;
+    }
   }
 
+  // AREA
   let areaName = "Ninguna";
   for (const a of getAreas()) {
     if (
@@ -2012,214 +1942,248 @@ function updateInspector(node) {
     }
   }
 
-  const div = document.getElementById("props");
+  bind(clone, "area", areaName);
 
-  div.innerHTML = `
-    <label>ID:</label><br>
-    <input id="nodeIdInput" 
-       value="${node.id}" 
-       data-oldid="${node.id}"
-       onkeydown="handleNodeIdKeyDown(event)"/><br><br>
+  // REFS
+  const refs = {
+    // idInput: clone.querySelector('[data-bind="id"]'),
+    nameInput: clone.querySelector('[data-bind="name"]'),
+    angleInput: clone.querySelector('[data-bind="angle"]'),
+    textInput: clone.querySelector('[data-bind="text"]'),
+    opacityInput: clone.querySelector('[data-bind="opacity"]'),
+    networkSelect: clone.querySelector('[data-bind="networkSelect"]'),
+    error: clone.querySelector('[data-bind="error"]')
+  };
 
-    <label>Nombre:</label><br>
-    <input id="nodeNameInput" value="${node.name}" 
-       onkeydown="handleNodeNameKeyDown(event, '${node.id}')"/><br><br>
+  // METADATA
+  const meta = clone.querySelector('[data-bind="metadata"]');
 
-    <b>Tipo:</b> ${node.type}<br>
-    <b>(x, y):</b>&nbsp;(${Math.round(node.position.x)}, ${Math.round(node.position.y)})<br>
-    <b>Área:</b> ${areaName}<br><br>
+  if (meta) {
+    meta.innerHTML = renderMetadataEditor(container._metaDraft);
+    bindMetadata(meta, container);
+  }
 
-    <span id="errorMsg" style="color:red;"></span>
+  // SAVE
+  const btnSave = clone.querySelector('[data-action="saveAll"]');
+  if (btnSave) {
+    btnSave.onclick = () => saveNode(node, refs);
+  }
 
-    ${node.type !== "area" && node.type !== "text"
-      ? renderMetadataEditor(node)
-      : ""
+  container.innerHTML = "";
+  container.appendChild(clone);
+}
+
+function bindMetadata(metaEl, container) {
+  const draft = container._metaDraft;
+
+  // ADD + DELETE
+  metaEl.onclick = (e) => {
+    const target = e.target;
+
+    // ADD
+    if (target.matches('[data-action="addMeta"]')) {
+      const input = metaEl.querySelector('#newMetaKey');
+      const key = input.value.trim();
+      if (!key) return;
+
+      if (draft[key] !== undefined) {
+        container.querySelector('[data-bind="error"]').textContent = "Clave ya existe";
+        return;
+      }
+
+      draft[key] = "";
+      input.value = "";
+
+      metaEl.innerHTML = renderMetadataEditor(draft);
+      bindMetadata(metaEl, container);
+      return;
     }
-  `;
+
+    // DELETE
+    if (target.matches('[data-action="deleteMeta"]')) {
+      const key = target.dataset.key;
+      if (!confirm(`¿Eliminar "${key}"?`)) return;
+
+      delete draft[key];
+
+      metaEl.innerHTML = renderMetadataEditor(draft);
+      bindMetadata(metaEl, container);
+    }
+  };
+
+  // 🔥 ESTE ES EL FIX IMPORTANTE
+  metaEl.oninput = (e) => {
+    const id = e.target.id;
+    if (!id || !id.startsWith("meta_")) return;
+
+    const key = id.replace("meta_", "");
+    draft[key] = e.target.value;
+  };
 }
 
-function saveNorthAngle(nodeId) {
-  const node = nodeMap.get(nodeId);
-  if (!node) return;
+function saveNode(node, refs) {
+  const container = document.getElementById("props");
+  const original = container._nodeSnapshot;
 
-  const input = document.getElementById("northAngleInput");
-  let angle = parseFloat(input.value);
+  let changed = false;
 
-  if (isNaN(angle)) angle = 0;
+  // const newId = refs.idInput?.value.trim();
+  const newName = refs.nameInput?.value.trim();
 
-  node.angle = angle;
+  // -------------------
+  // ID
+  // -------------------
+  // if (newId && newId !== original.id) {
+  //   if (getNodes().some(n => n.id === newId && n !== node)) {
+  //     refs.error.textContent = "ID duplicado";
+  //     refs.error.style.color = "red";
+  //     return;
+  //   }
 
-  requestRender();
+  //   const oldId = node.id;
+
+  //   node.id = newId;
+  //   node.name = newId;
+
+  //   getLinks().forEach(l => {
+  //     if (l.from.nodeId === oldId) l.from.nodeId = newId;
+  //     if (l.to.nodeId === oldId) l.to.nodeId = newId;
+  //   });
+
+  //   changed = true;
+  // }
+
+  // -------------------
+  // NAME
+  // -------------------
+  if (newName !== undefined && newName !== original.name) {
+    node.name = newName;
+    changed = true;
+  }
+
+  // -------------------
+  // TEXT NODE
+  // -------------------
+  if (refs.textInput) {
+    const newText = refs.textInput.value;
+
+    if (newText !== original.text) {
+      node.text = newText;
+      updateTextNodeSize(node);
+      changed = true;
+    }
+  }
+
+  // -------------------
+  // ANGLE
+  // -------------------
+  if (refs.angleInput) {
+    let angle = parseFloat(refs.angleInput.value);
+    if (isNaN(angle)) angle = 0;
+
+    if (angle !== original.angle) {
+      node.angle = angle;
+      changed = true;
+    }
+  }
+
+  // -------------------
+  // OPACITY
+  // -------------------
+  if (refs.opacityInput) {
+    const opacity = parseInt(refs.opacityInput.value) || 100;
+
+    if (opacity !== original.opacity) {
+      node.opacity = opacity;
+      changed = true;
+    }
+  }
+
+  // -------------------
+  // NETWORK SELECT (cloud link)
+  // -------------------
+  if (refs.networkSelect) {
+    const newLink = refs.networkSelect.value || null;
+
+    if (newLink !== original.link) {
+      node.link = newLink || undefined;
+      changed = true;
+    }
+  }
+
+  // METADATA
+  const draft = container._metaDraft || {};
+  node.metadata = structuredClone(draft);
+
+  if (JSON.stringify(node.metadata) !== original.metadata) {
+    changed = true;
+  }
+
+  // APPLY
+  if (changed) {
+    rebuildNodeMap();
+    rebuildLinkGroups();
+    requestRender();
+
+    refs.error.textContent = "✔ Guardado";
+    refs.error.style.color = "green";
+
+    container._nodeSnapshot = {
+      id: node.id,
+      name: node.name,
+      angle: node.angle ?? 0,
+      text: node.text ?? "",
+      opacity: node.opacity ?? 100,
+      link: node.link ?? null,
+      metadata: JSON.stringify(node.metadata || {})
+    };
+
+  } else {
+    refs.error.textContent = "Sin cambios";
+    refs.error.style.color = getColor("--color-area-border");
+  }
 }
 
-function renderMetadataEditor(node) {
-  if (!node.metadata) node.metadata = {};
+function renderMetadataEditor(metadata) {
+  metadata = metadata || {};
 
-  let html = `<hr><b>Metadata</b><br><br>`;
+  let html = "";
 
-  Object.entries(node.metadata).forEach(([key, value]) => {
+  Object.entries(metadata).forEach(([key, value]) => {
     const inputId = `meta_${key}`;
 
-    const deleteButton = `<button style="color:red;" onclick="deleteMetadataKey('${node.id}', '${key}')">X</button>`;
+    const inputField =
+      typeof value === "string" && value.length > 40
+        ? `<textarea id="${inputId}" rows="2">${value}</textarea>`
+        : `<input id="${inputId}" value="${value ?? ""}" />`;
 
-    if (typeof value === "string" && value.length > 40) {
-      html += `
-                <label>${key}:</label> ${deleteButton}<br>
-                <textarea id="${inputId}" rows="3"
-                    onkeydown="handleMetaKeyDown(event, '${node.id}', '${key}')"
-                >${value}</textarea><br><br>
-            `;
-    } else {
-      html += `
-                <label>${key}:</label> ${deleteButton}<br>
-                <input id="${inputId}" value="${value ?? ""}" 
-                    onkeydown="handleMetaKeyDown(event, '${node.id}', '${key}')"
-                /><br><br>
-            `;
-    }
+    html += `
+      <div class="meta-block">
+        <label class="meta-key">${key}</label>
+
+        <div class="meta-row">
+          ${inputField}
+          <button type="button"
+                  data-action="deleteMeta"
+                  data-key="${key}"
+                  class="meta-delete">
+            X
+          </button>
+        </div>
+      </div>
+    `;
   });
 
   html += `
-        <hr>
-        <input id="newMetaKey" placeholder="Agregar clave (Enter)" 
-            onkeydown="handleNewMetaKey(event, '${node.id}')"
-        />
-    `;
+    <div class="meta-add">
+      <button type="button" data-action="addMeta">
+        Añadir
+      </button>
+      <input id="newMetaKey" placeholder="Nueva clave" />
+    </div>
+  `;
 
   return html;
-}
-
-function handleNodeIdKeyDown(e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const oldId = e.target.dataset.oldid;
-    saveNodeId(oldId);
-    e.target.blur();
-  }
-}
-
-function handleNodeNameKeyDown(e, nodeId) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    saveNodeName(nodeId);
-    e.target.blur();
-  }
-}
-
-function handleMetaKeyDown(e, nodeId, key) {
-  if (e.key === "Enter") {
-    if (e.target.tagName === "TEXTAREA" && !e.ctrlKey) {
-      return;
-    }
-    e.preventDefault();
-    saveNodeMetadataField(nodeId, key);
-
-    e.target.blur();
-  }
-}
-
-function saveNodeMetadataField(nodeId, key) {
-  const node = nodeMap.get(nodeId);
-  if (!node) return;
-
-  const el = document.getElementById(`meta_${key}`);
-  if (!el) return;
-
-  node.metadata[key] = el.value;
-  requestRender();
-}
-
-function deleteMetadataKey(nodeId, key) {
-  const node = nodeMap.get(nodeId);
-  if (!node || !node.metadata) return;
-
-  const confirmDelete = confirm(`¿Eliminar la clave "${key}"?`);
-  if (!confirmDelete) return;
-
-  delete node.metadata[key];
-  updateInspector(node);
-  requestRender();
-}
-
-function handleNewMetaKey(e, nodeId) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const input = document.getElementById("newMetaKey");
-    const key = input.value.trim();
-    if (!key) return;
-
-    const node = nodeMap.get(nodeId);
-    if (!node) return;
-
-    if (!node.metadata) node.metadata = {};
-
-    if (node.metadata[key] !== undefined) {
-      alert("Ya existe esa clave");
-      return;
-    }
-
-    node.metadata[key] = "";
-    input.value = "";
-    updateInspector(node);
-  }
-}
-
-function saveNodeId(oldId) {
-  const input = document.getElementById("nodeIdInput");
-  const error = document.getElementById("errorMsg");
-  const newId = input.value.trim();
-
-  if (!newId) {
-    error.textContent = "El ID no puede estar vacío";
-    error.style.color = getColor("--color-alert");
-    input.value = input.dataset.oldid;
-    return;
-  }
-
-  if (getNodes().some((n) => n.id === newId && n.id !== oldId)) {
-    error.textContent = "Ya existe un dispositivo con ese ID";
-    error.style.color = getColor("--color-alert");
-    input.value = input.dataset.oldid;
-    return;
-  }
-
-  const node = nodeMap.get(oldId);
-  node.id = newId;
-  node.name = newId;
-  getLinks().forEach((l) => {
-    if (l.from.nodeId === oldId) l.from.nodeId = newId;
-    if (l.to.nodeId === oldId) l.to.nodeId = newId;
-  });
-
-  input.dataset.oldid = newId;
-
-  error.textContent = "✔ Guardado correctamente";
-  error.style.color = getColor("--color-success");
-
-  rebuildNodeMap();
-  rebuildLinkGroups();
-  requestRender();
-}
-
-function saveNodeName(nodeId) {
-  const input = document.getElementById("nodeNameInput");
-  const node = nodeMap.get(nodeId);
-  if (!node || !input.value.trim()) return;
-
-  node.name = input.value.trim();
-  requestRender();
-}
-
-function saveNodeText(nodeId) {
-  const input = document.getElementById("nodeTextInput");
-  const node = nodeMap.get(nodeId);
-  if (!node) return;
-
-  node.text = input.value;
-
-  updateTextNodeSize(node);
-
-  requestRender();
 }
 
 function clearInspector() {
@@ -2227,64 +2191,155 @@ function clearInspector() {
 }
 
 // =====================
+// INSPECTOR (PLANTILLA)
+// =====================
+
+const templates = {};
+
+async function loadTemplate() {
+  const names = ["text", "north", "image", "cloud", "default", "area", "link"];
+
+  for (const name of names) {
+    const res = await fetch(`/templates/${"inspector_" + name}.html`);
+    const html = await res.text();
+
+    const div = document.createElement("div");
+    div.innerHTML = html;
+
+    templates[name] = div.querySelector("template");
+  }
+}
+
+function bind(root, key, value) {
+  const el = root.querySelector(`[data-bind="${key}"]`);
+  if (!el) return;
+
+  if (el.type === "checkbox") {
+    el.checked = Boolean(value);
+  } else if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+    el.value = value ?? "";
+  } else {
+    el.textContent = value ?? "";
+  }
+}
+
+// =====================
 // INSPECTOR (ÁREAS)
 // =====================
 
 function updateAreaInspector(area) {
-  const div = document.getElementById("props");
-  div.innerHTML = `
-        <label>ID:</label><br>
-        <input id="areaIdInput" value="${area.id}"/>
-        <button onclick="saveAreaId('${area.id}')">Guardar</button><br><br>
+  const container = document.getElementById("props");
 
-        <label>Nombre:</label><br>
-        <input id="areaNameInput" value="${area.name}"/>
-        <button onclick="saveAreaName('${area.id}')">Guardar</button><br><br>
-
-        <b>X:</b> ${Math.round(area.position.x)}<br>
-        <b>Y:</b> ${Math.round(area.position.y)}<br>
-        <b>Ancho:</b> ${Math.round(area.size.width)}<br>
-        <b>Alto:</b> ${Math.round(area.size.height)}<br>
-
-        <span id="areaErrorMsg" style="color:red;"></span>
-    `;
-}
-
-function saveAreaId(oldId) {
-  const input = document.getElementById("areaIdInput");
-  const error = document.getElementById("areaErrorMsg");
-  const newId = input.value.trim();
-
-  if (!newId) {
-    error.textContent = "El ID no puede estar vacío";
-    error.style.color = getColor("--color-alert");
+  const tpl = templates.area;
+  if (!tpl) {
+    console.error("Template areaInspector no cargado");
     return;
   }
 
-  if (getAreas().some((a) => a.id === newId && a.id !== oldId)) {
-    error.textContent = "Ya existe un área con ese ID";
-    error.style.color = getColor("--color-alert");
-    return;
+  const clone = tpl.content.cloneNode(true);
+
+  // Rellenar valores
+  bind(clone, "id", area.id);
+  bind(clone, "name", area.name);
+  bind(clone, "x", Math.round(area.position.x));
+  bind(clone, "y", Math.round(area.position.y));
+  bind(clone, "width", Math.round(area.size.width));
+  bind(clone, "height", Math.round(area.size.height));
+  bind(clone, "color", area.color || "#000000");
+  bind(clone, "noColor", !area.color);
+
+  // Referencias del formulario
+  const refs = {
+    // idInput: clone.querySelector('[data-bind="id"]'),
+    nameInput: clone.querySelector('[data-bind="name"]'),
+    colorInput: clone.querySelector('[data-bind="color"]'),
+    noColorInput: clone.querySelector('[data-bind="noColor"]'),
+    error: clone.querySelector('#areaErrorMsg')
+  };
+
+  const btnSave = clone.querySelector('[data-action="saveAll"]');
+
+  // Snapshot del estado original
+  const snapshot = {
+    // id: area.id,
+    name: area.name,
+    color: area.color
+  };
+
+  container._areaSnapshot = snapshot;
+  // container._areaId = area.id;
+
+  // Guardado único
+  if (btnSave) {
+    btnSave.onclick = () => saveArea(area, refs);
   }
 
-  const area = getArea(oldId);
-  area.id = newId;
-
-  rebuildAreaMap();
-
-  error.textContent = "✔ Guardado correctamente";
-  error.style.color = "green";
-
-  requestRender();
+  // Render
+  container.innerHTML = "";
+  container.appendChild(clone);
 }
 
-function saveAreaName(areaId) {
-  const input = document.getElementById("areaNameInput");
-  const area = getArea(areaId);
+function saveArea(area, refs) {
+  const container = document.getElementById("props");
+  const original = container._areaSnapshot;
 
-  area.name = input.value.trim();
+  // const newId = refs.idInput.value.trim();
+  const newName = refs.nameInput.value.trim();
+  const newColor = refs.colorInput.value;
+  const newNoColor = refs.noColorInput.checked;
 
-  requestRender();
+  let changed = false;
+
+  // // ID
+  // if (newId !== original.id) {
+  //   if (!newId) {
+  //     refs.error.textContent = "El ID no puede estar vacío";
+  //     return;
+  //   }
+
+  //   if (getAreas().some(a => a.id === newId && a !== area)) {
+  //     refs.error.textContent = "Ya existe un área con ese ID";
+  //     return;
+  //   }
+
+  //   area.id = newId;
+  //   changed = true;
+  // }
+
+  // NAME
+  if (newName !== original.name) {
+    area.name = newName;
+    changed = true;
+  }
+
+  // COLOR
+  const finalColor = newNoColor ? null : newColor;
+  if (finalColor !== (original.color ?? null)) {
+    area.color = finalColor;
+    changed = true;
+  }
+
+  // -------------------
+  // RESULTADO
+  // -------------------
+  if (changed) {
+    rebuildAreaMap();
+    requestRender();
+
+    refs.error.textContent = "✔ Cambios guardados";
+    refs.error.style.color = "green";
+
+    // 🔥 actualizar snapshot
+    container._areaSnapshot = {
+      // id: area.id,
+      name: area.name,
+      color: area.color
+    };
+
+  } else {
+    refs.error.textContent = "No hay cambios";
+    refs.error.style.color = "#999";
+  }
 }
 
 // =====================
@@ -2292,67 +2347,138 @@ function saveAreaName(areaId) {
 // =====================
 
 function updateLinkInspector(link) {
+  const container = document.getElementById("props");
+
+  const tpl = templates.link;
+  if (!tpl) {
+    console.error("Template linkInspector no cargado");
+    return;
+  }
+
+  const clone = tpl.content.cloneNode(true);
+
   const fromNode = nodeMap.get(link.from.nodeId);
   const toNode = nodeMap.get(link.to.nodeId);
   const mode = link.vlan ? "ACCESS" : "TRUNK";
 
-  const div = document.getElementById("props");
+  // Bind
+  bind(clone, "id", link.id);
+  bind(clone, "type", link.type);
+  bind(clone, "mode", mode);
+  bind(clone, "vlan", link.vlan || "");
+  bind(clone, "fromNode", fromNode ? fromNode.name : link.from.nodeId);
+  bind(clone, "toNode", toNode ? toNode.name : link.to.nodeId);
+  bind(clone, "fromPort", link.from?.port || "");
+  bind(clone, "toPort", link.to?.port || "");
 
-  div.innerHTML = `
-      <b>Tipo:</b> ${link.type}<br><br>
+  // Refs
+  const refs = {
+    vlanInput: clone.querySelector('[data-bind="vlan"]'),
+    fromPortInput: clone.querySelector('[data-bind="fromPort"]'),
+    toPortInput: clone.querySelector('[data-bind="toPort"]'),
+    swapBtn: clone.querySelector('[data-action="swap"]'),
+    saveBtn: clone.querySelector('[data-action="saveAll"]'),
+    error: clone.querySelector('[data-bind="error"]')
+  };
 
-      <b>Modo:</b> ${mode}<br><br>
+  // Snapshot
+  container._linkSnapshot = {
+    vlan: link.vlan ?? null,
+    fromPort: link.from?.port ?? null,
+    toPort: link.to?.port ?? null
+  };
 
-      <label>VLAN:</label><br>
-      <input id="vlanInput" placeholder="1-4094 (vacío = trunk)" value="${link.vlan || ""}"/><br><br>
-  
-      <b>Origen:</b> ${fromNode ? fromNode.name : link.from.nodeId}<br>
-      <input id="fromPortInput" placeholder="Puerto" value="${link.from?.port || ""
-    }"/>
-      <br>
+  // container._linkId = link.id;
 
-      <button onclick="swapLinkDirection('${link.id}')">↕ Intercambiar</button>
-    <br><br>
-  
-      <b>Destino:</b> ${toNode ? toNode.name : link.to.nodeId}<br>
-      <input id="toPortInput" placeholder="Puerto" value="${link.to?.port || ""
-    }"/>
-  
-      <br>
-      <b>ID:</b> ${link.id}
-    `;
+  if (refs.swapBtn) {
+    refs.swapBtn.onclick = () => swapLinkDirection(link.id);
+  }
 
-  document
-    .getElementById("fromPortInput")
-    .addEventListener("keydown", (e) => handlePortInput(e, link, "from"));
+  if (refs.saveBtn) {
+    refs.saveBtn.onclick = () => saveLink(link, refs);
+  }
 
-  document
-    .getElementById("toPortInput")
-    .addEventListener("keydown", (e) => handlePortInput(e, link, "to"));
+  // Render
+  container.innerHTML = "";
+  container.appendChild(clone);
+}
 
-  document
-    .getElementById("vlanInput")
-    .addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        let value = e.target.value.trim();
+function saveLink(link, refs) {
+  const container = document.getElementById("props");
+  const original = container._linkSnapshot;
 
-        if (value === "") {
-          delete link.vlan; // TRUNK
-        } else {
-          const num = parseInt(value);
+  const vlanRaw = refs.vlanInput.value.trim();
+  const fromPortRaw = refs.fromPortInput.value.trim();
+  const toPortRaw = refs.toPortInput.value.trim();
 
-          if (isNaN(num) || num < 1 || num > 4094) {
-            alert("VLAN inválida (1-4094)");
-            return;
-          }
+  let changed = false;
 
-          link.vlan = num;
-        }
+  // VLAN
+  let newVlan = null;
 
-        updateLinkInspector(link);
-        requestRender();
-      }
-    });
+  if (vlanRaw !== "") {
+    const num = parseInt(vlanRaw);
+
+    if (isNaN(num) || num < 1 || num > 4094) {
+      refs.error.textContent = "VLAN inválida (1-4094)";
+      return;
+    }
+
+    newVlan = num;
+  }
+
+  if (newVlan !== (original.vlan ?? null)) {
+    if (newVlan === null) {
+      delete link.vlan;
+    } else {
+      link.vlan = newVlan;
+    }
+    changed = true;
+  }
+
+  // FROM PORT
+  const newFromPort = fromPortRaw || null;
+  if (newFromPort !== (original.fromPort ?? null)) {
+    if (!link.from) link.from = {};
+    if (newFromPort === null) {
+      delete link.from.port;
+    } else {
+      link.from.port = newFromPort;
+    }
+    changed = true;
+  }
+
+  // TO PORT
+  const newToPort = toPortRaw || null;
+  if (newToPort !== (original.toPort ?? null)) {
+    if (!link.to) link.to = {};
+    if (newToPort === null) {
+      delete link.to.port;
+    } else {
+      link.to.port = newToPort;
+    }
+    changed = true;
+  }
+
+  // RESULTADO
+  if (changed) {
+    rebuildLinkGroups();
+    requestRender();
+
+    refs.error.textContent = "✔ Cambios guardados";
+    refs.error.style.color = "green";
+
+    // actualizar snapshot
+    container._linkSnapshot = {
+      vlan: link.vlan ?? null,
+      fromPort: link.from?.port ?? null,
+      toPort: link.to?.port ?? null
+    };
+
+  } else {
+    refs.error.textContent = "No hay cambios";
+    refs.error.style.color = "#999";
+  }
 }
 
 function getVlanColor(vlan) {
@@ -2386,22 +2512,6 @@ function swapLinkDirection(linkId) {
 
   updateLinkInspector(link);
   requestRender();
-}
-
-function handlePortInput(e, link, side) {
-  if (e.key === "Enter") {
-    const value = e.target.value.trim();
-
-    if (!link[side]) link[side] = {};
-
-    if (value === "") {
-      delete link[side].port;
-    } else {
-      link[side].port = value;
-    }
-
-    requestRender();
-  }
 }
 
 // =====================
@@ -2555,7 +2665,6 @@ function triggerImportImage() {
 }
 
 function triggerImportSheet() {
-  console.log("aquí");
   const input = document.getElementById("importFile");
   input.value = "";
 
@@ -2734,8 +2843,6 @@ async function importAsNewSheet(file) {
     }
 
     const source = importedDB.networks[selected];
-
-    console.log(db.networks);
 
     let newName = selected;
     let i = 1;
@@ -3016,7 +3123,7 @@ fetch("data/example.json.gz")
     console.warn("No se pudo cargar example.json.gz:", err.message);
   });
 
-function init() {
+async function init() {
   ui.tool = "select";
 
   setActiveToolButton("select");
@@ -3038,6 +3145,8 @@ function init() {
   clearInspector();
   updateCursor();
   requestRender();
+
+  await loadTemplate();
 }
 
 init();
@@ -3049,3 +3158,4 @@ init();
 function openHelp() {
   window.open("help.html", "_blank");
 }
+

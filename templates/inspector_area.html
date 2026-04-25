@@ -1,0 +1,64 @@
+<template id="tpl-area">
+  <fieldset>
+    <legend>Identificación</legend>
+    <table class="inspector-table">
+      <tr>
+        <td><label>ID:</label></td>
+        <td><input data-bind="id" disabled /></td>
+      </tr>
+
+      <tr>
+        <td><label>Nombre:</label></td>
+        <td><input data-bind="name" /></td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <br>
+
+  <fieldset>
+    <legend>Posición y tamaño</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>X:</td>
+        <td data-bind="x"></td>
+      </tr>
+      <tr>
+        <td>Y:</td>
+        <td data-bind="y"></td>
+      </tr>
+      <tr>
+        <td>Ancho:</td>
+        <td data-bind="width"></td>
+      </tr>
+      <tr>
+        <td>Alto:</td>
+        <td data-bind="height"></td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <br>
+
+  <fieldset>
+    <legend>Aspecto</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>Color:</td>
+        <td><input type="color" data-bind="color" /></td>
+      </tr>
+      <tr>
+        <td>Sin fondo:</td>
+        <td><input type="checkbox" data-bind="noColor" /></td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <br>
+
+  <div class="inspector-actions">
+    <button data-action="saveAll">Guardar</button>
+  </div>
+
+  <span id="areaErrorMsg" class="inspector-error"></span>
+</template>
