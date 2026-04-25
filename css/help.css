@@ -1,94 +1,153 @@
-body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #2c3e50;
-            line-height: 1.6;
-        }
+/* ===================== HELP LAYOUT ===================== */
 
-        header {
-            background: #34495e;
-            color: white;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+header {
+    background: var(--color-topbar-bg);
+    color: var(--color-topbar-text);
+    padding: 15px 20px;
+    text-align: center;
+}
 
-        #layout {
-            display: flex;
-            max-width: 1200px;
-            margin: auto;
-        }
+header .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
 
-        nav {
-            width: 280px;
-            background: white;
-            border-right: 1px solid #ddd;
-            padding: 20px;
-            position: sticky;
-            top: 0;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
+header .logo {
+    width: 80px;
+}
 
-        nav a {
-            display: block;
-            padding: 6px 0;
-            color: #2980b9;
-            text-decoration: none;
-            font-size: 14px;
-        }
+#layout {
+    display: flex;
+    height: calc(100vh - 160px);
+}
 
-        nav a:hover {
-            text-decoration: underline;
-        }
+/* NAV */
+nav {
+    width: 220px;
+    background: var(--color-toolbar-bg);
+    padding: 15px;
+    overflow-y: auto;
+}
 
-        main {
-            flex: 1;
-            padding: 20px;
-        }
+nav a {
+    display: block;
+    margin: 6px 0;
+    text-decoration: none;
+    color: var(--color-toolbar-text);
+    padding: 2px 10px;
+    border-radius: 4px;
+}
 
-        .card {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin-bottom: 12px;
-        }
+nav a:hover {
+    text-decoration: underline;
+    background: var(--color-btn-hover-bg);
+}
 
-        details {
-            margin-top: 8px;
-        }
+/* MAIN */
+main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: var(--color-inspector-bg);
+}
 
-        summary {
-            cursor: pointer;
-            font-weight: bold;
-        }
+/* CARDS */
+.card {
+    background: #fff;
+    border: 1px solid var(--color-canvas-border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
 
-        .tag {
-            display: inline-block;
-            background: #ecf0f1;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-right: 5px;
-        }
+/* HEADINGS */
+h1 {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+    width: auto;
+}
 
-        h2 {
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 6px;
-            margin-top: 30px;
-        }
+h2 {
+    margin-top: 0;
+    color: var(--color-toolbar-text);
+}
 
-        .title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+/* LISTAS */
+ul,
+ol {
+    padding-left: 20px;
+}
 
-        .logo {
-            height: 80px;
-            /* ajusta según tu diseño */
-            width: auto;
-        }
+/* GRID DE DISPOSITIVOS */
+.device-grid {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.device-grid img {
+    width: 40px;
+    height: 40px;
+    background: var(--color-toolbar-bg);
+    padding: 5px;
+    border-radius: 6px;
+}
+
+/* DETAILS */
+details {
+    margin-top: 10px;
+    background: var(--color-inspector-bg);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--color-canvas-border);
+}
+
+summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* AGRUPACIONES */
+.nav-group {
+    margin-bottom: 15px;
+}
+
+.nav-title {
+    display: block;
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 5px;
+    opacity: 0.7;
+}
+
+/* SEPARADOR */
+.nav-separator {
+    height: 1px;
+    background: var(--color-canvas-border);
+    margin: 15px 0;
+}
+
+/* GITHUB LINK */
+.github-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--color-toolbar-text);
+    padding: 6px;
+    border-radius: 6px;
+    background: var(--color-btn-bg);
+    justify-content: center;
+}
+
+.github-link img {
+    width: 18px;
+    height: 18px;
+}
+
+.github-link:hover {
+    background: var(--color-btn-hover-bg);
+}

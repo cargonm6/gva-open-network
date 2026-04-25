@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ONetMap - Guía de uso</title>
+    <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/help.css">
 </head>
 
@@ -14,240 +15,350 @@
             <img src="img/logo.svg" class="logo">
             ONetMap — Guía de uso
         </h1>
-        <p>Aprende a crear y gestionar tu diagrama de red paso a paso</p>
+        <p>Editor visual para diseño de redes por nodos, enlaces y áreas</p>
     </header>
 
     <div id="layout">
 
         <!-- ===================== ÍNDICE ===================== -->
         <nav>
-            <h3>📌 Qué puedes hacer</h3>
-            <a href="#empezar">Empezar a usar ONetMap</a>
-            <a href="#dispositivos">Añadir dispositivos</a>
-            <a href="#conectar">Conectar elementos</a>
-            <a href="#organizar">Organizar tu red</a>
-            <a href="#texto">Añadir notas</a>
-            <a href="#seleccionar">Seleccionar y mover</a>
-            <a href="#editar">Editar propiedades</a>
-            <a href="#zoom">Navegar en el lienzo</a>
-            <a href="#guardar">Guardar y cargar</a>
-            <a href="#atajos">Atajos rápidos</a>
+            <h3>📌 Guía</h3>
+
+            <div class="nav-group">
+                <span class="nav-title">Inicio</span>
+                <a href="#empezar">Introducción</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-title">Interfaz</span>
+                <a href="#menu">Menú superior</a>
+                <a href="#herramientas">Barra de herramientas</a>
+                <a href="#inspector">Inspector</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-title">Edición</span>
+                <a href="#dispositivos">Dispositivos</a>
+                <a href="#enlaces">Enlaces</a>
+                <a href="#areas">Áreas</a>
+                <a href="#texto">Texto</a>
+                <a href="#seleccion">Selección</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-title">Gestión</span>
+                <a href="#hojas">Hojas</a>
+                <a href="#archivos">Importar / Exportar</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-title">Vista</span>
+                <a href="#vista">Visualización</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-title">Extra</span>
+                <a href="#atajos">Atajos</a>
+            </div>
+
+            <!-- SEPARADOR -->
+            <div class="nav-separator"></div>
+
+            <!-- GITHUB -->
+            <a href="https://github.com/cargonm6/gva-open-network" target="_blank" class="github-link">
+                <img src="img/buttons/other/github.svg">
+                <span>Ver en GitHub</span>
+            </a>
+
         </nav>
 
         <!-- ===================== CONTENIDO ===================== -->
         <main>
 
-            <!-- ===================== INTRO ===================== -->
+            <!-- INTRO -->
             <section id="empezar">
-                <h2>🚀 Empezar a usar ONetMap</h2>
-
+                <h2>🚀 Introducción</h2>
                 <div class="card">
                     <p>
-                        ONetMap es un editor visual donde puedes crear redes de dispositivos arrastrando, conectando y
-                        organizando elementos directamente en el lienzo.
-                    </p>
-
-                    <p>
-                        Todo ocurre en el <b>canvas central</b>. La barra izquierda contiene herramientas y la derecha
-                        muestra propiedades del elemento seleccionado.
-                    </p>
-                </div>
-            </section>
-
-            <!-- ===================== DISPOSITIVOS ===================== -->
-            <section id="dispositivos">
-                <h2>🖥️ Añadir dispositivos a la red</h2>
-
-                <div class="card">
-                    <p>Para añadir un dispositivo:</p>
-
-                    <ol>
-                        <li>Selecciona una herramienta (Router, Switch, PC o Patch Panel)</li>
-                        <li>Haz click en el lienzo</li>
-                        <li>El dispositivo aparecerá automáticamente</li>
-                    </ol>
-
-                    <details>
-                        <summary>💡 Tip</summary>
-                        <p>Puedes colocar varios dispositivos rápidamente sin cambiar de herramienta.</p>
-                    </details>
-                </div>
-            </section>
-
-            <!-- ===================== CONECTAR ===================== -->
-            <section id="conectar">
-                <h2>🔗 Conectar dispositivos</h2>
-
-                <div class="card">
-                    <p>Para crear una conexión:</p>
-
-                    <ol>
-                        <li>Selecciona la herramienta <b>Enlace</b></li>
-                        <li>Haz click en el primer dispositivo</li>
-                        <li>Haz click en el segundo dispositivo</li>
-                    </ol>
-
-                    <p>
-                        El sistema dibuja automáticamente la conexión entre ambos nodos.
-                    </p>
-
-                    <details>
-                        <summary>⚠️ Importante</summary>
-                        <p>No puedes crear enlaces sin seleccionar dos dispositivos diferentes.</p>
-                    </details>
-                </div>
-            </section>
-
-            <!-- ===================== ORGANIZAR ===================== -->
-            <section id="organizar">
-                <h2>📦 Organizar tu red con áreas</h2>
-
-                <div class="card">
-                    <p>
-                        Las áreas te permiten agrupar dispositivos visualmente.
-                    </p>
-
-                    <ol>
-                        <li>Selecciona la herramienta <b>Área</b></li>
-                        <li>Haz click en el lienzo</li>
-                        <li>Ajusta el tamaño arrastrando la esquina inferior derecha</li>
-                    </ol>
-
-                    <details>
-                        <summary>💡 Uso recomendado</summary>
-                        <p>Usa áreas para separar salas, edificios o zonas de red.</p>
-                    </details>
-                </div>
-            </section>
-
-            <!-- ===================== TEXTO ===================== -->
-            <section id="texto">
-                <h2>📝 Añadir notas o texto</h2>
-
-                <div class="card">
-                    <p>
-                        Puedes añadir notas directamente en el diagrama.
-                    </p>
-
-                    <ol>
-                        <li>Selecciona la herramienta <b>Texto</b></li>
-                        <li>Haz click en el lienzo</li>
-                        <li>Escribe el contenido</li>
-                    </ol>
-
-                    <details>
-                        <summary>✏️ Editar texto</summary>
-                        <p>Haz doble click sobre el texto para editarlo nuevamente.</p>
-                    </details>
-                </div>
-            </section>
-
-            <!-- ===================== SELECCIÓN ===================== -->
-            <section id="seleccionar">
-                <h2>🖱️ Seleccionar y mover elementos</h2>
-
-                <div class="card">
-                    <p>
-                        Selecciona cualquier elemento haciendo click sobre él.
+                        ONetMap (<i>Open Network Map</i>) es un editor basado en canvas donde puedes construir diagramas de red
+                        mediante nodos, enlaces y agrupaciones visuales.
                     </p>
 
                     <ul>
-                        <li>Arrastra para mover dispositivos</li>
-                        <li>Haz click en un área para seleccionarla</li>
+                        <li><b>Toolbar izquierda:</b> herramientas</li>
+                        <li><b>Canvas central:</b> área de trabajo</li>
+                        <li><b>Inspector derecho:</b> propiedades</li>
+                        <li><b>Barra superior:</b> gestión del proyecto</li>
                     </ul>
 
                     <details>
-                        <summary>🔴 Indicador visual</summary>
-                        <p>El elemento seleccionado se resalta en rojo.</p>
+                        <summary>💡 Flujo típico</summary>
+                        <p>
+                            1. Añades dispositivos → 2. Los conectas → 3. Organizas con áreas →
+                            4. Ajustas propiedades → 5. Exportas
+                        </p>
                     </details>
                 </div>
             </section>
 
-            <!-- ===================== EDITAR ===================== -->
-            <section id="editar">
-                <h2>⚙️ Editar propiedades</h2>
-
-                <div class="card">
-                    <p>
-                        Cuando seleccionas un elemento, verás sus propiedades en el panel derecho.
-                    </p>
-
-                    <ul>
-                        <li>Cambiar ID</li>
-                        <li>Cambiar nombre</li>
-                        <li>Editar texto (si aplica)</li>
-                    </ul>
-
-                    <details>
-                        <summary>⚠️ Validaciones</summary>
-                        <p>No puedes usar IDs duplicados dentro del proyecto.</p>
-                    </details>
-                </div>
-            </section>
-
-            <!-- ===================== ZOOM ===================== -->
-            <section id="zoom">
-                <h2>🔍 Navegar en el lienzo</h2>
-
-                <div class="card">
-                    <ul>
-                        <li>Usa la rueda del mouse para hacer zoom</li>
-                        <li>Usa el slider izquierdo para ajustar zoom</li>
-                        <li>Botón central del mouse para mover el lienzo</li>
-                    </ul>
-
-                    <details>
-                        <summary>🎯 Consejo</summary>
-                        <p>El zoom se centra en la posición del cursor.</p>
-                    </details>
-                </div>
-            </section>
-
-            <!-- ===================== GUARDAR ===================== -->
-            <section id="guardar">
-                <h2>💾 Guardar y cargar proyectos</h2>
-
+            <!-- MENU -->
+            <section id="menu">
+                <h2>📂 Menú superior</h2>
                 <div class="card">
 
-                    <h3>📤 Exportar</h3>
+                    <h3>Archivo</h3>
                     <ul>
-                        <li>JSON → editable</li>
-                        <li>GZIP → comprimido</li>
-                        <li>PNG → imagen del diagrama</li>
+                        <li>Nueva red</li>
+                        <li>Cargar red</li>
+                        <li>Exportar (JSON, GZIP, PNG, TXT)</li>
                     </ul>
 
-                    <h3>📥 Importar</h3>
-                    <p>Puedes cargar archivos <code>.json</code>, <code>.gz</code> o <code>.gzip</code>.</p>
+                    <h3>Hojas</h3>
+                    <ul>
+                        <li>Añadir / eliminar hoja</li>
+                        <li>Importar hoja</li>
+                        <li>Renombrar</li>
+                    </ul>
+
+                    <h3>Otros</h3>
+                    <ul>
+                        <li>Nombre del archivo editable</li>
+                        <li>Selector de red activa</li>
+                        <li>Botón de ayuda</li>
+                    </ul>
 
                     <details>
                         <summary>💡 Consejo</summary>
-                        <p>Guarda frecuentemente si estás trabajando en diagramas grandes.</p>
+                        <p>Usa GZIP para guardar proyectos grandes de forma más eficiente.</p>
                     </details>
 
                 </div>
             </section>
 
-            <!-- ===================== ATAJOS ===================== -->
-            <section id="atajos">
-                <h2>⌨️ Atajos rápidos</h2>
-
+            <!-- TOOLBAR -->
+            <section id="herramientas">
+                <h2>🧰 Barra de herramientas</h2>
                 <div class="card">
+
+                    <h3>Grupos principales</h3>
                     <ul>
-                        <li><span class="tag">Ctrl + C</span> Clonar dispositivo</li>
-                        <li><span class="tag">Enter</span> Guardar texto</li>
-                        <li><span class="tag">Esc</span> Cancelar herramienta</li>
-                        <li><span class="tag">Delete</span> Eliminar elemento</li>
+                        <li>Dispositivos</li>
+                        <li>Relaciones</li>
+                        <li>Herramientas</li>
+                        <li>Vista</li>
                     </ul>
 
                     <details>
-                        <summary>⚡ Flujo rápido</summary>
-                        <p>Puedes usar Ctrl + C para duplicar dispositivos seleccionados rápidamente.</p>
+                        <summary>⚙️ Herramientas clave</summary>
+                        <ul>
+                            <li><b>Selección:</b> interactuar</li>
+                            <li><b>Texto:</b> anotaciones</li>
+                            <li><b>Eliminar:</b> borrar elementos</li>
+                            <li><b>Reasignar ID:</b> reorganiza identificadores</li>
+                        </ul>
                     </details>
+
+                </div>
+            </section>
+
+            <!-- DISPOSITIVOS -->
+            <section id="dispositivos">
+                <h2>🖥️ Dispositivos</h2>
+                <div class="card">
+
+                    <div class="device-grid">
+                        <img src="img/devices/symbol/router.svg">
+                        <img src="img/devices/symbol/switch.svg">
+                        <img src="img/devices/symbol/pc.svg">
+                        <img src="img/devices/symbol/server.svg">
+                    </div>
+
+                    <p>Incluye:</p>
+                    <ul>
+                        <li>Routers, switches, APs</li>
+                        <li>PCs, servidores, NAS</li>
+                        <li>Impresoras, teléfonos IP</li>
+                        <li>Cloud (enlace entre hojas)</li>
+                    </ul>
+
+                    <details>
+                        <summary>💡 Uso del cloud</summary>
+                        <p>Permite conectar distintas hojas entre sí.</p>
+                    </details>
+
+                </div>
+            </section>
+
+            <!-- ENLACES -->
+            <section id="enlaces">
+                <h2>🔗 Enlaces</h2>
+                <div class="card">
+
+                    <h3>Tipos</h3>
+                    <ul>
+                        <li><b>Ethernet</b></li>
+                        <li><b>Inalámbrico</b></li>
+                        <li><b>WAN</b></li>
+                    </ul>
+
+                    <h3>Configuración</h3>
+                    <ul>
+                        <li>Puerto origen/destino</li>
+                        <li>VLAN</li>
+                        <li>Modo TRUNK / ACCESS</li>
+                    </ul>
+
+                    <details>
+                        <summary>⚠️ Reglas</summary>
+                        <p>No se puede conectar un nodo consigo mismo.</p>
+                    </details>
+
+                </div>
+            </section>
+
+            <!-- AREAS -->
+            <section id="areas">
+                <h2>📦 Áreas</h2>
+                <div class="card">
+
+                    <ul>
+                        <li>Agrupan dispositivos</li>
+                        <li>Redimensionables</li>
+                        <li>Con o sin color</li>
+                    </ul>
+
+                    <details>
+                        <summary>💡 Ejemplo</summary>
+                        <p>Separar redes por departamentos o edificios.</p>
+                    </details>
+
+                </div>
+            </section>
+
+            <!-- TEXTO -->
+            <section id="texto">
+                <h2>📝 Texto</h2>
+                <div class="card">
+
+                    <ul>
+                        <li>Click para crear</li>
+                        <li>Doble click para editar</li>
+                        <li>Enter para guardar</li>
+                    </ul>
+
+                </div>
+            </section>
+
+            <!-- SELECCION -->
+            <section id="seleccion">
+                <h2>🖱️ Selección</h2>
+                <div class="card">
+
+                    <ul>
+                        <li>Click → seleccionar</li>
+                        <li>Arrastrar → mover</li>
+                        <li>Delete → eliminar</li>
+                    </ul>
+
+                </div>
+            </section>
+
+            <!-- INSPECTOR -->
+            <section id="inspector">
+                <h2>⚙️ Inspector</h2>
+                <div class="card">
+
+                    <p>Panel derecho con propiedades dinámicas.</p>
+
+                    <details>
+                        <summary>Nodos</summary>
+                        <ul>
+                            <li>Nombre, texto</li>
+                            <li>Ángulo</li>
+                            <li>Opacidad</li>
+                            <li>Metadata</li>
+                        </ul>
+                    </details>
+
+                    <details>
+                        <summary>Enlaces</summary>
+                        <ul>
+                            <li>VLAN</li>
+                            <li>Puertos</li>
+                            <li>Dirección</li>
+                        </ul>
+                    </details>
+
+                </div>
+            </section>
+
+            <!-- HOJAS -->
+            <section id="hojas">
+                <h2>📄 Hojas</h2>
+                <div class="card">
+
+                    <ul>
+                        <li>Múltiples redes en un archivo</li>
+                        <li>Selector superior</li>
+                        <li>Interconexión con cloud</li>
+                    </ul>
+
+                </div>
+            </section>
+
+            <!-- ARCHIVOS -->
+            <section id="archivos">
+                <h2>💾 Importar / Exportar</h2>
+                <div class="card">
+
+                    <h3>Exportar</h3>
+                    <ul>
+                        <li>JSON</li>
+                        <li>GZIP</li>
+                        <li>PNG</li>
+                        <li>TXT</li>
+                    </ul>
+
+                    <h3>Importar</h3>
+                    <ul>
+                        <li>Proyecto completo</li>
+                        <li>Como hoja nueva</li>
+                    </ul>
+
+                </div>
+            </section>
+
+            <!-- VISTA -->
+            <section id="vista">
+                <h2>🔍 Vista</h2>
+                <div class="card">
+
+                    <ul>
+                        <li>Zoom con rueda o slider</li>
+                        <li>Rejilla opcional</li>
+                        <li>Mostrar puertos</li>
+                        <li>Cambio de iconos</li>
+                    </ul>
+
+                </div>
+            </section>
+
+            <!-- ATAJOS -->
+            <section id="atajos">
+                <h2>⌨️ Atajos</h2>
+                <div class="card">
+
+                    <ul>
+                        <li><b>Ctrl + C:</b> clonar</li>
+                        <li><b>Delete:</b> eliminar</li>
+                        <li><b>Esc:</b> cancelar herramienta</li>
+                        <li><b>Enter:</b> confirmar texto</li>
+                    </ul>
+
                 </div>
             </section>
 
         </main>
-
     </div>
 
 </body>

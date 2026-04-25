@@ -2261,7 +2261,7 @@ async function loadTemplate() {
   const names = ["text", "north", "image", "cloud", "default", "area", "link"];
 
   for (const name of names) {
-    const res = await fetch(`/templates/${"inspector_" + name}.html`);
+    const res = await fetch(`/templates/${"tpl-" + name}.html`);
     const html = await res.text();
 
     const div = document.createElement("div");
