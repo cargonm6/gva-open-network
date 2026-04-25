@@ -1,49 +1,96 @@
 <template id="tpl-link">
-    <fieldset>
-        <legend>Información</legend>
-        <div><b>ID:</b> <input data-bind="id" disabled /></div>
-        <div><b>Tipo:</b> <span data-bind="type"></span></div>
-        <div><b>Modo:</b> <span data-bind="mode"></span></div>
-    </fieldset>
+  <fieldset>
+    <legend>Información</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>ID:</td>
+        <td><input data-bind="id" disabled /></td>
+      </tr>
+      <tr>
+        <td>Tipo:</td>
+        <td><span data-bind="type"></span></td>
+      </tr>
+      <tr>
+        <td>Modo:</td>
+        <td><span data-bind="mode"></span></td>
+      </tr>
+    </table>
+  </fieldset>
 
-    <br>
+  <br>
 
-    <fieldset>
-        <legend>VLAN</legend>
-        <input data-bind="vlan" placeholder="1-4094 (vacío = trunk)" />
-    </fieldset>
+  <fieldset>
+    <legend>VLAN</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>VLAN:</td>
+        <td><input data-bind="vlan" placeholder="1-4094 (vacío = trunk)" /></td>
+      </tr>
+    </table>
+  </fieldset>
 
-    <br>
+  <br>
 
-    <fieldset>
-        <legend>Conexión</legend>
-        <div><b>Origen:</b>&nbsp;<span data-bind="fromNode"></span></div>
-        <div><b>Puerto:</b>&nbsp;<input class="inline" data-bind="fromPort" placeholder="Puerto" /></div>
+  <fieldset>
+    <legend>Conexión</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>Origen:</td>
+        <td style="font-size: smaller;">
+          <span data-action="jumpToNode" data-nodeid="{{fromNode}}">
+            <span class="link" data-bind="fromNodeName"></span>
+          </span>
+          (ID <span data-bind="fromNode"></span>)
+        </td>
+      </tr>
 
-        <br>
+      <tr>
+        <td>Puerto:</td>
+        <td><input class="inline" data-bind="fromPort" placeholder="Puerto" /></td>
+      </tr>
 
-        <div class="inspector-actions">
+      <tr>
+        <td colspan="2">
+          <div class="inspector-actions">
             <button data-action="swap">↕ Intercambiar</button>
-        </div>
+          </div>
+        </td>
+      </tr>
 
-        <br>
+      <tr>
+        <td>Destino:</td>
+        <td style="font-size: smaller;">
+          <span data-action="jumpToNode" data-nodeid="{{toNode}}">
+            <span class="link" data-bind="toNodeName"></span>
+          </span>
+          (ID <span data-bind="toNode"></span>)
+        </td>
+      </tr>
 
-        <div><b>Destino:</b>&nbsp;<span data-bind="toNode"></span></div>
-        <div><b>Puerto:</b>&nbsp;<input class="inline" data-bind="toPort" placeholder="Puerto" /></div>
-    </fieldset>
+      <tr>
+        <td>Puerto:</td>
+        <td><input class="inline" data-bind="toPort" placeholder="Puerto" /></td>
+      </tr>
+    </table>
+  </fieldset>
 
-    <br>
+  <br>
 
-    <fieldset>
-        <legend>ID</legend>
-        <div data-bind="id"></div>
-    </fieldset>
+  <fieldset>
+    <legend>ID</legend>
+    <table class="inspector-table">
+      <tr>
+        <td>ID:</td>
+        <td><span data-bind="id"></span></td>
+      </tr>
+    </table>
+  </fieldset>
 
-    <br>
+  <br>
 
-    <div class="inspector-actions">
-        <button data-action="saveAll">Guardar</button>
-    </div>
+  <div class="inspector-actions">
+    <button data-action="saveAll">Guardar</button>
+  </div>
 
-    <span data-bind="error" class="inspector-error"></span>
+  <span data-bind="error" class="inspector-error"></span>
 </template>

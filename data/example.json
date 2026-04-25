@@ -4,7 +4,7 @@
     "network": {
       "nodes": [
         {
-          "id": "router_7566",
+          "id": "router_7996",
           "type": "router",
           "name": "router_7566",
           "position": {
@@ -19,7 +19,7 @@
           "interfaces": []
         },
         {
-          "id": "switch3_5880",
+          "id": "switch3_3745",
           "type": "switch3",
           "name": "switch3_5880",
           "position": {
@@ -34,7 +34,7 @@
           "interfaces": []
         },
         {
-          "id": "switch3_3053",
+          "id": "switch3_6343",
           "type": "switch3",
           "name": "switch3_3053",
           "position": {
@@ -49,7 +49,7 @@
           "interfaces": []
         },
         {
-          "id": "switch_5626",
+          "id": "switch_4317",
           "type": "switch",
           "name": "switch_5626",
           "position": {
@@ -64,7 +64,7 @@
           "interfaces": []
         },
         {
-          "id": "switch_7674",
+          "id": "switch_4747",
           "type": "switch",
           "name": "switch_7674",
           "position": {
@@ -79,7 +79,7 @@
           "interfaces": []
         },
         {
-          "id": "switch_7309",
+          "id": "switch_1728",
           "type": "switch",
           "name": "switch_7309",
           "position": {
@@ -94,7 +94,7 @@
           "interfaces": []
         },
         {
-          "id": "switch_7887",
+          "id": "switch_1286",
           "type": "switch",
           "name": "switch_7887",
           "position": {
@@ -109,7 +109,7 @@
           "interfaces": []
         },
         {
-          "id": "switch_1630",
+          "id": "switch_7299",
           "type": "switch",
           "name": "switch_1630",
           "position": {
@@ -124,7 +124,7 @@
           "interfaces": []
         },
         {
-          "id": "server_8071",
+          "id": "server_5800",
           "type": "server",
           "name": "server_8071",
           "position": {
@@ -139,7 +139,7 @@
           "interfaces": []
         },
         {
-          "id": "nas_7650",
+          "id": "nas_6270",
           "type": "nas",
           "name": "nas_7650",
           "position": {
@@ -154,7 +154,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_7462",
+          "id": "pc_8105",
           "type": "pc",
           "name": "pc_7462",
           "position": {
@@ -169,7 +169,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_6840",
+          "id": "pc_7029",
           "type": "pc",
           "name": "pc_6840",
           "position": {
@@ -184,7 +184,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_8351",
+          "id": "pc_4936",
           "type": "pc",
           "name": "pc_8351",
           "position": {
@@ -199,7 +199,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_6224",
+          "id": "pc_4779",
           "type": "pc",
           "name": "pc_6224",
           "position": {
@@ -214,7 +214,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_7110",
+          "id": "pc_7476",
           "type": "pc",
           "name": "pc_7110",
           "position": {
@@ -229,7 +229,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_7991",
+          "id": "pc_7143",
           "type": "pc",
           "name": "pc_7991",
           "position": {
@@ -244,7 +244,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_5823",
+          "id": "pc_5538",
           "type": "pc",
           "name": "pc_5823",
           "position": {
@@ -259,7 +259,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_6522",
+          "id": "pc_6992",
           "type": "pc",
           "name": "pc_6522",
           "position": {
@@ -274,7 +274,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_6293",
+          "id": "pc_6643",
           "type": "pc",
           "name": "pc_6293",
           "position": {
@@ -289,7 +289,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_2874",
+          "id": "pc_6646",
           "type": "pc",
           "name": "pc_2874",
           "position": {
@@ -304,7 +304,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_9151",
+          "id": "pc_5799",
           "type": "pc",
           "name": "pc_9151",
           "position": {
@@ -319,7 +319,7 @@
           "interfaces": []
         },
         {
-          "id": "patch_2195",
+          "id": "patch_7380",
           "type": "patch",
           "name": "patch_2195",
           "position": {
@@ -334,7 +334,7 @@
           "interfaces": []
         },
         {
-          "id": "patch_5051",
+          "id": "patch_5127",
           "type": "patch",
           "name": "patch_5051",
           "position": {
@@ -349,7 +349,7 @@
           "interfaces": []
         },
         {
-          "id": "patch_7790",
+          "id": "patch_3978",
           "type": "patch",
           "name": "patch_7790",
           "position": {
@@ -364,7 +364,7 @@
           "interfaces": []
         },
         {
-          "id": "patch_3012",
+          "id": "patch_4079",
           "type": "patch",
           "name": "patch_3012",
           "position": {
@@ -379,7 +379,7 @@
           "interfaces": []
         },
         {
-          "id": "ap_6149",
+          "id": "ap_6405",
           "type": "ap",
           "name": "ap_6149",
           "position": {
@@ -394,7 +394,7 @@
           "interfaces": []
         },
         {
-          "id": "printer_4459",
+          "id": "printer_6586",
           "type": "printer",
           "name": "printer_4459",
           "position": {
@@ -409,7 +409,7 @@
           "interfaces": []
         },
         {
-          "id": "pc_1652",
+          "id": "pc_9647",
           "type": "pc",
           "name": "pc_1652",
           "position": {
@@ -424,7 +424,7 @@
           "interfaces": []
         },
         {
-          "id": "cloud_3562",
+          "id": "cloud_7477",
           "type": "cloud",
           "name": "cloud_3562",
           "position": {
@@ -435,7 +435,7 @@
           "interfaces": []
         },
         {
-          "id": "north_9731",
+          "id": "north_2808",
           "type": "north",
           "name": "",
           "position": {
@@ -445,7 +445,7 @@
           "angle": 0
         },
         {
-          "id": "text_2904",
+          "id": "text_156",
           "type": "text",
           "name": "text_2904",
           "position": {
@@ -459,7 +459,7 @@
           "_isNewText": true
         },
         {
-          "id": "screen_7548",
+          "id": "screen_4984",
           "type": "screen",
           "name": "screen_7548",
           "position": {
@@ -474,7 +474,7 @@
           "interfaces": []
         },
         {
-          "id": "screen_4550",
+          "id": "screen_3228",
           "type": "screen",
           "name": "screen_4550",
           "position": {
@@ -491,7 +491,7 @@
       ],
       "areas": [
         {
-          "id": "area_3732",
+          "id": "area_2998",
           "name": "area_3732",
           "position": {
             "x": 228,
@@ -503,7 +503,7 @@
           }
         },
         {
-          "id": "area_7386",
+          "id": "area_5406",
           "name": "area_7386",
           "position": {
             "x": 289,
@@ -515,7 +515,7 @@
           }
         },
         {
-          "id": "area_7739",
+          "id": "area_918",
           "name": "area_7739",
           "position": {
             "x": 696,
@@ -527,7 +527,7 @@
           }
         },
         {
-          "id": "area_8946",
+          "id": "area_4141",
           "name": "area_8946",
           "position": {
             "x": 974,
@@ -541,335 +541,335 @@
       ],
       "links": [
         {
-          "id": "ad0ba2c9-3725-4866-b404-720f5f00f631",
+          "id": "wired_7062",
           "type": "wired",
           "from": {
-            "nodeId": "pc_2874"
+            "nodeId": "pc_6646"
           },
           "to": {
-            "nodeId": "patch_2195"
+            "nodeId": "patch_7380"
           }
         },
         {
-          "id": "3133c836-631d-4948-84dc-955aad1980dc",
+          "id": "wired_4184",
           "type": "wired",
           "from": {
-            "nodeId": "pc_9151"
+            "nodeId": "pc_5799"
           },
           "to": {
-            "nodeId": "patch_5051"
+            "nodeId": "patch_5127"
           }
         },
         {
-          "id": "df88e07b-28d6-48e3-bc3c-8408a19c6003",
+          "id": "wired_6685",
           "type": "wired",
           "from": {
-            "nodeId": "pc_6293"
+            "nodeId": "pc_6643"
           },
           "to": {
-            "nodeId": "patch_5051"
+            "nodeId": "patch_5127"
           }
         },
         {
-          "id": "d86c1d9d-a472-4524-94b7-896d46a316e8",
+          "id": "wired_5784",
           "type": "wired",
           "from": {
-            "nodeId": "patch_2195"
+            "nodeId": "patch_7380"
           },
           "to": {
-            "nodeId": "switch_7674"
+            "nodeId": "switch_4747"
           }
         },
         {
-          "id": "87d27124-db16-44e4-a6e2-7cc6502b1e65",
+          "id": "wired_2563",
           "type": "wired",
           "from": {
-            "nodeId": "patch_5051"
+            "nodeId": "patch_5127"
           },
           "to": {
-            "nodeId": "switch_7674"
+            "nodeId": "switch_4747"
           }
         },
         {
-          "id": "8232a325-504a-4c97-a6a3-b6be0e6b4a44",
+          "id": "wired_6232",
           "type": "wired",
           "from": {
-            "nodeId": "switch_5626"
+            "nodeId": "switch_4317"
           },
           "to": {
-            "nodeId": "pc_5823"
+            "nodeId": "pc_5538"
           }
         },
         {
-          "id": "5bb78099-2171-4ef7-a933-97ba9b177862",
+          "id": "wired_8469",
           "type": "wired",
           "from": {
-            "nodeId": "switch_5626"
+            "nodeId": "switch_4317"
           },
           "to": {
-            "nodeId": "pc_6522"
+            "nodeId": "pc_6992"
           }
         },
         {
-          "id": "37e196b6-06cd-4d05-9e15-0e55e3eab279",
+          "id": "wired_2064",
           "type": "wired",
           "from": {
-            "nodeId": "pc_7110"
+            "nodeId": "pc_7476"
           },
           "to": {
-            "nodeId": "patch_7790"
+            "nodeId": "patch_3978"
           }
         },
         {
-          "id": "6d650736-80e8-496e-8cac-12aea1b6e2b0",
+          "id": "wired_9741",
           "type": "wired",
           "from": {
-            "nodeId": "pc_7991"
+            "nodeId": "pc_7143"
           },
           "to": {
-            "nodeId": "patch_3012"
+            "nodeId": "patch_4079"
           }
         },
         {
-          "id": "d02a17ec-0df9-467f-b4e8-a0f3bc6a307f",
+          "id": "wired_571",
           "type": "wired",
           "from": {
-            "nodeId": "pc_6224"
+            "nodeId": "pc_4779"
           },
           "to": {
-            "nodeId": "patch_3012"
+            "nodeId": "patch_4079"
           }
         },
         {
-          "id": "80540bd7-45a7-457f-a0ff-e05e1a0c7e92",
+          "id": "wired_1891",
           "type": "wired",
           "from": {
-            "nodeId": "pc_6840"
+            "nodeId": "pc_7029"
           },
           "to": {
-            "nodeId": "switch_7309"
+            "nodeId": "switch_1728"
           }
         },
         {
-          "id": "c300a93c-d320-4191-9875-60676465f022",
+          "id": "wired_5591",
           "type": "wired",
           "from": {
-            "nodeId": "pc_8351"
+            "nodeId": "pc_4936"
           },
           "to": {
-            "nodeId": "switch_7309"
+            "nodeId": "switch_1728"
           }
         },
         {
-          "id": "1e88a652-2058-4ac1-ad90-430ead0fed4a",
+          "id": "wired_6512",
           "type": "wired",
           "from": {
-            "nodeId": "patch_7790"
+            "nodeId": "patch_3978"
           },
           "to": {
-            "nodeId": "switch_7887"
+            "nodeId": "switch_1286"
           }
         },
         {
-          "id": "c0e4d855-324c-4c55-b67b-e880ed4c5286",
+          "id": "wired_6218",
           "type": "wired",
           "from": {
-            "nodeId": "patch_3012"
+            "nodeId": "patch_4079"
           },
           "to": {
-            "nodeId": "switch_7887"
+            "nodeId": "switch_1286"
           }
         },
         {
-          "id": "27c8d0cb-56ab-4bd5-974d-8417836cea16",
+          "id": "wired_6733",
           "type": "wired",
           "from": {
-            "nodeId": "switch_7674",
+            "nodeId": "switch_4747",
             "port": "fa0/0"
           },
           "to": {
-            "nodeId": "switch3_5880",
-            "port": "fa0/0"
-          },
-          "vlan": 1
-        },
-        {
-          "id": "aaa68bb3-10ea-4a21-9835-69ca3818e5ec",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_5626",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_5880",
-            "port": "fa0/1"
-          },
-          "vlan": 2
-        },
-        {
-          "id": "89d9fd60-b5ee-4344-a085-98260c3ce788",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_7309",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_3053",
+            "nodeId": "switch3_3745",
             "port": "fa0/0"
           },
           "vlan": 1
         },
         {
-          "id": "fd793a41-01e0-4211-a88a-e8fb495dea70",
+          "id": "wired_9687",
           "type": "wired",
           "from": {
-            "nodeId": "switch_7887",
+            "nodeId": "switch_4317",
             "port": "fa0/0"
           },
           "to": {
-            "nodeId": "switch3_3053",
+            "nodeId": "switch3_3745",
             "port": "fa0/1"
           },
           "vlan": 2
         },
         {
-          "id": "42a3db06-c18c-4b8a-a1ea-95790db4b357",
+          "id": "wired_2177",
           "type": "wired",
           "from": {
-            "nodeId": "ap_6149",
+            "nodeId": "switch_1728",
             "port": "fa0/0"
           },
           "to": {
-            "nodeId": "switch3_5880",
+            "nodeId": "switch3_6343",
+            "port": "fa0/0"
+          },
+          "vlan": 1
+        },
+        {
+          "id": "wired_9931",
+          "type": "wired",
+          "from": {
+            "nodeId": "switch_1286",
+            "port": "fa0/0"
+          },
+          "to": {
+            "nodeId": "switch3_6343",
+            "port": "fa0/1"
+          },
+          "vlan": 2
+        },
+        {
+          "id": "wired_5976",
+          "type": "wired",
+          "from": {
+            "nodeId": "ap_6405",
+            "port": "fa0/0"
+          },
+          "to": {
+            "nodeId": "switch3_3745",
             "port": "fa0/2"
           },
           "vlan": 5
         },
         {
-          "id": "cb35db74-4655-402c-ab0b-7ba227407d2a",
+          "id": "wired_7876",
           "type": "wired",
           "from": {
-            "nodeId": "switch3_5880",
+            "nodeId": "switch3_3745",
             "port": "fa0/4"
           },
           "to": {
-            "nodeId": "router_7566"
+            "nodeId": "router_7996"
           }
         },
         {
-          "id": "7e09d804-dbe1-4466-9e90-2ac4e242468e",
+          "id": "wired_7625",
           "type": "wired",
           "from": {
-            "nodeId": "switch3_5880",
+            "nodeId": "switch3_3745",
             "port": "fa0/3"
           },
           "to": {
-            "nodeId": "switch3_3053",
+            "nodeId": "switch3_6343",
             "port": "fa0/3"
           }
         },
         {
-          "id": "0340a34a-89a8-4e47-86b4-741542f9d1e2",
+          "id": "wired_7395",
           "type": "wired",
           "from": {
-            "nodeId": "switch3_3053",
+            "nodeId": "switch3_6343",
             "port": "fa0/4"
           },
           "to": {
-            "nodeId": "router_7566"
+            "nodeId": "router_7996"
           }
         },
         {
-          "id": "7d5f87a8-250e-4c09-b1b9-8efd216dd10d",
+          "id": "wired_5974",
           "type": "wired",
           "from": {
-            "nodeId": "switch3_3053",
+            "nodeId": "switch3_6343",
             "port": "fa0/2"
           },
           "to": {
-            "nodeId": "switch_1630",
+            "nodeId": "switch_7299",
             "port": "fa0/0"
           },
           "vlan": 8
         },
         {
-          "id": "43091b0c-4525-4634-8d4a-712bf04df8b6",
+          "id": "wired_472",
           "type": "wired",
           "from": {
-            "nodeId": "switch_1630"
+            "nodeId": "switch_7299"
           },
           "to": {
-            "nodeId": "server_8071"
+            "nodeId": "server_5800"
           }
         },
         {
-          "id": "58fa4ac3-9620-4017-a063-4b9c679b432d",
+          "id": "wired_2591",
           "type": "wired",
           "from": {
-            "nodeId": "switch_1630"
+            "nodeId": "switch_7299"
           },
           "to": {
-            "nodeId": "nas_7650"
+            "nodeId": "nas_6270"
           }
         },
         {
-          "id": "1e747d67-d0b0-433a-b2f2-987ace62d4d3",
+          "id": "wired_3964",
           "type": "wired",
           "from": {
-            "nodeId": "switch_1630"
+            "nodeId": "switch_7299"
           },
           "to": {
-            "nodeId": "pc_7462"
+            "nodeId": "pc_8105"
           }
         },
         {
-          "id": "bf8b2a0f-728c-4476-ad67-6360587d2764",
+          "id": "wireless_3222",
           "type": "wireless",
           "from": {
-            "nodeId": "printer_4459"
+            "nodeId": "printer_6586"
           },
           "to": {
-            "nodeId": "ap_6149"
+            "nodeId": "ap_6405"
           }
         },
         {
-          "id": "33afaa1e-35c4-4136-b8f1-a88093b79a88",
+          "id": "wireless_5197",
           "type": "wireless",
           "from": {
-            "nodeId": "pc_1652"
+            "nodeId": "pc_9647"
           },
           "to": {
-            "nodeId": "ap_6149"
+            "nodeId": "ap_6405"
           }
         },
         {
-          "id": "3654947e-9156-4a13-9dba-d0c887506d7a",
+          "id": "wan_8766",
           "type": "wan",
           "from": {
-            "nodeId": "cloud_3562"
+            "nodeId": "router_7996"
           },
           "to": {
-            "nodeId": "router_7566"
+            "nodeId": "cloud_7477"
           }
         },
         {
-          "id": "146da63f-c4f1-4b1a-bd58-09d52b7a56c7",
+          "id": "wired_9534",
           "type": "wired",
           "from": {
-            "nodeId": "patch_2195"
+            "nodeId": "patch_7380"
           },
           "to": {
-            "nodeId": "screen_7548"
+            "nodeId": "screen_4984"
           }
         },
         {
-          "id": "0b2a6576-2362-47d9-994a-9cb1e5c296e8",
+          "id": "wired_1633",
           "type": "wired",
           "from": {
-            "nodeId": "patch_7790"
+            "nodeId": "patch_3978"
           },
           "to": {
-            "nodeId": "screen_4550"
+            "nodeId": "screen_3228"
           }
         }
       ]

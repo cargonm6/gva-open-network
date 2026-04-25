@@ -206,6 +206,85 @@ function uuid() {
   return crypto.randomUUID();
 }
 
+function resetAllIds() {
+  const ok = confirm(
+    "⚠️ Esta acción reasignará TODOS los IDs de nodos y áreas.\n" +
+    "No se puede deshacer. ¿Continuar?"
+  );
+  if (!ok) return;
+
+  const network = getCurrentNetwork();
+
+  const nodes = network.nodes;
+  const areas = network.areas;
+  const links = network.links;
+
+  // =========================
+  // 1. GENERAR MAPA DE IDS
+  // =========================
+  const idMap = new Map();
+
+  for (const node of nodes) {
+    idMap.set(node.id, generateUniqueId(node.type, nodes));
+  }
+
+  for (const area of areas) {
+    idMap.set(area.id, generateUniqueId("area", areas));
+  }
+
+  for (const link of links) {
+    idMap.set(link.id, generateUniqueId(link.type, links));
+  }
+
+  // =========================
+  // 2. APLICAR IDS A NODOS
+  // =========================
+  for (const node of nodes) {
+    node.id = idMap.get(node.id);
+  }
+
+  // =========================
+  // 3. APLICAR IDS A ÁREAS
+  // =========================
+  for (const area of areas) {
+    area.id = idMap.get(area.id);
+  }
+
+  // =========================
+  // 4. ACTUALIZAR LINKS (IMPORTANTE)
+  // =========================
+  for (const link of links) {
+    link.id = idMap.get(link.id);
+
+    const fromId = link.from?.nodeId;
+    const toId = link.to?.nodeId;
+
+    console.log("aquí");
+
+    if (fromId && idMap.has(fromId)) {
+      link.from.nodeId = idMap.get(fromId);
+
+      console.log(fromId, idMap.get(fromId), link.from.nodeId);
+    }
+
+    if (toId && idMap.has(toId)) {
+      link.to.nodeId = idMap.get(toId);
+    }
+  }
+
+  // =========================
+  // 5. RECONSTRUIR TODO EN ORDEN CORRECTO
+  // =========================
+  rebuildNodeMap();
+
+  // 🔥 MUY IMPORTANTE: primero nodos, luego links
+  rebuildLinkGroups();
+
+  requestRender();
+
+  resetState();
+}
+
 function generateUniqueId(type, collection) {
   let id;
   do {
@@ -1950,10 +2029,25 @@ function updateNodeInspector(node) {
     nameInput: clone.querySelector('[data-bind="name"]'),
     angleInput: clone.querySelector('[data-bind="angle"]'),
     textInput: clone.querySelector('[data-bind="text"]'),
-    opacityInput: clone.querySelector('[data-bind="opacity"]'),
+    opacitySlider: clone.querySelector('[data-bind="opacitySlider"]'),
+    opacityValue: clone.querySelector('[data-bind="opacityValue"]'),
     networkSelect: clone.querySelector('[data-bind="networkSelect"]'),
     error: clone.querySelector('[data-bind="error"]')
   };
+
+  if (refs.opacitySlider && refs.opacityValue) {
+    const updateOpacityLabel = () => {
+      const value = refs.opacitySlider.value;
+      refs.opacityValue.textContent = `${value}%`;
+    };
+
+    // inicial
+    refs.opacitySlider.value = node.opacity ?? 100;
+    updateOpacityLabel();
+
+    // live update
+    refs.opacitySlider.addEventListener("input", updateOpacityLabel);
+  }
 
   // METADATA
   const meta = clone.querySelector('[data-bind="metadata"]');
@@ -2030,40 +2124,13 @@ function saveNode(node, refs) {
   // const newId = refs.idInput?.value.trim();
   const newName = refs.nameInput?.value.trim();
 
-  // -------------------
-  // ID
-  // -------------------
-  // if (newId && newId !== original.id) {
-  //   if (getNodes().some(n => n.id === newId && n !== node)) {
-  //     refs.error.textContent = "ID duplicado";
-  //     refs.error.style.color = "red";
-  //     return;
-  //   }
-
-  //   const oldId = node.id;
-
-  //   node.id = newId;
-  //   node.name = newId;
-
-  //   getLinks().forEach(l => {
-  //     if (l.from.nodeId === oldId) l.from.nodeId = newId;
-  //     if (l.to.nodeId === oldId) l.to.nodeId = newId;
-  //   });
-
-  //   changed = true;
-  // }
-
-  // -------------------
   // NAME
-  // -------------------
   if (newName !== undefined && newName !== original.name) {
     node.name = newName;
     changed = true;
   }
 
-  // -------------------
   // TEXT NODE
-  // -------------------
   if (refs.textInput) {
     const newText = refs.textInput.value;
 
@@ -2074,9 +2141,7 @@ function saveNode(node, refs) {
     }
   }
 
-  // -------------------
   // ANGLE
-  // -------------------
   if (refs.angleInput) {
     let angle = parseFloat(refs.angleInput.value);
     if (isNaN(angle)) angle = 0;
@@ -2087,11 +2152,9 @@ function saveNode(node, refs) {
     }
   }
 
-  // -------------------
   // OPACITY
-  // -------------------
-  if (refs.opacityInput) {
-    const opacity = parseInt(refs.opacityInput.value) || 100;
+  if (refs.opacitySlider) {
+    const opacity = parseInt(refs.opacitySlider.value) || 100;
 
     if (opacity !== original.opacity) {
       node.opacity = opacity;
@@ -2099,9 +2162,7 @@ function saveNode(node, refs) {
     }
   }
 
-  // -------------------
   // NETWORK SELECT (cloud link)
-  // -------------------
   if (refs.networkSelect) {
     const newLink = refs.networkSelect.value || null;
 
@@ -2279,6 +2340,32 @@ function updateAreaInspector(area) {
   container.appendChild(clone);
 }
 
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+
+  const action = el.dataset.action;
+
+  if (action === "jumpToNode") {
+    const id = el.dataset.nodeid;
+    const node = nodeMap.get(id);
+    if (!node) return;
+
+    // 🔥 limpiar selección actual
+    ui.selection.node = null;
+    ui.selection.area = null;
+    ui.selection.link = null;
+
+    // 🔥 seleccionar nuevo nodo
+    ui.selection.node = node;
+
+    // 🔥 actualizar inspector
+    updateNodeInspector(node);
+
+    requestRender();
+  }
+});
+
 function saveArea(area, refs) {
   const container = document.getElementById("props");
   const original = container._areaSnapshot;
@@ -2366,10 +2453,27 @@ function updateLinkInspector(link) {
   bind(clone, "type", link.type);
   bind(clone, "mode", mode);
   bind(clone, "vlan", link.vlan || "");
-  bind(clone, "fromNode", fromNode ? fromNode.name : link.from.nodeId);
-  bind(clone, "toNode", toNode ? toNode.name : link.to.nodeId);
+  bind(clone, "fromNode", link.from.nodeId);
+  bind(clone, "toNode", link.to.nodeId);
   bind(clone, "fromPort", link.from?.port || "");
   bind(clone, "toPort", link.to?.port || "");
+
+  const fromNodeNameEl = clone.querySelector('[data-bind="fromNodeName"]');
+  const toNodeNameEl = clone.querySelector('[data-bind="toNodeName"]');
+
+  if (fromNodeNameEl) {
+    fromNodeNameEl.textContent = fromNode?.name ?? "";
+    fromNodeNameEl.dataset.action = "jumpToNode";
+    fromNodeNameEl.dataset.nodeid = link.from.nodeId;
+    fromNodeNameEl.style.cursor = "pointer";
+  }
+
+  if (toNodeNameEl) {
+    toNodeNameEl.textContent = toNode?.name ?? "";
+    toNodeNameEl.dataset.action = "jumpToNode";
+    toNodeNameEl.dataset.nodeid = link.to.nodeId;
+    toNodeNameEl.style.cursor = "pointer";
+  }
 
   // Refs
   const refs = {

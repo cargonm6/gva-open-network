@@ -30,10 +30,10 @@
 ========================= */
 
 #inspector fieldset {
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     padding: 8px;
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 #inspector legend {
@@ -54,6 +54,10 @@
 
 #inspector .inspector-table td {
     padding: 4px 2px;
+    vertical-align: middle;
+}
+
+#inspector .inspector-table td.td-textarea {
     vertical-align: top;
 }
 
@@ -74,11 +78,35 @@
 #inspector input:not([type]) {
     width: 100%;
     padding: 4px 6px;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     background: #fff;
     font-size: 12px;
     outline: none;
+}
+
+#inspector .opacity-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#inspector td.opacity-cell input[type="range"] {
+    width: 65%;
+}
+
+#inspector td.opacity-cell span.inline {
+    width: auto;
+    display: inline;
+    margin-left: 0;
+}
+
+#inspector span.link {
+    color: var(--color-link-drawing);
+}
+
+#inspector span.link:hover {
+    color: var(--color-btn-active-border);
 }
 
 #inspector input.inline {
@@ -87,7 +115,7 @@
 }
 
 #inspector input:focus {
-    border-color: #4a90e2;
+    border-color: var(--color-btn-active-bg);
 }
 
 /* checkbox alineado */
@@ -101,7 +129,7 @@
     min-height: 200px;
     resize: vertical;
     padding: 4px 6px;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     background: #fff;
     font-size: 12px;
@@ -117,7 +145,7 @@
     padding: 6px;
     border: none;
     border-radius: 4px;
-    background: #4a90e2;
+    background: var(--color-btn-active-bg);
     color: white;
     font-size: 12px;
     cursor: pointer;
@@ -125,7 +153,7 @@
 }
 
 #inspector button:hover {
-    background: #3a78c2;
+    background: var(--color-btn-active-border);
 }
 
 /* =========================
@@ -134,57 +162,57 @@
 
 /* bloque completo */
 .meta-block {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 /* key arriba */
 .meta-key {
-  display: block;
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 3px;
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 3px;
 }
 
 /* fila input + botón */
 .meta-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* input ocupa todo */
 .meta-row input,
 .meta-row textarea {
-  flex: 1;
+    flex: 1;
 }
 
 /* botón pequeño */
 .meta-delete {
-  width: auto !important;
-  padding: 2px 6px !important;
-  font-size: 11px;
-  background: #e05a5a;
-  border-radius: 3px;
+    width: auto !important;
+    padding: 2px 6px !important;
+    font-size: 11px;
+    background: #e05a5a;
+    border-radius: 3px;
 }
 
 .meta-delete:hover {
-  background: #c94a4a;
+    background: #c94a4a;
 }
 
 /* añadir */
 .meta-add {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
 }
 
 .meta-add input {
-  flex: 1;
+    flex: 1;
 }
 
 .meta-add button {
-  width: auto !important;
-  padding: 4px 10px;
+    width: auto !important;
+    padding: 4px 10px;
 }
 
 /* =========================
@@ -207,7 +235,7 @@
         width: 100%;
         flex: 0 0 auto;
         order: 4;
-        border-top: 1px solid rgba(0,0,0,0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
         padding: 8px;
     }
 }

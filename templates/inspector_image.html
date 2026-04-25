@@ -37,12 +37,9 @@
     <table class="inspector-table">
       <tr>
         <td>Opacidad:</td>
-        <td><span data-bind="opacityLabel"></span></td>
-      </tr>
-
-      <tr>
-        <td colspan="2">
-          <input type="range" min="0" max="100" data-bind="opacitySlider" />
+        <td class="opacity-cell">
+          <input type="range" min="10" max="100" step="10" data-bind="opacitySlider" />
+          <span class="inline" data-bind="opacityValue" style="margin-left:8px;"></span>
         </td>
       </tr>
     </table>
