@@ -29,6 +29,8 @@
     --color-area-border: gray;
     --color-alert: red;
     --color-success: green;
+    --color-black: #000;
+    --color-white: #fff;
 }
 
 /* ===================== GENERAL ===================== */
@@ -219,8 +221,8 @@ h5:not(:first-child) {
 
 /* ===================== TOOLBAR ===================== */
 #toolbar {
-    width: 150px;
-    flex: 0 0 150px;
+    width: 200px;
+    flex: 0 0 200px;
     background: var(--color-toolbar-bg);
     color: var(--color-toolbar-text);
     padding: 10px;

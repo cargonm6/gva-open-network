@@ -23,24 +23,24 @@
                 <span>Archivo</span>
             </button>
             <div class="dropdown-content">
-                <button data-action="new">
+                <button data-action="file-new">
                     <img src="img/buttons/menu/file-net-new.svg" class="btn-icon">
                     <span>Nueva red</span>
                 </button>
 
-                <button data-action="import">
+                <button data-action="file-import">
                     <img src="img/buttons/menu/file-net-load.svg" class="btn-icon">
                     <span>Cargar red</span>
                 </button>
 
                 <hr>
 
-                <button data-action="export-json">
+                <button data-action="export" data-format="json">
                     <img src="img/buttons/menu/file-save-json.svg" class="btn-icon">
                     <span>Guardar como JSON</span>
                 </button>
 
-                <button data-action="export-gzip">
+                <button data-action="export" data-format="gzip">
                     <img src="img/buttons/menu/file-save-zip.svg" class="btn-icon">
                     <span>Guardar como GZIP</span>
                 </button>
@@ -79,7 +79,7 @@
                     <img src="img/buttons/menu/sheet-import.svg" class="btn-icon">
                     <span>Importar existente</span>
                 </button>
-                <button data-action="rename-sheet">
+                <button data-action="sheet-rename">
                     <img src="img/buttons/menu/sheet-rename.svg" class="btn-icon">
                     <span>Renombrar hoja</span>
                 </button>
@@ -255,7 +255,7 @@
                 <span>Eliminar</span>
             </button>
 
-            <button class="tool-btn" onclick="resetAllIds()">
+            <button class="tool-btn" data-action="reset-ids">
                 <img src="img/buttons/tools/id.svg" class="btn-icon">
                 <span>Reasignar ID</span>
             </button>
@@ -270,12 +270,12 @@
 
                 <div class="dropdown-content">
 
-                    <button class="tool-btn" onclick="changeIconSet('symbol', 'Simbólica')">
+                    <button class="tool-btn" data-action="change-icons" data-value="symbol">
                         <img src="img/devices/symbol/router.svg">
                         <span>Simbólica</span>
                     </button>
 
-                    <button class="tool-btn" onclick="changeIconSet('real', 'Realista')">
+                    <button class="tool-btn" data-action="change-icons" data-value="real">
                         <img src="img/devices/real/router.svg">
                         <span>Realista</span>
                     </button>
@@ -283,12 +283,12 @@
                 </div>
             </div>
 
-            <button class="tool-btn" id="toggleGrid" onclick="toggleGrid()">
+            <button class="tool-btn" id="toggleGrid" data-action="toggle-grid">
                 <img src="img/buttons/tools/grid-on.svg" class="btn-icon">
                 <span>Forzar a rejilla</span>
             </button>
 
-            <button class="tool-btn" id="togglePorts" onclick="togglePorts()">
+            <button class="tool-btn" id="togglePorts" data-action="toggle-ports">
                 <img src="img/buttons/tools/port-off.svg" class="btn-icon">
                 <span>Quitar puertos</span>
             </button>
@@ -319,6 +319,14 @@
     <!-- ===================== -->
     <!-- SCRIPT -->
     <!-- ===================== -->
+    <script src="js/state.js"></script>
+    <script src="js/interaction.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/controller.js"></script>
+    <script src="js/indexing.js"></script>
+    <script src="js/io.js"></script>
+    <script src="js/model.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/app.js"></script>
 </body>
 

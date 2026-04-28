@@ -6,11 +6,6 @@ const ctx = canvas.getContext("2d");
 const font = "12px Arial";
 
 let dpr = window.devicePixelRatio || 1;
-let view = {
-  scale: 1,
-  offsetX: 0,
-  offsetY: 0,
-};
 
 let renderPending = false;
 
@@ -49,14 +44,6 @@ resizeCanvas();
 // =====================
 // ESTADO GLOBAL
 // =====================
-
-let db = {
-  filename: "",
-  networks: {
-    network: { nodes: [], areas: [], links: [] }
-  },
-  activeNetwork: "network"
-};
 // let currentTool = "select";
 
 // let selectedNode = null;
@@ -85,33 +72,6 @@ let panStart = { x: 0, y: 0 };
 let cursorIcon = null;
 let lastMouseX = 0;
 let lastMouseY = 0;
-
-const ui = {
-  tool: "select",
-
-  mode: "idle",
-  // idle | dragging_node | dragging_area | resizing_area | panning | linking | cloning | editing_text
-
-  pointer: {
-    x: 0,
-    y: 0,
-    downX: 0,
-    downY: 0,
-    dragging: false,
-  },
-
-  selection: {
-    node: null,
-    area: null,
-    link: null,
-  },
-
-  interaction: {
-    target: null, // node/area/link actual en interacción
-    linkStart: null,
-    cloneSource: null,
-  }
-};
 
 function getCurrentNetwork() {
   return db.networks[db.activeNetwork];
@@ -142,69 +102,9 @@ function updateNetworkSelector() {
   });
 }
 
-document.getElementById("networkSelector").addEventListener("change", (e) => {
-  db.activeNetwork = e.target.value;
-
-  rebuildNodeMap();
-  rebuildAreaMap();
-  rebuildLinkGroups();
-
-  resetState();
-  requestRender();
-});
-
-function createNetwork() {
-  const name = prompt("Nombre de la red:");
-  if (!name) return;
-
-  if (db.networks[name]) {
-    alert("Ya existe una red con ese nombre");
-    return;
-  }
-
-  db.networks[name] = {
-    nodes: [],
-    areas: [],
-    links: []
-  };
-
-  db.activeNetwork = name;
-
-  updateNetworkSelector();
-  rebuildNodeMap(); rebuildAreaMap(); rebuildLinkGroups();
-
-  resetState();
-  requestRender();
-}
-
-function deleteNetwork() {
-  const keys = Object.keys(db.networks);
-
-  if (keys.length <= 1) {
-    alert("Debe existir al menos una red");
-    return;
-  }
-
-  if (!confirm("¿Eliminar la red actual?")) return;
-
-  delete db.networks[db.activeNetwork];
-
-  db.activeNetwork = Object.keys(db.networks)[0];
-
-  updateNetworkSelector();
-  rebuildNodeMap(); rebuildAreaMap(); rebuildLinkGroups();
-
-  resetState();
-  requestRender();
-}
-
 // =====================
 // UTILIDADES GENERALES
 // =====================
-
-function uuid() {
-  return crypto.randomUUID();
-}
 
 function resetAllIds() {
   const ok = confirm(
@@ -259,12 +159,8 @@ function resetAllIds() {
     const fromId = link.from?.nodeId;
     const toId = link.to?.nodeId;
 
-    console.log("aquí");
-
     if (fromId && idMap.has(fromId)) {
       link.from.nodeId = idMap.get(fromId);
-
-      console.log(fromId, idMap.get(fromId), link.from.nodeId);
     }
 
     if (toId && idMap.has(toId)) {
@@ -285,102 +181,42 @@ function resetAllIds() {
   resetState();
 }
 
-function generateUniqueId(type, collection) {
-  let id;
-  do {
-    id = `${type}_${Math.floor(Math.random() * 10000)}`;
-  } while (collection.some((item) => item.id === id));
-  return id;
-}
-
-function worldToScreen(x, y) {
-  return {
-    x: x * view.scale + view.offsetX,
-    y: y * view.scale + view.offsetY,
-  };
-}
-
-function screenToWorld(x, y) {
-  return {
-    x: (x - view.offsetX) / view.scale,
-    y: (y - view.offsetY) / view.scale,
-  };
-}
-
-function getMousePos(evt) {
-  const r = canvas.getBoundingClientRect();
-
-  const x = evt.clientX - r.left;
-  const y = evt.clientY - r.top;
-
-  return screenToWorld(x, y);
-}
-
 // =====================
 // SELECCIÓN Y DETECCIÓN
 // =====================
 
-// Mapa de nodos
-
-let nodeMap = new Map();
-
-function rebuildNodeMap() {
-  nodeMap.clear();
-  getNodes().forEach(n => nodeMap.set(n.id, n));
-}
-
-function getNode(id) {
-  return nodeMap.get(id);
-}
-
-// Mapa de áreas
-
-let areaMap = new Map();
-
-function rebuildAreaMap() {
-  areaMap.clear();
-  getAreas().forEach(a => areaMap.set(a.id, a));
-}
-
-function getArea(id) {
-  return areaMap.get(id);
-}
-
-// Mapa de enlaces
-
-let linkGroups = new Map();
-
-function rebuildLinkGroups() {
-  linkGroups.clear();
-
-  for (const link of getLinks()) {
-    const key = [link.from.nodeId, link.to.nodeId].sort().join("_");
-
-    if (!linkGroups.has(key)) {
-      linkGroups.set(key, []);
-    }
-
-    linkGroups.get(key).push(link);
-  }
-}
-
-
-
 function getNodeAt(x, y) {
-  for (let i = getNodes().length - 1; i >= 0; i--) {
-    const n = getNodes()[i];
+  const nodes = getNodes();
 
+  // 1. primero nodos que NO son imagen
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+
+    if (n.type === "image") continue;
     if (n.selectable === false || n.isBackground) continue;
 
-    let w, h;
+    const w = n._width || node_w;
+    const h = n._height || node_h;
 
-    if (n.type === "image") {
-      w = n.size?.width || 150;
-      h = n.size?.height || 150;
-    } else {
-      w = n._width || node_w;
-      h = n._height || node_h;
+    if (
+      x >= n.position.x &&
+      x <= n.position.x + w &&
+      y >= n.position.y &&
+      y <= n.position.y + h
+    ) {
+      return n;
     }
+  }
+
+  // 2. luego imágenes
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+
+    if (n.type !== "image") continue;
+    if (n.selectable === false || n.isBackground) continue;
+
+    const w = n.size?.width || 150;
+    const h = n.size?.height || 150;
 
     if (
       x >= n.position.x &&
@@ -453,164 +289,6 @@ function isOnResizeHandle(area, x, y) {
     y >= area.position.y + area.size.height - handleSize &&
     y <= area.position.y + area.size.height
   );
-}
-
-// =====================
-// CREACIÓN DE ELEMENTOS
-// =====================
-
-function createNode(type, x, y) {
-  const id = generateUniqueId(type, getNodes());
-
-  let node = null;
-
-  if (type === "north") {
-    node = {
-      id,
-      type,
-      name: "",
-      position: { x, y },
-      angle: 0
-    }
-  }
-
-  else if (type === "image") {
-    node = {
-      id,
-      name: "",
-      type,
-      position: { x, y },
-      size: { width: 150, height: 150 },
-      opacity: 100,
-      data: ""
-    }
-  }
-
-  else if (type === "cloud") {
-    node = {
-      id,
-      type,
-      name: id,
-      position: { x, y },
-      link: "",
-      interfaces: []
-    }
-  }
-
-  else {
-    node = {
-      id,
-      type,
-      name: id,
-      position: { x, y },
-      metadata: {
-        productor: "",
-        modelo: "",
-        notas: "",
-      },
-      interfaces: []
-    }
-  }
-
-  getNodes().push(node);
-  rebuildNodeMap();
-  return node;
-}
-
-function loadImageToNode(file, node) {
-  const reader = new FileReader();
-
-  reader.onload = (e) => {
-    const img = new Image();
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      // 🔥 reducción de tamaño (importante)
-      const maxSize = 800;
-      let w = img.width;
-      let h = img.height;
-
-      if (w > h && w > maxSize) {
-        h *= maxSize / w;
-        w = maxSize;
-      } else if (h > maxSize) {
-        w *= maxSize / h;
-        h = maxSize;
-      }
-
-      canvas.width = w;
-      canvas.height = h;
-
-      ctx.drawImage(img, 0, 0, w, h);
-
-      // 🔥 compresión moderna
-      const webp = canvas.toDataURL("image/webp", 0.7);
-
-      node.data = webp;
-      node.size = { width: w, height: h };
-      node.opacity = 100;
-
-      requestRender();
-    };
-
-    img.src = e.target.result;
-  };
-
-  reader.readAsDataURL(file);
-}
-
-function createArea(x, y) {
-  const id = generateUniqueId("area", getAreas());
-
-  getAreas().push({
-    id,
-    name: id,
-    position: { x, y },
-    size: { width: 150, height: 100 },
-    color: null,
-  });
-
-  rebuildAreaMap();
-}
-
-function createTextNode(x, y, content = "Nuevo texto") {
-  const id = generateUniqueId("text", getNodes());
-
-  const node = {
-    id,
-    type: "text",
-    name: id,
-    position: { x, y },
-    text: content,
-    metadata: {},
-  };
-
-  getNodes().push(node);
-
-  rebuildNodeMap();
-
-  updateTextNodeSize(node);
-  return node;
-}
-
-function cloneNode(node, x, y) {
-  const id = generateUniqueId(node.type, getNodes());
-
-  const newNode = structuredClone(node);
-
-  newNode.id = id;
-  newNode.position = { x, y };
-
-  delete newNode._width;
-  delete newNode._height;
-
-  getNodes().push(newNode);
-
-  rebuildNodeMap();
-
-  return newNode;
 }
 
 // =====================
@@ -694,61 +372,6 @@ function getColor(variable) {
   return getComputedStyle(root).getPropertyValue(variable).trim();
 }
 
-function render() {
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  applyTransform();
-
-  if (gridEnabled) drawGrid();
-
-  getNodes()
-    .filter(n => n.type === "image")
-    .forEach(drawNodeBase);
-
-  getAreas().forEach(drawArea);
-  drawLinks();
-
-  getNodes()
-    .filter(n => n.type !== "image")
-    .forEach(drawNodeBase);
-
-  getAreas().forEach(drawAreaLabel);
-  getNodes().forEach(drawNodeLabel);
-
-  drawPorts();
-  drawPreview();
-
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-}
-
-function drawArea(a) {
-  ctx.save();
-
-  const { x, y } = a.position;
-  const { width, height } = a.size;
-
-  ctx.strokeStyle =
-    a === ui.selection.area
-      ? getColor("--color-alert")
-      : getColor("--color-area-border");
-  ctx.strokeRect(x, y, width, height);
-
-  if (a.color) {
-    ctx.fillStyle = a.color;
-    ctx.fillRect(x, y, width, height);
-  }
-
-  ctx.fillStyle = getColor("--color-alert");
-  ctx.fillRect(x + width - 10, y + height - 10, 10, 10);
-
-  ctx.restore();
-}
-
-function drawAreaLabel(a) {
-  drawTextWithOutline(a.name, a.position.x + 5, a.position.y + 5);
-}
-
 function isOnImageResizeHandle(n, x, y) {
   const size = 10;
 
@@ -758,328 +381,9 @@ function isOnImageResizeHandle(n, x, y) {
     y >= n.position.y + n.size.height - size
   );
 }
-
-function drawNodeBase(n) {
-  ctx.save();
-
-  if (n.type === "north") {
-    const icon = icons[n.type];
-
-    const { w, h } = getNodeSize(n);
-    const cx = n.position.x + w / 2;
-    const cy = n.position.y + h / 2;
-
-    ctx.translate(cx, cy);
-    ctx.rotate((- n.angle || 0) * Math.PI / 180);
-
-    ctx.drawImage(icon, -w / 2, -h / 2, w, h);
-
-    if (n === ui.selection.node) {
-      ctx.strokeStyle = getColor("--color-alert");
-      ctx.strokeRect(-w / 2, -h / 2, w, h);
-    }
-
-    ctx.restore();
-    return;
-  }
-
-  if (n.type === "image") {
-    if (!n._cachedImg) {
-      const img = new Image();
-      img.src = n.data;
-      n._cachedImg = img;
-    }
-
-    const img = n._cachedImg;
-
-    const w = n.size?.width || 150;
-    const h = n.size?.height || 150;
-
-    ctx.save();
-    ctx.globalAlpha = (n.opacity ?? 100) / 100;
-
-    if (img.complete) {
-      ctx.drawImage(img, n.position.x, n.position.y, w, h);
-    } else {
-      ctx.fillStyle = "#ddd";
-      ctx.fillRect(n.position.x, n.position.y, w, h);
-    }
-
-    ctx.restore();
-
-    if (n === ui.selection.node) {
-      ctx.strokeStyle = getColor("--color-alert");
-      ctx.strokeRect(n.position.x, n.position.y, w, h);
-    }
-
-    return;
-  }
-
-  if (n.type === "text") {
-    const width = n._width || 100;
-    const height = n._height || 40;
-
-    ctx.fillStyle = getColor("--color-textarea-bg");
-    ctx.fillRect(n.position.x, n.position.y, width, height);
-
-    ctx.strokeStyle = n === ui.selection.node ? getColor("--color-alert") : "black";
-    ctx.strokeRect(n.position.x, n.position.y, width, height);
-
-    ctx.restore();
-    return;
-  }
-
-  const icon = icons[n.type];
-
-  if (icon && icon.complete) {
-    ctx.drawImage(icon, n.position.x, n.position.y, node_w, node_h);
-  } else {
-    ctx.fillStyle = getColor("--color-link-drawing");
-    ctx.fillRect(n.position.x, n.position.y, node_w, node_h);
-  }
-
-  if (n === ui.selection.node) {
-    ctx.strokeStyle = getColor("--color-alert");
-    ctx.strokeRect(n.position.x, n.position.y, node_w, node_h);
-  }
-
-  ctx.restore();
-}
-
-function drawNodeLabel(n) {
-  ctx.save();
-
-  if (n.type === "text") {
-    const padding = 10;
-    const lines = n.text.split("\n");
-
-    lines.forEach((line, i) => {
-      drawTextWithOutline(
-        line,
-        n.position.x + padding / 2,
-        n.position.y + padding / 2 + i * 14,
-        "left",
-        getColor("--color-textarea-bg")
-      );
-    });
-
-    ctx.restore();
-    return;
-  }
-
-  drawTextWithOutline(n.name, n.position.x + 25, n.position.y + 52, "center");
-
-  ctx.restore();
-}
-
-function drawLinks() {
-  for (const ls of linkGroups.values()) {
-    const f = nodeMap.get(ls[0].from.nodeId);
-    const t = nodeMap.get(ls[0].to.nodeId);
-    if (!f || !t) continue;
-    const { ux, uy } = getLinkGeometry(f, t);
-    const gap = 10;
-    ls.forEach((l, i) => {
-      const isSelected = ui.selection.link && ui.selection.link.id === l.id;
-      const off = (i - (ls.length - 1) / 2) * gap;
-      const ox = ux * off;
-      const oy = uy * off;
-
-      if (l.type === "wireless") {
-        drawWavyLine(
-          ctx,
-          f.position.x + node_w / 2 + ox,
-          f.position.y + node_h / 2 + oy,
-          t.position.x + node_w / 2 + ox,
-          t.position.y + node_h / 2 + oy,
-          isSelected
-        );
-      } else if (l.type === "wan") {
-        drawZigzagLine(
-          ctx,
-          f.position.x + node_w / 2 + ox,
-          f.position.y + node_h / 2 + oy,
-          t.position.x + node_w / 2 + ox,
-          t.position.y + node_h / 2 + oy,
-          isSelected
-        );
-      } else {
-        drawStraightLine(
-          ctx,
-          f.position.x + node_w / 2 + ox,
-          f.position.y + node_h / 2 + oy,
-          t.position.x + node_w / 2 + ox,
-          t.position.y + node_h / 2 + oy,
-          isSelected
-        );
-      }
-    });
-  }
-}
-
-function drawStraightLine(ctx, x1, y1, x2, y2, isSelected = false) {
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.strokeStyle = isSelected
-    ? getColor("--color-alert")
-    : "black";
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-}
-
-function drawWavyLine(ctx, x1, y1, x2, y2, isSelected = false) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.sqrt(dx * dx + dy * dy);
-
-  if (len === 0) return;
-
-  const ux = dx / len;
-  const uy = dy / len;
-
-  const nx = -uy;
-  const ny = ux;
-
-  const amplitude = 5;
-  const wavelength = 20;
-  const step = 2;
-
-  ctx.beginPath();
-
-  for (let i = 0; i <= len; i += step) {
-    const x = x1 + ux * i;
-    const y = y1 + uy * i;
-
-    const wave = Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
-
-    const px = x + nx * wave;
-    const py = y + ny * wave;
-
-    if (i === 0) {
-      ctx.moveTo(px, py);
-    } else {
-      ctx.lineTo(px, py);
-    }
-  }
-
-  ctx.strokeStyle = isSelected
-    ? getColor("--color-alert")
-    : getColor("--color-link-drawing");
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-}
-
-function drawZigzagLine(ctx, x1, y1, x2, y2, isSelected = false) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.sqrt(dx * dx + dy * dy);
-
-  if (len === 0) return;
-
-  const B = 5;
-  const A = len * 0.5 + B;
-
-  const ux = dx / len;
-  const uy = dy / len;
-
-  const px = -uy;
-  const py = ux;
-
-  const xA = x1 + ux * A + px * B;
-  const yA = y1 + uy * A + py * B;
-
-  const xC = x2 - ux * A + px * -B;
-  const yC = y2 - uy * A + py * -B;
-
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(xA, yA);
-  ctx.lineTo(xC, yC);
-  ctx.lineTo(x2, y2);
-
-  ctx.strokeStyle = isSelected
-    ? getColor("--color-alert")
-    : getColor("--color-link-wan");
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-}
-
-function drawPreview() {
-  const icon = getActiveCursorIcon();
-
-  if (icon && icon.complete) {
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-
-    ctx.drawImage(
-      icon,
-      lastMouseX - 12,
-      lastMouseY - 12,
-      node_w / 2,
-      node_h / 2
-    );
-
-    ctx.restore();
-  }
-
-  if (
-    ["link-wired", "link-wireless", "link-wan"].includes(ui.tool) &&
-    linkStart
-  ) {
-    ctx.beginPath();
-    ctx.moveTo(
-      linkStart.position.x + node_w / 2,
-      linkStart.position.y + node_h / 2
-    );
-    ctx.lineTo(lastMouseX, lastMouseY);
-    ctx.strokeStyle = getColor("--color-link-drawing");
-    ctx.setLineDash([5, 5]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
-}
-
-function drawTextWithOutline(
-  text,
-  x,
-  y,
-  align = "left",
-  outlineColor = "white"
-) {
-  ctx.save();
-
-  ctx.font = font;
-  ctx.textAlign = align;
-  ctx.textBaseline = "top";
-
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = outlineColor;
-  ctx.strokeText(text, x, y);
-
-  ctx.fillStyle = "black";
-  ctx.fillText(text, x, y);
-
-  ctx.restore();
-}
-
 // =====================
 // CURSOR Y GUI (UX)
 // =====================
-
-function getNodeSize(n) {
-  if (n.type === "image") {
-    return {
-      w: n.size?.width ?? 150,
-      h: n.size?.height ?? 150
-    };
-  }
-
-  return {
-    w: n._width ?? node_w,
-    h: n._height ?? node_h
-  };
-}
 
 const tool_devices = [
   "router",
@@ -1097,112 +401,6 @@ const tool_devices = [
   "cloud",
   "north"
 ];
-
-function updateCursor() {
-  if (isPanning) {
-    canvas.style.cursor = "grabbing";
-    return;
-  }
-
-  if (ui.mode === "dragging_node" || ui.mode === "dragging_area" || resizing) {
-    canvas.style.cursor = "move";
-    return;
-  }
-
-  for (const area of getAreas()) {
-    if (isOnResizeHandle(area, lastMouseX, lastMouseY)) {
-      canvas.style.cursor = "se-resize";
-      return;
-    }
-  }
-
-  if (cloneMode) {
-    canvas.style.cursor = "copy";
-    return;
-  }
-
-  if (ui.tool === "select") {
-    const node = getNodeAt(lastMouseX, lastMouseY);
-    const link = getLinkAt(lastMouseX, lastMouseY);
-    if (node || link) {
-      canvas.style.cursor = "pointer";
-      return;
-    }
-  }
-
-  if (tool_devices.includes(ui.tool) || ui.tool == "area") {
-    canvas.style.cursor = "crosshair";
-    return;
-  }
-
-  if (["link-wired", "link-wireless", "link-wan"].includes(ui.tool)) {
-    canvas.style.cursor = "crosshair";
-    return;
-  }
-
-  if (ui.tool === "text") {
-    canvas.style.cursor = "text";
-    return;
-  }
-
-  if (ui.tool === "delete") {
-    canvas.style.cursor = "not-allowed";
-    return;
-  }
-
-  canvas.style.cursor = "default";
-}
-
-function getActiveCursorIcon() {
-  if (cloneMode) {
-    return icons[cloneMode.type];
-  }
-
-  if (tool_devices.includes(ui.tool) || ui.tool == "area") {
-    return icons[ui.tool];
-  }
-
-  return null;
-}
-
-function setActiveToolButton(tool) {
-  document
-    .querySelectorAll("[data-action='tool']")
-    .forEach((b) => b.classList.remove("active"));
-
-  const btn = document.querySelector(`[data-tool='${tool}']`);
-  if (btn) btn.classList.add("active");
-}
-
-const actions = {
-  tool: (btn) => toggleTool(btn.dataset.tool, btn),
-
-  new: () => clearAll(),
-
-  "export-json": () => exportFile(false),
-  "export-gzip": () => exportFile(true),
-  "export-png": () => exportPNG(),
-  "export-txt": () => exportTXT(db),
-  "sheet-import": () => triggerImportSheet(),
-  "sheet-add": () => createNetwork(),
-  "sheet-delete": () => deleteNetwork(),
-  "rename-sheet": () => renameCurrentNetwork(),
-  "image": () => triggerImportImage(),
-
-  import: () => triggerImportFile(),
-
-  help: () => openHelp(),
-};
-
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-action]");
-  if (!btn) return;
-
-  const action = btn.dataset.action;
-  if (actions[action]) {
-    actions[action](btn);
-  }
-});
 
 // =====================
 // REPRESENTAR PUERTOS
@@ -1330,11 +528,11 @@ function drawPortBox(text, x, y, vlan) {
 
   const paddingX = 8;
   const textWidth = ctx.measureText(text).width;
-  const w = textWidth + paddingX * 2;
+  const w = textWidth + paddingX;
   const h = 18;
 
   ctx.fillStyle = getVlanColor(vlan);
-  ctx.strokeStyle = "#111";
+  ctx.strokeStyle = getColor("--color-white");
 
   ctx.beginPath();
   ctx.roundRect
@@ -1344,7 +542,7 @@ function drawPortBox(text, x, y, vlan) {
   ctx.fill();
   ctx.stroke();
 
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = getColor("--color-black");
   ctx.fillText(text, x, y);
 
   ctx.restore();
@@ -1460,8 +658,6 @@ function clearTool() {
 // =====================
 // EVENT HANDLERS
 // =====================
-
-
 
 canvas.addEventListener("mousedown", (e) => {
   if (cloneMode) {
@@ -1590,21 +786,33 @@ canvas.addEventListener("mousedown", (e) => {
   }
 
   if (ui.tool === "select") {
-    if (node) {
+
+    const isImageNode = node && node.type === "image";
+
+    if (node && !isImageNode) {
       ui.selection.node = node;
       ui.selection.area = null;
       ui.selection.link = null;
       updateNodeInspector(node);
+
     } else if (link) {
       ui.selection.link = link;
       ui.selection.node = null;
       ui.selection.area = null;
       updateLinkInspector(link);
+
     } else if (area) {
       ui.selection.area = area;
       ui.selection.node = null;
       ui.selection.link = null;
       updateAreaInspector(area);
+
+    } else if (isImageNode) {
+      ui.selection.node = node;
+      ui.selection.area = null;
+      ui.selection.link = null;
+      updateNodeInspector(node);
+
     } else {
       ui.selection.node = null;
       ui.selection.area = null;
@@ -1780,85 +988,6 @@ canvas.addEventListener("dblclick", (e) => {
 
 canvas.addEventListener("mouseleave", () => {
   isPanning = false;
-});
-
-// KEYBOARD
-
-document.addEventListener("keydown", (e) => {
-  const el = document.activeElement;
-  const isTyping =
-    el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
-
-  if (isTyping) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      textEditor.blur();
-      e.preventDefault();
-      return;
-    }
-
-    if (e.key === "Escape") {
-      e.preventDefault();
-
-      if (editingTextNode) {
-        if (editingTextNode._isNewText) {
-          const net = getCurrentNetwork();
-          net.nodes = net.nodes.filter(n => n.id !== editingTextNode.id);
-          rebuildNodeMap();
-        } else {
-          editingTextNode.text = textEditor.dataset.originalText || editingTextNode.text;
-          updateTextNodeSize(editingTextNode);
-        }
-
-        editingTextNode = null;
-      }
-
-      textEditor.style.display = "none";
-      textEditor.blur();
-
-      requestRender();
-      return;
-    }
-
-    return;
-  }
-
-  // =========================
-  // SHORTCUTS GLOBALES
-  // =========================
-
-  if (e.ctrlKey && e.key.toLowerCase() === "c") {
-    if (ui.selection.node) {
-      cloneMode = ui.selection.node;
-      cursorIcon = icons[ui.selection.node.type] || null;
-      updateCursor();
-      e.preventDefault();
-    }
-  }
-
-  if (e.key === "Escape") {
-    resetState();
-
-    const selectBtn = document.getElementById("selectButton");
-    toggleTool("select", selectBtn);
-
-    cloneMode = null;
-    cursorIcon = null;
-
-    requestRender();
-    return;
-  }
-
-  if (e.key === "Delete") {
-    const deleteButton = document.getElementById("deleteButton");
-
-    toggleTool("delete", deleteButton);
-
-    setTimeout(() => {
-      if (ui.selection.node || ui.selection.area) {
-        deleteSelection({ confirmDelete: true });
-      }
-    }, 0);
-  }
 });
 
 // =====================
@@ -2306,7 +1435,7 @@ function updateAreaInspector(area) {
   bind(clone, "y", Math.round(area.position.y));
   bind(clone, "width", Math.round(area.size.width));
   bind(clone, "height", Math.round(area.size.height));
-  bind(clone, "color", area.color || "#000000");
+  bind(clone, "color", area.color || getColor("--color-black"));
   bind(clone, "noColor", !area.color);
 
   // Referencias del formulario
@@ -2340,32 +1469,6 @@ function updateAreaInspector(area) {
   container.appendChild(clone);
 }
 
-document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-action]");
-  if (!el) return;
-
-  const action = el.dataset.action;
-
-  if (action === "jumpToNode") {
-    const id = el.dataset.nodeid;
-    const node = nodeMap.get(id);
-    if (!node) return;
-
-    // 🔥 limpiar selección actual
-    ui.selection.node = null;
-    ui.selection.area = null;
-    ui.selection.link = null;
-
-    // 🔥 seleccionar nuevo nodo
-    ui.selection.node = node;
-
-    // 🔥 actualizar inspector
-    updateNodeInspector(node);
-
-    requestRender();
-  }
-});
-
 function saveArea(area, refs) {
   const container = document.getElementById("props");
   const original = container._areaSnapshot;
@@ -2376,22 +1479,6 @@ function saveArea(area, refs) {
   const newNoColor = refs.noColorInput.checked;
 
   let changed = false;
-
-  // // ID
-  // if (newId !== original.id) {
-  //   if (!newId) {
-  //     refs.error.textContent = "El ID no puede estar vacío";
-  //     return;
-  //   }
-
-  //   if (getAreas().some(a => a.id === newId && a !== area)) {
-  //     refs.error.textContent = "Ya existe un área con ese ID";
-  //     return;
-  //   }
-
-  //   area.id = newId;
-  //   changed = true;
-  // }
 
   // NAME
   if (newName !== original.name) {
@@ -2425,7 +1512,7 @@ function saveArea(area, refs) {
 
   } else {
     refs.error.textContent = "No hay cambios";
-    refs.error.style.color = "#999";
+    refs.error.style.color = getColor("--color-canvas-grid");
   }
 }
 
@@ -2581,12 +1668,12 @@ function saveLink(link, refs) {
 
   } else {
     refs.error.textContent = "No hay cambios";
-    refs.error.style.color = "#999";
+    refs.error.style.color = getColor("--color-canvas-grid");
   }
 }
 
 function getVlanColor(vlan) {
-  if (!vlan) return "#fff"; // trunk
+  if (!vlan) return getColor("--color-white"); // trunk
 
   const hue = (vlan * 47) % 360;
   return `hsl(${hue}, 70%, 70%)`;
@@ -2687,99 +1774,6 @@ filenameInput.addEventListener("input", () => {
   db.filename = filenameInput.value.trim();
 });
 
-async function exportFile(compressed = false) {
-  let blob;
-
-  if (compressed) {
-    blob = await compressJSON(db);
-  } else {
-    blob = new Blob([JSON.stringify(db, null, 2)], {
-      type: "application/json",
-    });
-  }
-
-  const baseName = db.filename?.trim() || "Sin nombre";
-  const ext = compressed ? "json.gz" : "json";
-  await saveBlob(blob, `${baseName}.${ext}`);
-}
-
-async function saveBlob(blob, defaultName) {
-  if ("showSaveFilePicker" in window) {
-    // Método no disponible para algunos navegadores (Firefox, Safari)
-    // https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker
-    try {
-      const handle = await window.showSaveFilePicker({
-        suggestedName: defaultName,
-        types: [
-          {
-            description: "Archivos",
-            accept: {
-              "application/octet-stream": [`.${defaultName.split(".").pop()}`],
-            },
-          },
-        ],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    } catch (err) {
-      if (err.name === "AbortError") {
-        console.log("El guardado fue cancelado por el usuario.");
-      } else {
-        console.error("Error guardando archivo:", err);
-        alert("Ocurrió un error al guardar el archivo.");
-      }
-    }
-  } else {
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    a.href = url;
-    a.download = defaultName;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-}
-
-function triggerImportFile() {
-  const input = document.getElementById("importFile");
-  input.value = "";
-  input.click();
-
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) importFile(file);
-  };
-}
-
-function triggerImportImage() {
-  const input = document.getElementById("importImage");
-  input.value = "";
-  input.click();
-
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // posición donde quieras crearla
-      const x = 100;
-      const y = 100;
-      const node = createNode("image", x, y);
-      loadImageToNode(file, node);
-    }
-  };
-}
-
-function triggerImportSheet() {
-  const input = document.getElementById("importFile");
-  input.value = "";
-
-  input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) importAsNewSheet(file);
-  };
-
-  input.click();
-}
-
 function renameCurrentNetwork() {
   const oldName = db.activeNetwork;
   const net = db.networks[oldName];
@@ -2854,248 +1848,6 @@ function normalizeDB(data) {
     networks,
     activeNetwork: active
   };
-}
-
-async function importFile(file) {
-  try {
-    const buffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-
-    const isGzip =
-      file.name?.endsWith(".gz") ||
-      file.name?.endsWith(".gzip") ||
-      (bytes[0] === 0x1f && bytes[1] === 0x8b);
-
-    let data;
-
-    if (isGzip) {
-      data = await decompressJSON(new Blob([buffer]));
-    } else {
-      const text = new TextDecoder().decode(buffer);
-      data = JSON.parse(text);
-    }
-
-    // Normalizar SIEMPRE
-    const importedDB = normalizeDB(data);
-
-    // 🔥 REEMPLAZO COMPLETO (sin merges raros)
-    db = {
-      filename: importedDB.filename || "",
-      networks: structuredClone(importedDB.networks),
-      activeNetwork:
-        importedDB.activeNetwork &&
-          importedDB.networks[importedDB.activeNetwork]
-          ? importedDB.activeNetwork
-          : Object.keys(importedDB.networks)[0]
-    };
-
-    updateFilenameUI();
-    updateNetworkSelector();
-
-    resetState();
-    setTimeout(() => {
-      rebuildNodeMap();
-      rebuildAreaMap();
-      rebuildLinkGroups();
-      requestRender();
-    }, 0);
-
-  } catch (err) {
-    alert("Error importando archivo: " + err.message);
-  }
-}
-
-async function importAsNewSheet(file) {
-  try {
-
-    const buffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-
-    const isGzip =
-      file.name?.endsWith(".gz") ||
-      file.name?.endsWith(".gzip") ||
-      (bytes[0] === 0x1f && bytes[1] === 0x8b);
-
-    let data;
-
-    if (isGzip) {
-
-      data = await decompressJSON(new Blob([buffer]));
-
-    } else {
-
-      const text = new TextDecoder().decode(buffer);
-      data = JSON.parse(text);
-
-    }
-
-    const importedDB = normalizeDB(data);
-    const names = Object.keys(importedDB.networks);
-
-    if (names.length === 0) return;
-
-    let selected = names[0];
-
-    if (names.length > 1) {
-      const choice = prompt(
-        "Selecciona la hoja a importar:\n\n" +
-        names.join("\n")
-      );
-
-      if (!choice || !importedDB.networks[choice]) return;
-      selected = choice;
-    }
-
-    const source = importedDB.networks[selected];
-
-    let newName = selected;
-    let i = 1;
-
-    while (db.networks[newName]) {
-      newName = `${selected}_${i++}`;
-    }
-
-    // ✔ SOLO UNA ASIGNACIÓN
-    db.networks[newName] = structuredClone({
-      nodes: source.nodes || [],
-      areas: source.areas || [],
-      links: source.links || []
-    });
-
-    db.activeNetwork = newName;
-
-    updateNetworkSelector();
-
-    // 🔥 CRÍTICO: asegurar consistencia antes de rebuild
-    resetState();
-
-    // 🔥 reconstruir DESPUÉS de estado limpio
-    rebuildNodeMap();
-    rebuildAreaMap();
-    rebuildLinkGroups();
-
-    requestRender();
-
-  } catch (err) {
-    alert("Error importando hoja: " + err.message);
-  }
-}
-
-async function compressJSON(data) {
-  const json = JSON.stringify(data);
-
-  const stream = new Blob([json]).stream();
-
-  const compressedStream = stream.pipeThrough(new CompressionStream("gzip"));
-
-  return await new Response(compressedStream).blob();
-}
-
-async function decompressJSON(blob) {
-  try {
-    const stream = blob.stream().pipeThrough(new DecompressionStream("gzip"));
-
-    const text = await new Response(stream).text();
-    return JSON.parse(text);
-  } catch (err) {
-    throw new Error("Archivo comprimido inválido o corrupto");
-  }
-}
-
-async function exportTXT(data) {
-  const result = [];
-
-  const networks = data.networks || {};
-
-  for (const [networkName, net] of Object.entries(networks)) {
-    result.push(`\n====================`);
-    result.push(`RED: ${networkName}`);
-    result.push(`====================\n`);
-
-    const nodes = net.nodes || [];
-    const links = net.links || [];
-
-    if (!nodes.length) {
-      result.push("(vacía)\n");
-      continue;
-    }
-
-    const adjacency = {};
-    const nodeMap = {};
-
-    nodes.forEach(n => {
-      nodeMap[n.id] = n;
-      adjacency[n.id] = new Set();
-    });
-
-    links.forEach(l => {
-      const a = l.from.nodeId;
-      const b = l.to.nodeId;
-      if (adjacency[a] && adjacency[b]) {
-        adjacency[a].add(b);
-        adjacency[b].add(a);
-      }
-    });
-
-    const visited = new Set();
-    let groupIndex = 1;
-
-    function bfs(startId) {
-      const queue = [startId];
-      const group = [];
-
-      visited.add(startId);
-
-      while (queue.length) {
-        const id = queue.shift();
-        group.push(id);
-
-        for (const n of adjacency[id] || []) {
-          if (!visited.has(n)) {
-            visited.add(n);
-            queue.push(n);
-          }
-        }
-      }
-
-      result.push(`-- Subred ${groupIndex++} --`);
-
-      for (const id of group) {
-        const n = nodeMap[id];
-        result.push(`${n.name} (${n.type})`);
-      }
-
-      result.push("");
-    }
-
-    for (const id of Object.keys(nodeMap)) {
-      if (!visited.has(id)) {
-        bfs(id);
-      }
-    }
-  }
-
-  const blob = new Blob([result.join("\n")], { type: "text/plain" });
-  const baseName = db.filename?.trim() || "Sin nombre";
-  await saveBlob(blob, `${baseName}.txt`);
-}
-
-function exportPNG() {
-  const tempCanvas = document.createElement("canvas");
-  const tempCtx = tempCanvas.getContext("2d");
-
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
-
-  tempCtx.fillStyle = "white";
-  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-  tempCtx.drawImage(canvas, 0, 0);
-
-  const baseName = db.filename?.trim() || "Sin nombre";
-  tempCanvas.toBlob((blob) => {
-    saveBlob(blob, `${baseName}.png`);
-  });
 }
 
 // =====================
@@ -3193,8 +1945,10 @@ function loadIconSet(setName) {
   requestRender();
 }
 
-function changeIconSet(setName, label) {
+function changeIconSet(setName) {
   loadIconSet(setName);
+
+  const label = (setName === "symbol") ? "Simbólica" : "Realista";
 
   document.getElementById("iconSetLabel").textContent = label;
   document.getElementById(
@@ -3213,19 +1967,6 @@ function loadIcon(src) {
 // =====================
 // INICIALIZACIÓN
 // =====================
-
-fetch("data/example.json.gz")
-  .then((response) => {
-    if (!response.ok) throw new Error("No se encontró example.json.gz");
-    return response.blob();
-  })
-  .then((blob) => importFile(blob))
-  .then(() => {
-    updateNetworkSelector();
-  })
-  .catch((err) => {
-    console.warn("No se pudo cargar example.json.gz:", err.message);
-  });
 
 async function init() {
   ui.tool = "select";
@@ -3251,15 +1992,23 @@ async function init() {
   requestRender();
 
   await loadTemplate();
+
+  try {
+    const response = await fetch("data/example.json.gz");
+
+    if (!response.ok) {
+      throw new Error("No se encontró example.json.gz");
+    }
+
+    const blob = await response.blob();
+
+    await importFile(blob);
+
+    updateNetworkSelector();
+
+  } catch (err) {
+    console.warn("No se pudo cargar example.json.gz:", err.message);
+  }
 }
 
 init();
-
-// =====================
-// AYUDA Y MISCELÁNEA
-// =====================
-
-function openHelp() {
-  window.open("help.html", "_blank");
-}
-
