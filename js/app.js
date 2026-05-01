@@ -831,6 +831,9 @@ canvas.addEventListener("mousemove", (e) => {
   lastMouseX = x;
   lastMouseY = y;
 
+  const node = getNodeAt(lastMouseX, lastMouseY);
+  updateNodeTooltip(e, node);
+
   if (isPanning) {
     view.offsetX += e.movementX;
     view.offsetY += e.movementY;
@@ -988,6 +991,9 @@ canvas.addEventListener("dblclick", (e) => {
 
 canvas.addEventListener("mouseleave", () => {
   isPanning = false;
+
+  const tooltip = document.getElementById("nodeTooltip");
+  if (!tooltip.classList.contains("hidden")) tooltip.classList.add("hidden");
 });
 
 // =====================

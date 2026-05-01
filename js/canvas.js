@@ -6,24 +6,121 @@ function render() {
 
     if (gridEnabled) drawGrid();
 
-    getNodes()
-        .filter(n => n.type === "image")
-        .forEach(drawNodeBase);
+    const nodes = getNodes();
+    const areas = getAreas();
 
-    getAreas().forEach(drawArea);
+    const hoveredNode = getNodeAt(lastMouseX, lastMouseY);
+
+    const imageNodes = [];
+    const otherNodes = [];
+
+    for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (n.type === "image") imageNodes.push(n);
+        else otherNodes.push(n);
+    }
+
+    // Dibuja nodos de imagen
+    for (let i = 0; i < imageNodes.length; i++) {
+        drawNodeBase(imageNodes[i]);
+    }
+
+    // Dibuja áreas
+    for (let i = 0; i < areas.length; i++) {
+        drawArea(areas[i]);
+    }
+
+    // Dibuja links
     drawLinks();
 
-    getNodes()
-        .filter(n => n.type !== "image")
-        .forEach(drawNodeBase);
+    // Dibuja resto de nodos
+    for (let i = 0; i < otherNodes.length; i++) {
+        drawNodeBase(otherNodes[i]);
+    }
 
-    getAreas().forEach(drawAreaLabel);
-    getNodes().forEach(drawNodeLabel);
+    // Dibuja etiquetas de área
+    for (let i = 0; i < areas.length; i++) {
+        drawAreaLabel(areas[i]);
+    }
+
+    // Dibuja etiquetas de nodos
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i] !== hoveredNode) {
+            drawNodeLabel(nodes[i]);
+        }
+    }
 
     drawPorts();
     drawPreview();
 
+    if (hoveredNode) {
+        drawNodeLabel(hoveredNode);
+    }
+
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function updateNodeTooltip(e, node) {
+    const tooltip = document.getElementById("nodeTooltip");
+
+    if (!node || node.type === "image" || node.type === "text") {
+        tooltip.classList.add("hidden");
+        return;
+    }
+
+    let html = `
+        <div class="tt-title"><strong>${node.name || node.id}</strong> (${node.type})</div><div class="tt-body">
+    `;
+
+    if (node) {
+        const links = getLinks?.() || []; // o tu fuente real
+
+        const related = [];
+
+        for (let i = 0; i < links.length; i++) {
+            const l = links[i];
+
+            const isFrom = l.from.nodeId === node.id;
+            const isTo = l.to.nodeId === node.id;
+
+            if (!isFrom && !isTo) continue;
+
+            const otherNodeId = isFrom ? l.to.nodeId : l.from.nodeId;
+            const otherNode = nodeMap.get(otherNodeId);
+
+            const port = isFrom ? l.from.port : l.to.port;
+
+            related.push({
+                other: otherNode?.name || otherNodeId,
+                port: port || "?"
+            });
+        }
+
+        if (related.length) {
+            html += `Enlaces:<ul>`;
+
+            for (let i = 0; i < related.length; i++) {
+                const r = related[i];
+                if (r.port && r.port !== "?" && r.port !== "") {
+                    html += `<li>${r.other}, por ${r.port}</li>`;
+                } else {
+                    html += `<li>${r.other}</li>`;
+                }
+            }
+
+            html += `</ul>`;
+        }
+    }
+
+    html += `</div>`;
+
+    tooltip.innerHTML = html;
+    tooltip.classList.remove("hidden");
+
+    const rect = canvas.getBoundingClientRect();
+
+    tooltip.style.left = e.clientX + 14 + "px";
+    tooltip.style.top = e.clientY + 12 + "px";
 }
 
 const imageCache = new Map();
@@ -146,25 +243,53 @@ function drawNodeLabel(n) {
 
 function drawLinks() {
     for (const ls of linkGroups.values()) {
-        const f = nodeMap.get(ls[0].from.nodeId);
-        const t = nodeMap.get(ls[0].to.nodeId);
+
+        const first = ls[0];
+
+        const f = nodeMap.get(first.from.nodeId);
+        const t = nodeMap.get(first.to.nodeId);
         if (!f || !t) continue;
-        const { ux, uy } = getLinkGeometry(f, t);
+
+        // 🔥 cache local
+        const fx = f.position.x + node_w * 0.5;
+        const fy = f.position.y + node_h * 0.5;
+        const tx = t.position.x + node_w * 0.5;
+        const ty = t.position.y + node_h * 0.5;
+
+        // 🔥 geometría (aquí aún no cacheada)
+        const dx = tx - fx;
+        const dy = ty - fy;
+        const len = Math.hypot(dx, dy);
+        if (len === 0) continue;
+
+        const ux = dx / len;
+        const uy = dy / len;
+
         const gap = 10;
-        ls.forEach((l, i) => {
-            const isSelected = ui.selection.link && ui.selection.link.id === l.id;
-            const off = (i - (ls.length - 1) / 2) * gap;
+        const count = ls.length;
+        const mid = (count - 1) * 0.5;
+
+        for (let i = 0; i < count; i++) {
+            const l = ls[i];
+
+            const isSelected =
+                ui.selection.link && ui.selection.link.id === l.id;
+
+            const off = (i - mid) * gap;
+
             const ox = ux * off;
             const oy = uy * off;
 
-            drawLine(l.type,
+            drawLine(
+                l.type,
                 ctx,
-                f.position.x + node_w / 2 + ox,
-                f.position.y + node_h / 2 + oy,
-                t.position.x + node_w / 2 + ox,
-                t.position.y + node_h / 2 + oy,
-                isSelected);
-        });
+                fx + ox,
+                fy + oy,
+                tx + ox,
+                ty + oy,
+                isSelected
+            );
+        }
     }
 }
 

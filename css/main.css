@@ -313,7 +313,7 @@ canvas {
     /* ⚠️ importante en flex */
     border: 1px solid var(--color-canvas-border);
     cursor: pointer;
-} 
+}
 
 /* ===================== CUSTOM FILE LABEL ===================== */
 .custom-file-label {
@@ -355,6 +355,42 @@ canvas {
 }
 
 #resizer {
+    display: none;
+}
+
+.tooltip {
+    position: absolute;
+    background: var(--color-btn-active-border);
+    color: white;
+    border-radius: 6px;
+    font-size: 11px;
+    pointer-events: none;
+    z-index: 9999;
+    max-width: 250px;
+    padding: 0;
+    box-shadow: 5px 5px 5px var(--color-toolbar-text);
+}
+
+.tooltip .tt-title {
+    background-color: var(--color-btn-active-bg);
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 6px 6px 0 0;
+}
+
+.tooltip .tt-body {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 0 0 6px 6px;
+}
+
+.tooltip .tt-body ul {
+    padding: 0 0 0 10px;
+    margin: 0;
+}
+
+
+.hidden {
     display: none;
 }
 
