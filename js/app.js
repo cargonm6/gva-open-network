@@ -549,6 +549,27 @@ function drawPortBox(text, x, y, vlan) {
 }
 
 // =====================
+// TOOLTIP
+// =====================
+
+let tooltipEnabled = true;
+
+function toggleTooltip() {
+  const toggleTooltipButton = document.getElementById("toggleTooltip");
+  tooltipEnabled = !tooltipEnabled;
+
+  if (tooltipEnabled) {
+    toggleTooltipButton.querySelector("img").src = `img/buttons/tools/tooltip-off.svg`;
+    toggleTooltipButton.querySelector("span").textContent = "Quitar tooltip";
+  } else {
+    toggleTooltipButton.querySelector("img").src = `img/buttons/tools/tooltip-on.svg`;
+    toggleTooltipButton.querySelector("span").textContent = "Mostrar tooltip";
+  }
+
+  requestRender();
+}
+
+// =====================
 // FORZADO A REJILLA
 // =====================
 
@@ -559,9 +580,7 @@ function toggleGrid() {
   gridEnabled = !gridEnabled;
 
   if (gridEnabled) {
-    toggleGridButton.querySelector(
-      "img"
-    ).src = `img/buttons/tools/grid-off.svg`;
+    toggleGridButton.querySelector("img").src = `img/buttons/tools/grid-off.svg`;
     toggleGridButton.querySelector("span").textContent = "Quitar rejilla";
   } else {
     toggleGridButton.querySelector("img").src = `img/buttons/tools/grid-on.svg`;
@@ -832,7 +851,7 @@ canvas.addEventListener("mousemove", (e) => {
   lastMouseY = y;
 
   const node = getNodeAt(lastMouseX, lastMouseY);
-  updateNodeTooltip(e, node);
+  if (tooltipEnabled) updateNodeTooltip(e, node);
 
   if (isPanning) {
     view.offsetX += e.movementX;

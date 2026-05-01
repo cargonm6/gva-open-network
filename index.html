@@ -283,15 +283,31 @@
                 </div>
             </div>
 
-            <button class="tool-btn" id="toggleGrid" data-action="toggle-grid">
-                <img src="img/buttons/tools/grid-on.svg" class="btn-icon">
-                <span>Forzar a rejilla</span>
-            </button>
+            <div class="dropdown toolbar-dropdown">
+                <button class="tool-btn dropbtn">
+                    <img id="iconSetPreview" src="img/buttons/tools/gear.svg" class="btn-icon">
+                    <span id="iconSetLabel">Opciones</span>
+                </button>
 
-            <button class="tool-btn" id="togglePorts" data-action="toggle-ports">
-                <img src="img/buttons/tools/port-off.svg" class="btn-icon">
-                <span>Quitar puertos</span>
-            </button>
+                <div class="dropdown-content">
+
+                    <button class="tool-btn" id="toggleGrid" data-action="toggle-grid">
+                        <img src="img/buttons/tools/grid-on.svg" class="btn-icon">
+                        <span>Forzar a rejilla</span>
+                    </button>
+
+                    <button class="tool-btn" id="togglePorts" data-action="toggle-ports">
+                        <img src="img/buttons/tools/port-off.svg" class="btn-icon">
+                        <span>Quitar puertos</span>
+                    </button>
+
+                    <button class="tool-btn" id="toggleTooltip" data-action="toggle-tooltip">
+                        <img src="img/buttons/tools/tooltip-off.svg" class="btn-icon">
+                        <span>Quitar tooltip</span>
+                    </button>
+
+                </div>
+            </div>
 
             <p id="zoom">Zoom: <span id="zoomLabel">100%</span></p>
             <input id="zoomSlider" type="range" min="0" max="1" step="0.01" value="0.5">
