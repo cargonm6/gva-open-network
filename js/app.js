@@ -735,18 +735,20 @@ canvas.addEventListener("mousedown", (e) => {
     return;
   }
 
-  if (["link-wired", "link-wireless", "link-wan"].includes(ui.tool)) {
+  if (["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool)) {
     if (!node) return;
 
     if (!linkStart) {
       linkStart = node;
     } else if (node !== linkStart) {
-      let type = "wired";
+      let type = "ethernet";
 
       if (ui.tool === "link-wireless") {
         type = "wireless";
       } else if (ui.tool === "link-wan") {
         type = "wan";
+      } else if (ui.tool === "link-console") {
+        type = "console";
       }
 
       getLinks().push({
@@ -980,7 +982,7 @@ canvas.addEventListener(
 canvas.addEventListener("contextmenu", (e) => {
   e.preventDefault();
   if (
-    ["link-wired", "link-wireless", "link-wan"].includes(ui.tool) &&
+    ["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool) &&
     linkStart
   ) {
     linkStart = null;
@@ -1570,8 +1572,12 @@ function updateLinkInspector(link) {
   bind(clone, "fromPort", link.from?.port || "");
   bind(clone, "toPort", link.to?.port || "");
 
+  const crossoverInput = clone.querySelector('[data-bind="crossover"]');
   const fromNodeNameEl = clone.querySelector('[data-bind="fromNodeName"]');
   const toNodeNameEl = clone.querySelector('[data-bind="toNodeName"]');
+
+  if (crossoverInput) crossoverInput.checked = !!link.crossover;
+  if (link.type !== "ethernet") crossoverInput.disabled = true;
 
   if (fromNodeNameEl) {
     fromNodeNameEl.textContent = fromNode?.name ?? "";
@@ -1594,14 +1600,16 @@ function updateLinkInspector(link) {
     toPortInput: clone.querySelector('[data-bind="toPort"]'),
     swapBtn: clone.querySelector('[data-action="swap"]'),
     saveBtn: clone.querySelector('[data-action="saveAll"]'),
-    error: clone.querySelector('[data-bind="error"]')
+    error: clone.querySelector('[data-bind="error"]'),
+    crossoverInput: clone.querySelector('[data-bind="crossover"]')
   };
 
   // Snapshot
   container._linkSnapshot = {
     vlan: link.vlan ?? null,
     fromPort: link.from?.port ?? null,
-    toPort: link.to?.port ?? null
+    toPort: link.to?.port ?? null,
+    crossover: !!link.crossover
   };
 
   // container._linkId = link.id;
@@ -1626,11 +1634,21 @@ function saveLink(link, refs) {
   const vlanRaw = refs.vlanInput.value.trim();
   const fromPortRaw = refs.fromPortInput.value.trim();
   const toPortRaw = refs.toPortInput.value.trim();
+  const newCrossover = refs.crossoverInput?.checked ?? false;
 
   let changed = false;
 
   // VLAN
   let newVlan = null;
+
+  if (newCrossover !== (original.crossover ?? false)) {
+    if (newCrossover) {
+      link.crossover = true;
+    } else {
+      delete link.crossover;
+    }
+    changed = true;
+  }
 
   if (vlanRaw !== "") {
     const num = parseInt(vlanRaw);

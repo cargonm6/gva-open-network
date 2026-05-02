@@ -1,15 +1,27 @@
 {
   "filename": "example",
   "networks": {
-    "network": {
+    "red2": {
       "nodes": [
         {
-          "id": "router_7996",
-          "type": "router",
-          "name": "router_7566",
+          "id": "cloud_3980",
+          "type": "cloud",
+          "name": "cloud_3980",
           "position": {
-            "x": 650,
+            "x": 300,
             "y": 50
+          },
+          "link": "red1",
+          "interfaces": [],
+          "metadata": {}
+        },
+        {
+          "id": "pc_3617",
+          "type": "pc",
+          "name": "pc_3617",
+          "position": {
+            "x": 50,
+            "y": 450
           },
           "metadata": {
             "productor": "",
@@ -19,9 +31,264 @@
           "interfaces": []
         },
         {
-          "id": "switch3_3745",
-          "type": "switch3",
-          "name": "switch3_5880",
+          "id": "pc_8834",
+          "type": "pc",
+          "name": "pc_8834",
+          "position": {
+            "x": 150,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_5766",
+          "type": "pc",
+          "name": "pc_5766",
+          "position": {
+            "x": 250,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_2417",
+          "type": "pc",
+          "name": "pc_2417",
+          "position": {
+            "x": 350,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_1446",
+          "type": "pc",
+          "name": "pc_1446",
+          "position": {
+            "x": 450,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_8009",
+          "type": "pc",
+          "name": "pc_8009",
+          "position": {
+            "x": 550,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_9737",
+          "type": "pc",
+          "name": "pc_9737",
+          "position": {
+            "x": 650,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_3953",
+          "type": "pc",
+          "name": "pc_3953",
+          "position": {
+            "x": 750,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_7551",
+          "type": "ipphone",
+          "name": "ipphone_7551",
+          "position": {
+            "x": 50,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_204",
+          "type": "ipphone",
+          "name": "ipphone_204",
+          "position": {
+            "x": 150,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_3116",
+          "type": "ipphone",
+          "name": "ipphone_3116",
+          "position": {
+            "x": 250,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_1184",
+          "type": "ipphone",
+          "name": "ipphone_1184",
+          "position": {
+            "x": 350,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_2017",
+          "type": "ipphone",
+          "name": "ipphone_2017",
+          "position": {
+            "x": 450,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_8718",
+          "type": "ipphone",
+          "name": "ipphone_8718",
+          "position": {
+            "x": 550,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_6880",
+          "type": "ipphone",
+          "name": "ipphone_6880",
+          "position": {
+            "x": 650,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ipphone_8148",
+          "type": "ipphone",
+          "name": "ipphone_8148",
+          "position": {
+            "x": 750,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "switch_6391",
+          "type": "switch",
+          "name": "switch_6391",
+          "position": {
+            "x": 100,
+            "y": 250
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "switch_3005",
+          "type": "switch",
+          "name": "switch_3005",
+          "position": {
+            "x": 300,
+            "y": 250
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "switch_2740",
+          "type": "switch",
+          "name": "switch_2740",
           "position": {
             "x": 500,
             "y": 250
@@ -34,11 +301,11 @@
           "interfaces": []
         },
         {
-          "id": "switch3_6343",
-          "type": "switch3",
-          "name": "switch3_3053",
+          "id": "switch_1488",
+          "type": "switch",
+          "name": "switch_1488",
           "position": {
-            "x": 800,
+            "x": 700,
             "y": 250
           },
           "metadata": {
@@ -49,27 +316,12 @@
           "interfaces": []
         },
         {
-          "id": "switch_4317",
-          "type": "switch",
-          "name": "switch_5626",
-          "position": {
-            "x": 550,
-            "y": 400
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "switch_4747",
-          "type": "switch",
-          "name": "switch_7674",
+          "id": "switch3_6867",
+          "type": "switch3",
+          "name": "switch3_6867",
           "position": {
             "x": 400,
-            "y": 400
+            "y": 150
           },
           "metadata": {
             "productor": "",
@@ -79,12 +331,513 @@
           "interfaces": []
         },
         {
-          "id": "switch_1728",
+          "id": "router_437",
+          "type": "router",
+          "name": "router_437",
+          "position": {
+            "x": 450,
+            "y": 50
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        }
+      ],
+      "areas": [],
+      "links": [
+        {
+          "id": "wan_126",
+          "type": "wan",
+          "from": {
+            "nodeId": "cloud_3980"
+          },
+          "to": {
+            "nodeId": "router_437"
+          }
+        },
+        {
+          "id": "ethernet_3618",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "router_437"
+          },
+          "to": {
+            "nodeId": "switch3_6867"
+          }
+        },
+        {
+          "id": "ethernet_7475",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_6867"
+          },
+          "to": {
+            "nodeId": "switch_3005"
+          },
+          "crossover": true
+        },
+        {
+          "id": "ethernet_9668",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_6867"
+          },
+          "to": {
+            "nodeId": "switch_6391"
+          },
+          "crossover": true
+        },
+        {
+          "id": "ethernet_2078",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_6867"
+          },
+          "to": {
+            "nodeId": "switch_2740"
+          },
+          "crossover": true
+        },
+        {
+          "id": "ethernet_5394",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_1488"
+          },
+          "to": {
+            "nodeId": "switch3_6867"
+          },
+          "crossover": true
+        },
+        {
+          "id": "ethernet_7098",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_7551"
+          },
+          "to": {
+            "nodeId": "switch_6391"
+          }
+        },
+        {
+          "id": "ethernet_6317",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_204"
+          },
+          "to": {
+            "nodeId": "switch_6391"
+          }
+        },
+        {
+          "id": "ethernet_5390",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_3005"
+          },
+          "to": {
+            "nodeId": "ipphone_3116"
+          }
+        },
+        {
+          "id": "ethernet_8283",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_3005"
+          },
+          "to": {
+            "nodeId": "ipphone_1184"
+          }
+        },
+        {
+          "id": "ethernet_3804",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_2740"
+          },
+          "to": {
+            "nodeId": "ipphone_2017"
+          }
+        },
+        {
+          "id": "ethernet_3073",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_2740"
+          },
+          "to": {
+            "nodeId": "ipphone_8718"
+          }
+        },
+        {
+          "id": "ethernet_4011",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_1488"
+          },
+          "to": {
+            "nodeId": "ipphone_6880"
+          }
+        },
+        {
+          "id": "ethernet_3505",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_1488"
+          },
+          "to": {
+            "nodeId": "ipphone_8148"
+          }
+        },
+        {
+          "id": "ethernet_1548",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_8148"
+          },
+          "to": {
+            "nodeId": "pc_3953"
+          }
+        },
+        {
+          "id": "ethernet_701",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_6880"
+          },
+          "to": {
+            "nodeId": "pc_9737"
+          }
+        },
+        {
+          "id": "ethernet_5904",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_8718"
+          },
+          "to": {
+            "nodeId": "pc_8009"
+          }
+        },
+        {
+          "id": "ethernet_2457",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_2017"
+          },
+          "to": {
+            "nodeId": "pc_1446"
+          }
+        },
+        {
+          "id": "ethernet_4281",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_2417"
+          },
+          "to": {
+            "nodeId": "ipphone_1184"
+          }
+        },
+        {
+          "id": "ethernet_1780",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_5766"
+          },
+          "to": {
+            "nodeId": "ipphone_3116"
+          }
+        },
+        {
+          "id": "ethernet_9238",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_8834"
+          },
+          "to": {
+            "nodeId": "ipphone_204"
+          }
+        },
+        {
+          "id": "ethernet_513",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_3617"
+          },
+          "to": {
+            "nodeId": "ipphone_7551"
+          }
+        }
+      ]
+    },
+    "red1": {
+      "nodes": [
+        {
+          "id": "switch3_3851",
+          "type": "switch3",
+          "name": "switch3_3851",
+          "position": {
+            "x": 650,
+            "y": 200
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "switch3_9430",
+          "type": "switch3",
+          "name": "switch3_9430",
+          "position": {
+            "x": 450,
+            "y": 200
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "router_9996",
+          "type": "router",
+          "name": "router_9996",
+          "position": {
+            "x": 550,
+            "y": 50
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_7763",
+          "type": "pc",
+          "name": "pc_7763",
+          "position": {
+            "x": 200,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_3208",
+          "type": "pc",
+          "name": "pc_3208",
+          "position": {
+            "x": 200,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_7350",
+          "type": "pc",
+          "name": "pc_7350",
+          "position": {
+            "x": 300,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_7609",
+          "type": "pc",
+          "name": "pc_7609",
+          "position": {
+            "x": 300,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "patch_2917",
+          "type": "patch",
+          "name": "patch_2917",
+          "position": {
+            "x": 400,
+            "y": 500
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_1012",
+          "type": "pc",
+          "name": "pc_1012",
+          "position": {
+            "x": 200,
+            "y": 650
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_7293",
+          "type": "pc",
+          "name": "pc_7293",
+          "position": {
+            "x": 300,
+            "y": 650
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_6421",
+          "type": "pc",
+          "name": "pc_6421",
+          "position": {
+            "x": 300,
+            "y": 750
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_5899",
+          "type": "pc",
+          "name": "pc_5899",
+          "position": {
+            "x": 200,
+            "y": 750
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "patch_1051",
+          "type": "patch",
+          "name": "patch_1051",
+          "position": {
+            "x": 400,
+            "y": 700
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "switch_9845",
           "type": "switch",
-          "name": "switch_7309",
+          "name": "switch_9845",
+          "position": {
+            "x": 450,
+            "y": 600
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "ap_1742",
+          "type": "ap",
+          "name": "ap_1742",
+          "position": {
+            "x": 350,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "screen_1534",
+          "type": "screen",
+          "name": "screen_1534",
+          "position": {
+            "x": 200,
+            "y": 350
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "hub_7864",
+          "type": "hub",
+          "name": "hub_7864",
+          "position": {
+            "x": 650,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "printer_1521",
+          "type": "printer",
+          "name": "printer_1521",
           "position": {
             "x": 750,
-            "y": 400
+            "y": 600
           },
           "metadata": {
             "productor": "",
@@ -94,9 +847,39 @@
           "interfaces": []
         },
         {
-          "id": "switch_1286",
-          "type": "switch",
-          "name": "switch_7887",
+          "id": "printer_2577",
+          "type": "printer",
+          "name": "printer_2577",
+          "position": {
+            "x": 850,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "printer_9958",
+          "type": "printer",
+          "name": "printer_9958",
+          "position": {
+            "x": 750,
+            "y": 500
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_2705",
+          "type": "pc",
+          "name": "pc_2705",
           "position": {
             "x": 900,
             "y": 400
@@ -109,12 +892,12 @@
           "interfaces": []
         },
         {
-          "id": "switch_7299",
-          "type": "switch",
-          "name": "switch_1630",
+          "id": "ipphone_364",
+          "type": "ipphone",
+          "name": "ipphone_364",
           "position": {
-            "x": 1000,
-            "y": 200
+            "x": 800,
+            "y": 400
           },
           "metadata": {
             "productor": "",
@@ -124,41 +907,11 @@
           "interfaces": []
         },
         {
-          "id": "server_5800",
-          "type": "server",
-          "name": "server_8071",
+          "id": "ipphone_3717",
+          "type": "ipphone",
+          "name": "ipphone_3717",
           "position": {
-            "x": 1100,
-            "y": 100
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "nas_6270",
-          "type": "nas",
-          "name": "nas_7650",
-          "position": {
-            "x": 1200,
-            "y": 200
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_8105",
-          "type": "pc",
-          "name": "pc_7462",
-          "position": {
-            "x": 1100,
+            "x": 800,
             "y": 300
           },
           "metadata": {
@@ -169,12 +922,12 @@
           "interfaces": []
         },
         {
-          "id": "pc_7029",
+          "id": "pc_6247",
           "type": "pc",
-          "name": "pc_6840",
+          "name": "pc_6247",
           "position": {
-            "x": 700,
-            "y": 550
+            "x": 900,
+            "y": 300
           },
           "metadata": {
             "productor": "",
@@ -184,12 +937,12 @@
           "interfaces": []
         },
         {
-          "id": "pc_4936",
-          "type": "pc",
-          "name": "pc_8351",
+          "id": "switch_9604",
+          "type": "switch",
+          "name": "switch_9604",
           "position": {
-            "x": 750,
-            "y": 600
+            "x": 650,
+            "y": 350
           },
           "metadata": {
             "productor": "",
@@ -199,191 +952,11 @@
           "interfaces": []
         },
         {
-          "id": "pc_4779",
-          "type": "pc",
-          "name": "pc_6224",
+          "id": "screen_2627",
+          "type": "screen",
+          "name": "screen_2627",
           "position": {
-            "x": 850,
-            "y": 650
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_7476",
-          "type": "pc",
-          "name": "pc_7110",
-          "position": {
-            "x": 1000,
-            "y": 550
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_7143",
-          "type": "pc",
-          "name": "pc_7991",
-          "position": {
-            "x": 1000,
-            "y": 650
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_5538",
-          "type": "pc",
-          "name": "pc_5823",
-          "position": {
-            "x": 600,
-            "y": 550
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_6992",
-          "type": "pc",
-          "name": "pc_6522",
-          "position": {
-            "x": 550,
-            "y": 600
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_6643",
-          "type": "pc",
-          "name": "pc_6293",
-          "position": {
-            "x": 450,
-            "y": 650
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_6646",
-          "type": "pc",
-          "name": "pc_2874",
-          "position": {
-            "x": 300,
-            "y": 550
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_5799",
-          "type": "pc",
-          "name": "pc_9151",
-          "position": {
-            "x": 300,
-            "y": 650
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "patch_7380",
-          "type": "patch",
-          "name": "patch_2195",
-          "position": {
-            "x": 374,
-            "y": 500
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "patch_5127",
-          "type": "patch",
-          "name": "patch_5051",
-          "position": {
-            "x": 375,
-            "y": 600
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "patch_3978",
-          "type": "patch",
-          "name": "patch_7790",
-          "position": {
-            "x": 927,
-            "y": 500
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "patch_4079",
-          "type": "patch",
-          "name": "patch_3012",
-          "position": {
-            "x": 929,
-            "y": 600
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "ap_6405",
-          "type": "ap",
-          "name": "ap_6149",
-          "position": {
-            "x": 350,
+            "x": 200,
             "y": 250
           },
           "metadata": {
@@ -394,12 +967,12 @@
           "interfaces": []
         },
         {
-          "id": "printer_6586",
-          "type": "printer",
-          "name": "printer_4459",
+          "id": "server_7415",
+          "type": "server",
+          "name": "server_7415",
           "position": {
-            "x": 250,
-            "y": 200
+            "x": 750,
+            "y": 100
           },
           "metadata": {
             "productor": "",
@@ -409,491 +982,12 @@
           "interfaces": []
         },
         {
-          "id": "pc_9647",
-          "type": "pc",
-          "name": "pc_1652",
-          "position": {
-            "x": 250,
-            "y": 300
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "cloud_7477",
-          "type": "cloud",
-          "name": "cloud_3562",
-          "position": {
-            "x": 250,
-            "y": 50
-          },
-          "link": "network2",
-          "interfaces": []
-        },
-        {
-          "id": "north_2808",
-          "type": "north",
-          "name": "",
-          "position": {
-            "x": 100,
-            "y": 150
-          },
-          "angle": 0
-        },
-        {
-          "id": "text_156",
-          "type": "text",
-          "name": "text_2904",
-          "position": {
-            "x": 277,
-            "y": 138
-          },
-          "text": "Red inalámbrica,\ncon impresora y PC.",
-          "metadata": {},
-          "_width": 132,
-          "_height": 38,
-          "_isNewText": true
-        },
-        {
-          "id": "screen_4984",
-          "type": "screen",
-          "name": "screen_7548",
-          "position": {
-            "x": 450,
-            "y": 550
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "screen_3228",
-          "type": "screen",
-          "name": "screen_4550",
+          "id": "nas_1660",
+          "type": "nas",
+          "name": "nas_1660",
           "position": {
             "x": 850,
-            "y": 550
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        }
-      ],
-      "areas": [
-        {
-          "id": "area_2998",
-          "name": "area_3732",
-          "position": {
-            "x": 228,
-            "y": 183
-          },
-          "size": {
-            "width": 180,
-            "height": 189
-          }
-        },
-        {
-          "id": "area_5406",
-          "name": "area_7386",
-          "position": {
-            "x": 289,
-            "y": 390
-          },
-          "size": {
-            "width": 372,
-            "height": 334
-          }
-        },
-        {
-          "id": "area_918",
-          "name": "area_7739",
-          "position": {
-            "x": 696,
-            "y": 392
-          },
-          "size": {
-            "width": 371,
-            "height": 331
-          }
-        },
-        {
-          "id": "area_4141",
-          "name": "area_8946",
-          "position": {
-            "x": 974,
-            "y": 88
-          },
-          "size": {
-            "width": 289,
-            "height": 285
-          }
-        }
-      ],
-      "links": [
-        {
-          "id": "wired_7062",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_6646"
-          },
-          "to": {
-            "nodeId": "patch_7380"
-          }
-        },
-        {
-          "id": "wired_4184",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_5799"
-          },
-          "to": {
-            "nodeId": "patch_5127"
-          }
-        },
-        {
-          "id": "wired_6685",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_6643"
-          },
-          "to": {
-            "nodeId": "patch_5127"
-          }
-        },
-        {
-          "id": "wired_5784",
-          "type": "wired",
-          "from": {
-            "nodeId": "patch_7380"
-          },
-          "to": {
-            "nodeId": "switch_4747"
-          }
-        },
-        {
-          "id": "wired_2563",
-          "type": "wired",
-          "from": {
-            "nodeId": "patch_5127"
-          },
-          "to": {
-            "nodeId": "switch_4747"
-          }
-        },
-        {
-          "id": "wired_6232",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_4317"
-          },
-          "to": {
-            "nodeId": "pc_5538"
-          }
-        },
-        {
-          "id": "wired_8469",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_4317"
-          },
-          "to": {
-            "nodeId": "pc_6992"
-          }
-        },
-        {
-          "id": "wired_2064",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_7476"
-          },
-          "to": {
-            "nodeId": "patch_3978"
-          }
-        },
-        {
-          "id": "wired_9741",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_7143"
-          },
-          "to": {
-            "nodeId": "patch_4079"
-          }
-        },
-        {
-          "id": "wired_571",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_4779"
-          },
-          "to": {
-            "nodeId": "patch_4079"
-          }
-        },
-        {
-          "id": "wired_1891",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_7029"
-          },
-          "to": {
-            "nodeId": "switch_1728"
-          }
-        },
-        {
-          "id": "wired_5591",
-          "type": "wired",
-          "from": {
-            "nodeId": "pc_4936"
-          },
-          "to": {
-            "nodeId": "switch_1728"
-          }
-        },
-        {
-          "id": "wired_6512",
-          "type": "wired",
-          "from": {
-            "nodeId": "patch_3978"
-          },
-          "to": {
-            "nodeId": "switch_1286"
-          }
-        },
-        {
-          "id": "wired_6218",
-          "type": "wired",
-          "from": {
-            "nodeId": "patch_4079"
-          },
-          "to": {
-            "nodeId": "switch_1286"
-          }
-        },
-        {
-          "id": "wired_6733",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_4747",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_3745",
-            "port": "fa0/0"
-          },
-          "vlan": 1
-        },
-        {
-          "id": "wired_9687",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_4317",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_3745",
-            "port": "fa0/1"
-          },
-          "vlan": 2
-        },
-        {
-          "id": "wired_2177",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_1728",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_6343",
-            "port": "fa0/0"
-          },
-          "vlan": 1
-        },
-        {
-          "id": "wired_9931",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_1286",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_6343",
-            "port": "fa0/1"
-          },
-          "vlan": 2
-        },
-        {
-          "id": "wired_5976",
-          "type": "wired",
-          "from": {
-            "nodeId": "ap_6405",
-            "port": "fa0/0"
-          },
-          "to": {
-            "nodeId": "switch3_3745",
-            "port": "fa0/2"
-          },
-          "vlan": 5
-        },
-        {
-          "id": "wired_7876",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch3_3745",
-            "port": "fa0/4"
-          },
-          "to": {
-            "nodeId": "router_7996"
-          }
-        },
-        {
-          "id": "wired_7625",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch3_3745",
-            "port": "fa0/3"
-          },
-          "to": {
-            "nodeId": "switch3_6343",
-            "port": "fa0/3"
-          }
-        },
-        {
-          "id": "wired_7395",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch3_6343",
-            "port": "fa0/4"
-          },
-          "to": {
-            "nodeId": "router_7996"
-          }
-        },
-        {
-          "id": "wired_5974",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch3_6343",
-            "port": "fa0/2"
-          },
-          "to": {
-            "nodeId": "switch_7299",
-            "port": "fa0/0"
-          },
-          "vlan": 8
-        },
-        {
-          "id": "wired_472",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_7299"
-          },
-          "to": {
-            "nodeId": "server_5800"
-          }
-        },
-        {
-          "id": "wired_2591",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_7299"
-          },
-          "to": {
-            "nodeId": "nas_6270"
-          }
-        },
-        {
-          "id": "wired_3964",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_7299"
-          },
-          "to": {
-            "nodeId": "pc_8105"
-          }
-        },
-        {
-          "id": "wireless_3222",
-          "type": "wireless",
-          "from": {
-            "nodeId": "printer_6586"
-          },
-          "to": {
-            "nodeId": "ap_6405"
-          }
-        },
-        {
-          "id": "wireless_5197",
-          "type": "wireless",
-          "from": {
-            "nodeId": "pc_9647"
-          },
-          "to": {
-            "nodeId": "ap_6405"
-          }
-        },
-        {
-          "id": "wan_8766",
-          "type": "wan",
-          "from": {
-            "nodeId": "router_7996"
-          },
-          "to": {
-            "nodeId": "cloud_7477"
-          }
-        },
-        {
-          "id": "wired_9534",
-          "type": "wired",
-          "from": {
-            "nodeId": "patch_7380"
-          },
-          "to": {
-            "nodeId": "screen_4984"
-          }
-        },
-        {
-          "id": "wired_1633",
-          "type": "wired",
-          "from": {
-            "nodeId": "patch_3978"
-          },
-          "to": {
-            "nodeId": "screen_3228"
-          }
-        }
-      ]
-    },
-    "network2": {
-      "nodes": [
-        {
-          "id": "cloud_9253",
-          "type": "cloud",
-          "name": "cloud_9253",
-          "position": {
-            "x": 250,
-            "y": 50
-          },
-          "link": "network",
-          "interfaces": []
-        },
-        {
-          "id": "router_3282",
-          "type": "router",
-          "name": "router_3282",
-          "position": {
-            "x": 450,
-            "y": 150
+            "y": 100
           },
           "metadata": {
             "productor": "",
@@ -903,56 +997,11 @@
           "interfaces": []
         },
         {
-          "id": "switch_5554",
-          "type": "switch",
-          "name": "switch_5554",
+          "id": "patch_1066",
+          "type": "patch",
+          "name": "patch_1066",
           "position": {
-            "x": 300,
-            "y": 300
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "switch_8019",
-          "type": "switch",
-          "name": "switch_8019",
-          "position": {
-            "x": 600,
-            "y": 300
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "hub_8453",
-          "type": "hub",
-          "name": "hub_8453",
-          "position": {
-            "x": 700,
-            "y": 300
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_6115",
-          "type": "pc",
-          "name": "pc_6115",
-          "position": {
-            "x": 800,
+            "x": 850,
             "y": 200
           },
           "metadata": {
@@ -963,12 +1012,12 @@
           "interfaces": []
         },
         {
-          "id": "pc_8966",
+          "id": "pc_9341",
           "type": "pc",
-          "name": "pc_8966",
+          "name": "pc_9341",
           "position": {
-            "x": 800,
-            "y": 300
+            "x": 950,
+            "y": 100
           },
           "metadata": {
             "productor": "",
@@ -978,294 +1027,378 @@
           "interfaces": []
         },
         {
-          "id": "pc_1189",
-          "type": "pc",
-          "name": "pc_1189",
-          "position": {
-            "x": 800,
-            "y": 400
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "ap_1657",
-          "type": "ap",
-          "name": "ap_1657",
-          "position": {
-            "x": 600,
-            "y": 400
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "ap_7319",
-          "type": "ap",
-          "name": "ap_7319",
+          "id": "cloud_9046",
+          "type": "cloud",
+          "name": "cloud_9046",
           "position": {
             "x": 300,
-            "y": 400
+            "y": 50
           },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_281",
-          "type": "pc",
-          "name": "pc_281",
-          "position": {
-            "x": 350,
-            "y": 500
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "pc_5211",
-          "type": "pc",
-          "name": "pc_5211",
-          "position": {
-            "x": 650,
-            "y": 500
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "screen_3061",
-          "type": "screen",
-          "name": "screen_3061",
-          "position": {
-            "x": 250,
-            "y": 500
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "screen_8689",
-          "type": "screen",
-          "name": "screen_8689",
-          "position": {
-            "x": 550,
-            "y": 500
-          },
-          "metadata": {
-            "productor": "",
-            "modelo": "",
-            "notas": ""
-          },
-          "interfaces": []
-        },
-        {
-          "id": "north_2833",
-          "type": "north",
-          "name": "",
-          "position": {
-            "x": 100,
-            "y": 150
-          },
-          "angle": 0
-        },
-        {
-          "id": "text_2314",
-          "type": "text",
-          "name": "text_2314",
-          "position": {
-            "x": 740,
-            "y": 164
-          },
-          "text": "Área con hub y AP.",
-          "metadata": {},
-          "_width": 125,
-          "_height": 24,
-          "_isNewText": true
+          "link": "red2",
+          "interfaces": [],
+          "metadata": {}
         }
       ],
-      "areas": [
-        {
-          "id": "area_3704",
-          "name": "area_3704",
-          "position": {
-            "x": 226,
-            "y": 190
-          },
-          "size": {
-            "width": 200,
-            "height": 386
-          }
-        },
-        {
-          "id": "area_7675",
-          "name": "area_7675",
-          "position": {
-            "x": 535,
-            "y": 192
-          },
-          "size": {
-            "width": 331,
-            "height": 379
-          }
-        }
-      ],
+      "areas": [],
       "links": [
         {
-          "id": "e0b3c183-4047-449f-aede-c75dc9f7133b",
+          "id": "ethernet_8773",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_9430",
+            "port": "fa0/4"
+          },
+          "to": {
+            "nodeId": "switch3_3851"
+          },
+          "crossover": true
+        },
+        {
+          "id": "ethernet_6727",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_3851"
+          },
+          "to": {
+            "nodeId": "switch3_9430"
+          },
+          "crossover": true
+        },
+        {
+          "id": "ethernet_3716",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_9430",
+            "port": "fa0/1"
+          },
+          "to": {
+            "nodeId": "router_9996",
+            "port": "fa1/0"
+          }
+        },
+        {
+          "id": "ethernet_1619",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_3851",
+            "port": "fa0/1"
+          },
+          "to": {
+            "nodeId": "router_9996",
+            "port": "fa2/0"
+          }
+        },
+        {
+          "id": "ethernet_1713",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_2917"
+          },
+          "to": {
+            "nodeId": "pc_7763"
+          }
+        },
+        {
+          "id": "ethernet_1398",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_2917"
+          },
+          "to": {
+            "nodeId": "pc_7350"
+          }
+        },
+        {
+          "id": "ethernet_1933",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_2917"
+          },
+          "to": {
+            "nodeId": "pc_3208"
+          }
+        },
+        {
+          "id": "ethernet_2193",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_2917"
+          },
+          "to": {
+            "nodeId": "pc_7609"
+          }
+        },
+        {
+          "id": "ethernet_9035",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1051"
+          },
+          "to": {
+            "nodeId": "pc_1012"
+          }
+        },
+        {
+          "id": "ethernet_8923",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1051"
+          },
+          "to": {
+            "nodeId": "pc_7293"
+          }
+        },
+        {
+          "id": "ethernet_5962",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1051"
+          },
+          "to": {
+            "nodeId": "pc_5899"
+          }
+        },
+        {
+          "id": "ethernet_404",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1051"
+          },
+          "to": {
+            "nodeId": "pc_6421"
+          }
+        },
+        {
+          "id": "ethernet_5800",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_2917"
+          },
+          "to": {
+            "nodeId": "switch_9845"
+          }
+        },
+        {
+          "id": "ethernet_6874",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1051"
+          },
+          "to": {
+            "nodeId": "switch_9845"
+          }
+        },
+        {
+          "id": "ethernet_4153",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_9430",
+            "port": "fa0/3"
+          },
+          "to": {
+            "nodeId": "switch_9845"
+          },
+          "vlan": 3,
+          "crossover": true
+        },
+        {
+          "id": "wireless_8460",
+          "type": "wireless",
+          "from": {
+            "nodeId": "screen_1534"
+          },
+          "to": {
+            "nodeId": "ap_1742"
+          }
+        },
+        {
+          "id": "ethernet_8284",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_9430",
+            "port": "fa0/2"
+          },
+          "to": {
+            "nodeId": "ap_1742"
+          },
+          "vlan": 2
+        },
+        {
+          "id": "ethernet_7773",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "printer_1521"
+          },
+          "to": {
+            "nodeId": "hub_7864"
+          }
+        },
+        {
+          "id": "ethernet_1302",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "printer_2577"
+          },
+          "to": {
+            "nodeId": "hub_7864"
+          }
+        },
+        {
+          "id": "ethernet_566",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "printer_9958"
+          },
+          "to": {
+            "nodeId": "hub_7864"
+          }
+        },
+        {
+          "id": "ethernet_3253",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_9604"
+          },
+          "to": {
+            "nodeId": "ipphone_364"
+          }
+        },
+        {
+          "id": "ethernet_2929",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_364"
+          },
+          "to": {
+            "nodeId": "pc_2705"
+          }
+        },
+        {
+          "id": "ethernet_6421",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_9604"
+          },
+          "to": {
+            "nodeId": "ipphone_3717"
+          }
+        },
+        {
+          "id": "ethernet_7301",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "ipphone_3717"
+          },
+          "to": {
+            "nodeId": "pc_6247"
+          }
+        },
+        {
+          "id": "ethernet_2339",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch_9604"
+          },
+          "to": {
+            "nodeId": "hub_7864"
+          }
+        },
+        {
+          "id": "ethernet_5293",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "switch3_3851",
+            "port": "fa0/5"
+          },
+          "to": {
+            "nodeId": "switch_9604",
+            "port": "fa0/1"
+          },
+          "vlan": 15,
+          "crossover": true
+        },
+        {
+          "id": "wireless_4096",
+          "type": "wireless",
+          "from": {
+            "nodeId": "screen_2627"
+          },
+          "to": {
+            "nodeId": "ap_1742"
+          }
+        },
+        {
+          "id": "ethernet_26",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1066"
+          },
+          "to": {
+            "nodeId": "switch3_3851"
+          }
+        },
+        {
+          "id": "ethernet_5177",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "server_7415"
+          },
+          "to": {
+            "nodeId": "patch_1066"
+          }
+        },
+        {
+          "id": "ethernet_8209",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "nas_1660"
+          },
+          "to": {
+            "nodeId": "patch_1066"
+          }
+        },
+        {
+          "id": "ethernet_9174",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_9341"
+          },
+          "to": {
+            "nodeId": "patch_1066"
+          }
+        },
+        {
+          "id": "wan_57",
           "type": "wan",
           "from": {
-            "nodeId": "cloud_9253"
+            "nodeId": "cloud_9046"
           },
           "to": {
-            "nodeId": "router_3282"
+            "nodeId": "router_9996"
           }
         },
         {
-          "id": "b83ec79a-bf1e-492d-abf4-4267918f562c",
-          "type": "wired",
+          "id": "console_2951",
+          "type": "console",
           "from": {
-            "nodeId": "pc_6115"
+            "nodeId": "pc_7609"
           },
           "to": {
-            "nodeId": "hub_8453"
+            "nodeId": "switch_9845"
           }
         },
         {
-          "id": "a83bd7ac-0ea0-47ae-a344-9fa1daab7ae6",
-          "type": "wired",
+          "id": "console_3282",
+          "type": "console",
           "from": {
-            "nodeId": "hub_8453"
+            "nodeId": "pc_2705"
           },
           "to": {
-            "nodeId": "pc_8966"
-          }
-        },
-        {
-          "id": "96c37306-d76f-408e-9608-387eeb27da9c",
-          "type": "wired",
-          "from": {
-            "nodeId": "hub_8453"
-          },
-          "to": {
-            "nodeId": "pc_1189"
-          }
-        },
-        {
-          "id": "f6679ca8-dc79-478d-97e5-164c58a41e02",
-          "type": "wired",
-          "from": {
-            "nodeId": "hub_8453"
-          },
-          "to": {
-            "nodeId": "switch_8019"
-          }
-        },
-        {
-          "id": "4b6e9d11-2fa2-4763-a1ae-f204ea003f40",
-          "type": "wired",
-          "from": {
-            "nodeId": "router_3282"
-          },
-          "to": {
-            "nodeId": "switch_8019"
-          }
-        },
-        {
-          "id": "b6252489-65f1-425d-ab6e-0afa642f3504",
-          "type": "wired",
-          "from": {
-            "nodeId": "router_3282"
-          },
-          "to": {
-            "nodeId": "switch_5554"
-          }
-        },
-        {
-          "id": "3a9fe438-29cd-4912-9e30-0a361e24083e",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_5554"
-          },
-          "to": {
-            "nodeId": "ap_7319"
-          }
-        },
-        {
-          "id": "d624ca9f-1db9-4a20-8dfc-cf55029aad61",
-          "type": "wired",
-          "from": {
-            "nodeId": "switch_8019"
-          },
-          "to": {
-            "nodeId": "ap_1657"
-          }
-        },
-        {
-          "id": "88173eb9-6b97-40ff-a6de-0956391ac47f",
-          "type": "wireless",
-          "from": {
-            "nodeId": "screen_3061"
-          },
-          "to": {
-            "nodeId": "ap_7319"
-          }
-        },
-        {
-          "id": "b4f3081b-00d5-4d15-be6b-153b90932875",
-          "type": "wireless",
-          "from": {
-            "nodeId": "pc_281"
-          },
-          "to": {
-            "nodeId": "ap_7319"
-          }
-        },
-        {
-          "id": "03a85e7b-bdb1-4ea7-a4a6-25a377218580",
-          "type": "wireless",
-          "from": {
-            "nodeId": "screen_8689"
-          },
-          "to": {
-            "nodeId": "ap_1657"
-          }
-        },
-        {
-          "id": "a5e9c514-7b0d-4a3c-93cd-55d38e1d7458",
-          "type": "wireless",
-          "from": {
-            "nodeId": "pc_5211"
-          },
-          "to": {
-            "nodeId": "ap_1657"
+            "nodeId": "switch_9604"
           }
         }
       ]
     }
   },
-  "activeNetwork": "network"
+  "activeNetwork": "red1"
 }

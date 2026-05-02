@@ -269,6 +269,9 @@ function drawLinks() {
         const count = ls.length;
         const mid = (count - 1) * 0.5;
 
+        const px = -uy;
+        const py = ux;
+
         for (let i = 0; i < count; i++) {
             const l = ls[i];
 
@@ -277,11 +280,11 @@ function drawLinks() {
 
             const off = (i - mid) * gap;
 
-            const ox = ux * off;
-            const oy = uy * off;
+            const ox = px * off;
+            const oy = py * off;
 
             drawLine(
-                l.type,
+                l,
                 ctx,
                 fx + ox,
                 fy + oy,
@@ -339,7 +342,7 @@ function drawPreview() {
     }
 
     if (
-        ["link-wired", "link-wireless", "link-wan"].includes(ui.tool) &&
+        ["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool) &&
         linkStart
     ) {
         ctx.beginPath();
@@ -378,7 +381,10 @@ function drawTextWithOutline(
     ctx.restore();
 }
 
-function drawLine(type, ctx, x1, y1, x2, y2, isSelected = false) {
+function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
+    const type = link.type;
+    const cross = link?.crossover;
+
     const dx = x2 - x1;
     const dy = y2 - y1;
     const len = Math.hypot(dx, dy);
@@ -395,7 +401,7 @@ function drawLine(type, ctx, x1, y1, x2, y2, isSelected = false) {
         : (
             type === "wan"
                 ? getColor("--color-link-wan")
-                : type === "wireless"
+                : (type === "wireless" || type === "console")
                     ? getColor("--color-link-drawing")
                     : "black"
         );
@@ -440,10 +446,29 @@ function drawLine(type, ctx, x1, y1, x2, y2, isSelected = false) {
         ctx.lineTo(xC, yC);
         ctx.lineTo(x2, y2);
 
+    } else if (type === "console") {
+        const px = -uy;
+        const py = ux;
+
+        const curvature = 50; // desplazamiento máximo
+
+        // punto medio
+        const mx = (x1 + x2) * 0.5;
+        const my = (y1 + y2) * 0.5;
+
+        // punto de control desplazado
+        const cx = mx + px * curvature;
+        const cy = my + py * curvature;
+
+        ctx.moveTo(x1, y1);
+        ctx.quadraticCurveTo(cx, cy, x2, y2);
+
     } else {
+        if (cross) ctx.setLineDash([7, 3]); // 6px línea, 4px espacio
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
     }
 
     ctx.stroke();
+    ctx.setLineDash([]); // reset
 }

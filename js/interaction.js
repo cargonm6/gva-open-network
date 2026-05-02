@@ -35,7 +35,7 @@ function updateCursor() {
         return;
     }
 
-    if (["link-wired", "link-wireless", "link-wan"].includes(ui.tool)) {
+    if (["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool)) {
         canvas.style.cursor = "crosshair";
         return;
     }
