@@ -53,7 +53,8 @@
 
             <div class="nav-group">
                 <span class="nav-title">Vista</span>
-                <a href="#vista">Visualización</a>
+                <a href="#visualizacion">Visualización</a>
+                <a href="#iconos">Iconos</a>
             </div>
 
             <div class="nav-group">
@@ -80,7 +81,8 @@
                 <h2>🚀 Introducción</h2>
                 <div class="card">
                     <p>
-                        ONetMap (<i>Open Network Map</i>) es un editor basado en canvas donde puedes construir diagramas de red
+                        ONetMap (<i>Open Network Map</i>) es un editor basado en canvas donde puedes construir diagramas
+                        de red
                         mediante nodos, enlaces y agrupaciones visuales.
                     </p>
 
@@ -165,14 +167,6 @@
             <section id="dispositivos">
                 <h2>🖥️ Dispositivos</h2>
                 <div class="card">
-
-                    <div class="device-grid">
-                        <img src="img/devices/symbol/router.svg">
-                        <img src="img/devices/symbol/switch.svg">
-                        <img src="img/devices/symbol/pc.svg">
-                        <img src="img/devices/symbol/server.svg">
-                    </div>
-
                     <p>Incluye:</p>
                     <ul>
                         <li>Routers, switches, APs</li>
@@ -329,8 +323,8 @@
             </section>
 
             <!-- VISTA -->
-            <section id="vista">
-                <h2>🔍 Vista</h2>
+            <section id="visualizacion">
+                <h2>🔍 Visualización</h2>
                 <div class="card">
 
                     <ul>
@@ -338,6 +332,80 @@
                         <li>Rejilla opcional</li>
                         <li>Mostrar puertos</li>
                         <li>Cambio de iconos</li>
+                    </ul>
+
+                </div>
+            </section>
+
+            <!-- ICONOS -->
+            <section id="iconos">
+                <h2>🎨 Iconos</h2>
+                <div class="card">
+
+                    <p>
+                        ONetMap utiliza un conjunto de iconos estandarizados para representar dispositivos,
+                        conexiones y elementos de red. Estos iconos combinan recursos reconocidos del sector
+                        junto con adaptaciones personalizadas para mejorar la claridad visual.
+                    </p>
+
+                    <h3>📚 Fuentes de iconos</h3>
+                    <ul>
+                        <li>
+                            <b>Vista simbólica: Cisco Network Topology Icons 3015</b> - <a
+                                href="https://vecta.io/symbols/240/cisco-network-topology-icons-3015" target="_blank">
+                                Ver colección
+                            </a><br>
+                            Conjunto oficial de Cisco ampliamente utilizado en documentación profesional
+                            y diagramas de infraestructura de red.
+                            <br><br>
+                            <div class="device-grid">
+                                <img src="img/devices/symbol/router.svg">
+                                <img src="img/devices/symbol/switch.svg">
+                                <img src="img/devices/symbol/pc.svg">
+                                <img src="img/devices/symbol/server.svg">
+                            </div>
+                        </li>
+                        <li>
+                            <b>Vista realista: Basic Network</b> - <a href="https://vecta.io/symbols/37/basic-network"
+                                target="_blank">
+                                Ver colección
+                            </a><br>
+                            Iconos esqueumórficos, orientados al diseño de diagramas rápidos y de fácil interpretación.
+                            <br><br>
+                            <div class="device-grid">
+                                <img src="img/devices/real/router.svg">
+                                <img src="img/devices/real/switch.svg">
+                                <img src="img/devices/real/pc.svg">
+                                <img src="img/devices/real/server.svg">
+                            </div>
+                        </li>
+                        <li>
+                            <b>Standardized Network Diagramming Symbols (SANDS)</b> - <a
+                                href="https://iacis.org/iis/2008/S2008_967.pdf" target="_blank">
+                                Paper original
+                            </a> |
+                            <a href="https://digitalcommons.georgiasouthern.edu/etd/666" target="_blank">
+                                Tesis relacionada
+                            </a>
+                            <br>
+                            Propuesta académica para la estandarización de símbolos en diagramas de red,
+                            enfocada en consistencia semántica y claridad en la representación.
+                            <br><br>
+                            <div class="device-grid">
+                                <img src="img/devices/sands/router.svg">
+                                <img src="img/devices/sands/switch.svg">
+                                <img src="img/devices/sands/pc.svg">
+                                <img src="img/devices/sands/server.svg">
+                            </div>
+                        </li>
+                    </ul>
+
+                    <h3>🛠️ Personalización</h3>
+                    <ul>
+                        <li>Adaptación de estilos para coherencia visual dentro de la herramienta</li>
+                        <li>Simplificación de algunos iconos para mejorar legibilidad en zoom bajo</li>
+                        <li>Unificación de tamaños y proporciones</li>
+                        <li>Creación de iconos propios para elementos específicos (como nodos cloud entre hojas)</li>
                     </ul>
 
                 </div>

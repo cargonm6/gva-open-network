@@ -1991,7 +1991,7 @@ function loadIconSet(setName) {
 function changeIconSet(setName) {
   loadIconSet(setName);
 
-  const label = (setName === "symbol") ? "Simbólica" : "Realista";
+  const label = (setName === "symbol") ? "Simbólica" : (setName === "sands") ? "SANDS" : "Realista";
 
   document.getElementById("iconSetLabel").textContent = label;
   document.getElementById(
