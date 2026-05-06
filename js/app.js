@@ -1991,7 +1991,7 @@ function loadIconSet(setName) {
 function changeIconSet(setName) {
   loadIconSet(setName);
 
-  const label = (setName === "symbol") ? "Simbólica" : (setName === "sands") ? "SANDS" : "Realista";
+  const label = (setName === "symbol") ? "Simbólica" : (setName === "sands") ? "Esquemática" : "Realista";
 
   document.getElementById("iconSetLabel").textContent = label;
   document.getElementById(
@@ -2018,7 +2018,9 @@ async function init() {
 
   const savedIconSet = localStorage.getItem("iconSet") || "symbol";
   loadIconSet(savedIconSet);
-  const label = savedIconSet === "real" ? "Realista" : "Simbólica";
+
+  const label = (savedIconSet === "symbol") ? "Simbólica" : (savedIconSet === "sands") ? "Esquemática" : "Realista";
+  
   document.getElementById("iconSetLabel").textContent = label;
   document.getElementById(
     "iconSetPreview"
