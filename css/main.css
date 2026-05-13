@@ -186,7 +186,7 @@ h5:not(:first-child) {
     height: auto;
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown:hover > .dropdown-content {
     display: flex;
     flex-direction: column;
 }
@@ -228,8 +228,11 @@ h5:not(:first-child) {
     padding: 10px;
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow: visible;
+    position: relative;
+    z-index: 10;
 }
+
 
 #toolbar button {
     width: 100%;
@@ -274,6 +277,7 @@ button.tool-btn.active {
 /* Dropdown dentro de toolbar */
 .toolbar-dropdown {
     width: 100%;
+    position: relative;
 }
 
 .toolbar-dropdown .dropbtn {
@@ -284,24 +288,24 @@ button.tool-btn.active {
 /* Ajustar dropdown en sidebar */
 #toolbar .dropdown-content {
     position: absolute;
-    top: 100%;
-    left: 0;
     width: max-content;
-    /* ✅ toma solo el ancho del contenido */
-    min-width: 100%;
-    /* opcional: al menos igual al botón */
-    /* box-shadow: none; */
     background: var(--color-dropdown-bg);
-    /* asegúrate que contraste */
     border-radius: 6px;
     flex-direction: column;
     z-index: 999;
-    margin-top: -5px;
+    top: 0;
+    left: 100%;
 }
 
 #toolbar p {
     font-size: small;
     margin-bottom: 5px;
+}
+
+.dropdown-content {
+    display: none;
+    flex-direction: column;
+    position: absolute;
 }
 
 /* ===================== CANVAS ===================== */
@@ -313,6 +317,8 @@ canvas {
     /* ⚠️ importante en flex */
     border: 1px solid var(--color-canvas-border);
     cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
 /* ===================== CUSTOM FILE LABEL ===================== */
@@ -394,11 +400,10 @@ canvas {
     display: none;
 }
 
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
     #container {
         flex-direction: column;
         height: 100vh;
-        /* 🔥 CLAVE */
     }
 
     #resizer {
@@ -421,7 +426,6 @@ canvas {
     }
 
     #topbar {
-        /* flex-wrap: wrap; */
         height: 50px;
         padding: 5px;
         gap: 5px;
@@ -540,4 +544,4 @@ canvas {
         white-space: nowrap;
         z-index: 1000;
     }
-}
+} */

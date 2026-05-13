@@ -112,215 +112,265 @@
         <!-- TOOLBAR IZQUIERDA -->
         <!-- ===================== -->
         <div id="toolbar">
+            <div class="toolbar-scroll">
+                <h5>Dispositivos</h5>
 
-            <h5>Dispositivos</h5>
-
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img src="img/devices/symbol/router.svg" class="btn-icon">
-                    <span>Intermedios</span>
-                </button>
-                <div class="dropdown-content">
-                    <button class="tool-btn" data-action="tool" data-tool="router">
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
                         <img src="img/devices/symbol/router.svg" class="btn-icon">
-                        <span>Router</span>
+                        <span>Interconexión</span>
                     </button>
-                    <button class="tool-btn" data-action="tool" data-tool="switch">
-                        <img src="img/devices/symbol/switch.svg" class="btn-icon">
-                        <span>Switch</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="switch3">
-                        <img src="img/devices/symbol/switch3.svg" class="btn-icon">
-                        <span>L3 Switch</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="ap">
-                        <img src="img/devices/symbol/ap.svg" class="btn-icon">
-                        <span>Access point</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="hub">
-                        <img src="img/devices/symbol/hub.svg" class="btn-icon">
-                        <span>Hub</span>
-                    </button>
-                </div>
-            </div>
+                    <div class="dropdown-content">
 
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img src="img/devices/symbol/pc.svg" class="btn-icon">
-                    <span>Terminales</span>
-                </button>
-                <div class="dropdown-content">
-                    <button class="tool-btn" data-action="tool" data-tool="pc">
+                        <div class="dropdown">
+                            <button class="tool-btn dropbtn">
+                                <img src="img/devices/symbol/router.svg" class="btn-icon">
+                                <span>OSI 3 (red)</span>
+                            </button>
+                            <div class="dropdown-content">
+                                <button class="tool-btn" data-action="tool" data-tool="router">
+                                    <img src="img/devices/symbol/router.svg" class="btn-icon">
+                                    <span>Router</span>
+                                </button>
+                                <button class="tool-btn" data-action="tool" data-tool="switch3">
+                                    <img src="img/devices/symbol/switch3.svg" class="btn-icon">
+                                    <span>L3 Switch</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button class="tool-btn dropbtn">
+                                <img src="img/devices/symbol/switch.svg" class="btn-icon">
+                                <span>OSI 2 (enlace)</span>
+                            </button>
+                            <div class="dropdown-content">
+                                <button class="tool-btn" data-action="tool" data-tool="switch">
+                                    <img src="img/devices/symbol/switch.svg" class="btn-icon">
+                                    <span>Switch</span>
+                                </button>
+                                <button class="tool-btn" data-action="tool" data-tool="ap">
+                                    <img src="img/devices/symbol/ap.svg" class="btn-icon">
+                                    <span>Access point</span>
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button class="tool-btn dropbtn">
+                                <img src="img/devices/symbol/hub.svg" class="btn-icon">
+                                <span>OSI 1 (física)</span>
+                            </button>
+                            <div class="dropdown-content">
+                                <button class="tool-btn" data-action="tool" data-tool="hub">
+                                    <img src="img/devices/symbol/hub.svg" class="btn-icon">
+                                    <span>Hub</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
                         <img src="img/devices/symbol/pc.svg" class="btn-icon">
-                        <span>PC</span>
+                        <span>Terminales</span>
                     </button>
-                    <button class="tool-btn" data-action="tool" data-tool="server">
-                        <img src="img/devices/symbol/server.svg" class="btn-icon">
-                        <span>Servidor</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="nas">
-                        <img src="img/devices/symbol/nas.svg" class="btn-icon">
-                        <span>NAS</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="printer">
-                        <img src="img/devices/symbol/printer.svg" class="btn-icon">
-                        <span>Impresora</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="screen">
-                        <img src="img/devices/symbol/screen.svg" class="btn-icon">
-                        <span>Pantalla</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="ipphone">
-                        <img src="img/devices/symbol/ipphone.svg" class="btn-icon">
-                        <span>Teléfono VoIP</span>
-                    </button>
-                </div>
-            </div>
+                    <div class="dropdown-content">
 
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img src="img/devices/symbol/patch.svg" class="btn-icon">
-                    <span>Estructura</span>
-                </button>
-                <div class="dropdown-content">
-                    <button class="tool-btn" data-action="tool" data-tool="patch">
+                        <div class="dropdown">
+                            <button class="tool-btn dropbtn">
+                                <img src="img/devices/symbol/pc.svg" class="btn-icon">
+                                <span>Equipos</span>
+                            </button>
+                            <div class="dropdown-content">
+                                <button class="tool-btn" data-action="tool" data-tool="pc">
+                                    <img src="img/devices/symbol/pc.svg" class="btn-icon">
+                                    <span>PC</span>
+                                </button>
+                                <button class="tool-btn" data-action="tool" data-tool="server">
+                                    <img src="img/devices/symbol/server.svg" class="btn-icon">
+                                    <span>Servidor</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button class="tool-btn dropbtn">
+                                <img src="img/devices/symbol/printer.svg" class="btn-icon">
+                                <span>Auxiliar</span>
+                            </button>
+                            <div class="dropdown-content">
+                                <button class="tool-btn" data-action="tool" data-tool="nas">
+                                    <img src="img/devices/symbol/nas.svg" class="btn-icon">
+                                    <span>NAS</span>
+                                </button>
+                                <button class="tool-btn" data-action="tool" data-tool="printer">
+                                    <img src="img/devices/symbol/printer.svg" class="btn-icon">
+                                    <span>Impresora</span>
+                                </button>
+                                <button class="tool-btn" data-action="tool" data-tool="screen">
+                                    <img src="img/devices/symbol/screen.svg" class="btn-icon">
+                                    <span>Pantalla</span>
+                                </button>
+                                <button class="tool-btn" data-action="tool" data-tool="ipphone">
+                                    <img src="img/devices/symbol/ipphone.svg" class="btn-icon">
+                                    <span>Teléfono VoIP</span>
+                                </button>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
                         <img src="img/devices/symbol/patch.svg" class="btn-icon">
-                        <span>Patch panel</span>
+                        <span>Estructura</span>
                     </button>
-                    <button class="tool-btn" data-action="tool" data-tool="cloud">
-                        <img src="img/devices/symbol/cloud.svg" class="btn-icon">
-                        <span>Nube</span>
-                    </button>
+                    <div class="dropdown-content">
+                        <button class="tool-btn" data-action="tool" data-tool="patch">
+                            <img src="img/devices/symbol/patch.svg" class="btn-icon">
+                            <span>Patch panel</span>
+                        </button>
+                        <button class="tool-btn" data-action="tool" data-tool="cloud">
+                            <img src="img/devices/symbol/cloud.svg" class="btn-icon">
+                            <span>Nube</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <h5>Relaciones</h5>
+                <h5>Relaciones</h5>
 
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img src="img/buttons/link/cable.svg" class="btn-icon">
-                    <span>Enlace</span>
-                </button>
-                <div class="dropdown-content">
-                    <button class="tool-btn" data-action="tool" data-tool="link-ethernet">
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
                         <img src="img/buttons/link/cable.svg" class="btn-icon">
-                        <span>Ethernet</span>
+                        <span>Enlace</span>
                     </button>
-                    <button class="tool-btn" data-action="tool" data-tool="link-wireless">
-                        <img src="img/buttons/link/wireless.svg" class="btn-icon">
-                        <span>Wireless</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="link-wan">
-                        <img src="img/buttons/link/wan.svg" class="btn-icon">
-                        <span>Serial / WAN</span>
-                    </button>
-                    <button class="tool-btn" data-action="tool" data-tool="link-console">
-                        <img src="img/buttons/link/console.svg" class="btn-icon">
-                        <span>Console</span>
-                    </button>
+                    <div class="dropdown-content">
+                        <button class="tool-btn" data-action="tool" data-tool="link-ethernet">
+                            <img src="img/buttons/link/cable.svg" class="btn-icon">
+                            <span>Ethernet</span>
+                        </button>
+                        <button class="tool-btn" data-action="tool" data-tool="link-wireless">
+                            <img src="img/buttons/link/wireless.svg" class="btn-icon">
+                            <span>Wireless</span>
+                        </button>
+                        <button class="tool-btn" data-action="tool" data-tool="link-wan">
+                            <img src="img/buttons/link/wan.svg" class="btn-icon">
+                            <span>Serial / WAN</span>
+                        </button>
+                        <button class="tool-btn" data-action="tool" data-tool="link-console">
+                            <img src="img/buttons/link/console.svg" class="btn-icon">
+                            <span>Console</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img src="img/buttons/link/area.svg" class="btn-icon">
-                    <span>Otros</span>
-                </button>
-                <div class="dropdown-content">
-                    <button class="tool-btn" data-action="tool" data-tool="area">
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
                         <img src="img/buttons/link/area.svg" class="btn-icon">
-                        <span>Área</span>
+                        <span>Otros</span>
                     </button>
-                    <button class="tool-btn" data-action="tool" data-tool="north">
-                        <img src="img/buttons/link/north.svg" class="btn-icon">
-                        <span>Norte</span>
-                    </button>
-                    <button data-action="image">
-                        <img src="img/buttons/menu/file-export-png.svg" class="btn-icon">
-                        <span>Imagen</span>
-                    </button>
+                    <div class="dropdown-content">
+                        <button class="tool-btn" data-action="tool" data-tool="area">
+                            <img src="img/buttons/link/area.svg" class="btn-icon">
+                            <span>Área</span>
+                        </button>
+                        <button class="tool-btn" data-action="tool" data-tool="north">
+                            <img src="img/buttons/link/north.svg" class="btn-icon">
+                            <span>Norte</span>
+                        </button>
+                        <button data-action="image">
+                            <img src="img/buttons/menu/file-export-png.svg" class="btn-icon">
+                            <span>Imagen</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <h5>Herramientas</h5>
+                <h5>Herramientas</h5>
 
-            <button class="tool-btn active" id="selectButton" data-action="tool" data-tool="select">
-                <img src="img/buttons/tools/cursor.svg" class="btn-icon">
-                <span>Selección</span>
-            </button>
-
-            <button class="tool-btn" data-action="tool" data-tool="text">
-                <img src="img/buttons/tools/text.svg" class="btn-icon">
-                <span>Texto</span>
-            </button>
-
-            <button class="tool-btn" id="deleteButton" data-action="tool" data-tool="delete">
-                <img src="img/buttons/tools/delete.svg" class="btn-icon">
-                <span>Eliminar</span>
-            </button>
-
-            <button class="tool-btn" data-action="reset-ids">
-                <img src="img/buttons/tools/id.svg" class="btn-icon">
-                <span>Reasignar ID</span>
-            </button>
-
-            <h5>Vista</h5>
-
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img id="iconSetPreview" src="img/devices/symbol/router.svg" class="btn-icon">
-                    <span id="iconSetLabel">Simbólica</span>
+                <button class="tool-btn active" id="selectButton" data-action="tool" data-tool="select">
+                    <img src="img/buttons/tools/cursor.svg" class="btn-icon">
+                    <span>Selección</span>
                 </button>
 
-                <div class="dropdown-content">
-
-                    <button class="tool-btn" data-action="change-icons" data-value="symbol">
-                        <img src="img/devices/symbol/router.svg">
-                        <span>Simbólica</span>
-                    </button>
-
-                    <button class="tool-btn" data-action="change-icons" data-value="real">
-                        <img src="img/devices/real/router.svg">
-                        <span>Realista</span>
-                    </button>
-
-                    <button class="tool-btn" data-action="change-icons" data-value="sands">
-                        <img src="img/devices/sands/router.svg">
-                        <span>Esquemática</span>
-                    </button>
-
-                </div>
-            </div>
-
-            <div class="dropdown toolbar-dropdown">
-                <button class="tool-btn dropbtn">
-                    <img id="iconSetPreview" src="img/buttons/tools/gear.svg" class="btn-icon">
-                    <span id="iconSetLabel">Opciones</span>
+                <button class="tool-btn" data-action="tool" data-tool="text">
+                    <img src="img/buttons/tools/text.svg" class="btn-icon">
+                    <span>Texto</span>
                 </button>
 
-                <div class="dropdown-content">
+                <button class="tool-btn" id="deleteButton" data-action="tool" data-tool="delete">
+                    <img src="img/buttons/tools/delete.svg" class="btn-icon">
+                    <span>Eliminar</span>
+                </button>
 
-                    <button class="tool-btn" id="toggleGrid" data-action="toggle-grid">
-                        <img src="img/buttons/tools/grid-on.svg" class="btn-icon">
-                        <span>Forzar a rejilla</span>
+                <button class="tool-btn" data-action="reset-ids">
+                    <img src="img/buttons/tools/id.svg" class="btn-icon">
+                    <span>Reasignar ID</span>
+                </button>
+
+                <h5>Vista</h5>
+
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
+                        <img id="iconSetPreview" src="img/devices/symbol/router.svg" class="btn-icon">
+                        <span id="iconSetLabel">Simbólica</span>
                     </button>
 
-                    <button class="tool-btn" id="togglePorts" data-action="toggle-ports">
-                        <img src="img/buttons/tools/port-off.svg" class="btn-icon">
-                        <span>Quitar puertos</span>
-                    </button>
+                    <div class="dropdown-content">
 
-                    <button class="tool-btn" id="toggleTooltip" data-action="toggle-tooltip">
-                        <img src="img/buttons/tools/tooltip-off.svg" class="btn-icon">
-                        <span>Quitar tooltip</span>
-                    </button>
+                        <button class="tool-btn" data-action="change-icons" data-value="symbol">
+                            <img src="img/devices/symbol/router.svg">
+                            <span>Simbólica</span>
+                        </button>
 
+                        <button class="tool-btn" data-action="change-icons" data-value="real">
+                            <img src="img/devices/real/router.svg">
+                            <span>Realista</span>
+                        </button>
+
+                        <button class="tool-btn" data-action="change-icons" data-value="sands">
+                            <img src="img/devices/sands/router.svg">
+                            <span>Esquemática</span>
+                        </button>
+
+                    </div>
                 </div>
+
+                <div class="dropdown toolbar-dropdown">
+                    <button class="tool-btn dropbtn">
+                        <img id="iconSetPreview" src="img/buttons/tools/gear.svg" class="btn-icon">
+                        <span id="iconSetLabel">Opciones</span>
+                    </button>
+
+                    <div class="dropdown-content">
+
+                        <button class="tool-btn" id="toggleGrid" data-action="toggle-grid">
+                            <img src="img/buttons/tools/grid-on.svg" class="btn-icon">
+                            <span>Forzar a rejilla</span>
+                        </button>
+
+                        <button class="tool-btn" id="togglePorts" data-action="toggle-ports">
+                            <img src="img/buttons/tools/port-off.svg" class="btn-icon">
+                            <span>Quitar puertos</span>
+                        </button>
+
+                        <button class="tool-btn" id="toggleTooltip" data-action="toggle-tooltip">
+                            <img src="img/buttons/tools/tooltip-off.svg" class="btn-icon">
+                            <span>Quitar tooltip</span>
+                        </button>
+
+                    </div>
+                </div>
+
+                <p id="zoom">Zoom: <span id="zoomLabel">100%</span></p>
+                <input id="zoomSlider" type="range" min="0" max="1" step="0.01" value="0.5">
             </div>
-
-            <p id="zoom">Zoom: <span id="zoomLabel">100%</span></p>
-            <input id="zoomSlider" type="range" min="0" max="1" step="0.01" value="0.5">
-
         </div>
 
         <!-- ===================== -->
