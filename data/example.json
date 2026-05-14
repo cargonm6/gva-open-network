@@ -1037,6 +1037,36 @@
           "link": "red2",
           "interfaces": [],
           "metadata": {}
+        },
+        {
+          "id": "repeater_4587",
+          "type": "repeater",
+          "name": "repeater_4587",
+          "position": {
+            "x": 1050,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "server_1575",
+          "type": "server",
+          "name": "server_1575",
+          "position": {
+            "x": 1050,
+            "y": 500
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
         }
       ],
       "areas": [],
@@ -1395,6 +1425,26 @@
           },
           "to": {
             "nodeId": "switch_9604"
+          }
+        },
+        {
+          "id": "ethernet_8261",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "patch_1066"
+          },
+          "to": {
+            "nodeId": "repeater_4587"
+          }
+        },
+        {
+          "id": "ethernet_6158",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "repeater_4587"
+          },
+          "to": {
+            "nodeId": "server_1575"
           }
         }
       ]

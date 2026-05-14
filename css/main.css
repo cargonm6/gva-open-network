@@ -158,10 +158,15 @@ h5:not(:first-child) {
     min-width: 120px;
 }
 
-.dropbtn::after {
+#topbar .dropbtn::after {
     content: "▾";
     margin-left: auto;
-    /* empuja el símbolo al final */
+    font-size: 12px;
+}
+
+#toolbar .dropbtn::after {
+    content: "▸";
+    margin-left: auto;
     font-size: 12px;
 }
 
