@@ -389,6 +389,7 @@ const tool_devices = [
   "router",
   "switch",
   "switch3",
+  "bridge",
   "ap",
   "hub",
   "repeater",
@@ -1972,6 +1973,7 @@ function loadIconSet(setName) {
     router: loadIcon(`img/devices/${setName}/router.svg`),
     switch: loadIcon(`img/devices/${setName}/switch.svg`),
     switch3: loadIcon(`img/devices/${setName}/switch3.svg`),
+    bridge: loadIcon(`img/devices/${setName}/bridge.svg`),
     ap: loadIcon(`img/devices/${setName}/ap.svg`),
     hub: loadIcon(`img/devices/${setName}/hub.svg`),
     repeater: loadIcon(`img/devices/${setName}/repeater.svg`),
@@ -2022,7 +2024,7 @@ async function init() {
   loadIconSet(savedIconSet);
 
   const label = (savedIconSet === "symbol") ? "Simbólica" : (savedIconSet === "sands") ? "Esquemática" : "Realista";
-  
+
   document.getElementById("iconSetLabel").textContent = label;
   document.getElementById(
     "iconSetPreview"
