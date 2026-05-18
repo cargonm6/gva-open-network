@@ -450,15 +450,23 @@ function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
         const px = -uy;
         const py = ux;
 
-        const curvature = 50; // desplazamiento máximo
+        const curvature = 50;
 
-        // punto medio
         const mx = (x1 + x2) * 0.5;
         const my = (y1 + y2) * 0.5;
 
-        // punto de control desplazado
-        const cx = mx + px * curvature;
-        const cy = my + py * curvature;
+        // dos posibles controles (izquierda/derecha)
+        const cx1 = mx + px * curvature;
+        const cy1 = my + py * curvature;
+
+        const cx2 = mx - px * curvature;
+        const cy2 = my - py * curvature;
+
+        // elegimos el que esté más arriba (menor Y)
+        const useFirst = cy1 < cy2;
+
+        const cx = useFirst ? cx1 : cx2;
+        const cy = useFirst ? cy1 : cy2;
 
         ctx.moveTo(x1, y1);
         ctx.quadraticCurveTo(cx, cy, x2, y2);
