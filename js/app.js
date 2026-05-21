@@ -738,7 +738,7 @@ canvas.addEventListener("mousedown", (e) => {
     return;
   }
 
-  if (["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool)) {
+  if (["link-ethernet", "link-wireless", "link-wan", "link-console", "link-tokenring"].includes(ui.tool)) {
     if (!node) return;
 
     if (!linkStart) {
@@ -752,6 +752,8 @@ canvas.addEventListener("mousedown", (e) => {
         type = "wan";
       } else if (ui.tool === "link-console") {
         type = "console";
+      } else if (ui.tool === "link-tokenring") {
+        type = "tokenring";
       }
 
       getLinks().push({
@@ -985,7 +987,7 @@ canvas.addEventListener(
 canvas.addEventListener("contextmenu", (e) => {
   e.preventDefault();
   if (
-    ["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool) &&
+    ["link-ethernet", "link-wireless", "link-wan", "link-console", "link-tokenring"].includes(ui.tool) &&
     linkStart
   ) {
     linkStart = null;

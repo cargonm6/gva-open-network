@@ -246,8 +246,64 @@ function drawLinks() {
 
         const first = ls[0];
 
-        const f = nodeMap.get(first.from.nodeId);
-        const t = nodeMap.get(first.to.nodeId);
+        if (first.type === "tokenring") {
+
+            // 🔥 grouping correcto por dirección
+            const groups = getTokenringGroups(ls);
+
+            for (const group of groups.values()) {
+
+                for (let i = 0; i < group.length; i++) {
+
+                    const l = group[i];
+
+                    const f = nodeMap.get(l.from.nodeId);
+                    const t = nodeMap.get(l.to.nodeId);
+                    if (!f || !t) continue;
+
+                    const fx = f.position.x + node_w * 0.5;
+                    const fy = f.position.y + node_h * 0.5;
+                    const tx = t.position.x + node_w * 0.5;
+                    const ty = t.position.y + node_h * 0.5;
+
+                    const dx = tx - fx;
+                    const dy = ty - fy;
+                    const len = Math.hypot(dx, dy);
+                    if (len === 0) continue;
+
+                    const ux = dx / len;
+                    const uy = dy / len;
+
+                    // perpendicular estable por dirección real
+                    const px = -uy;
+                    const py = ux;
+
+                    const mid = (group.length - 1) * 0.5;
+                    const off = (i - mid) * 10;
+
+                    const ox = px * off;
+                    const oy = py * off;
+
+                    drawLine(
+                        l,
+                        ctx,
+                        fx + ox,
+                        fy + oy,
+                        tx + ox,
+                        ty + oy,
+                        ui.selection.link?.id === l.id
+                    );
+                }
+            }
+
+            continue;
+        }
+
+        // resto igual (tu código actual)
+        const firstNonToken = ls[0];
+
+        const f = nodeMap.get(firstNonToken.from.nodeId);
+        const t = nodeMap.get(firstNonToken.to.nodeId);
         if (!f || !t) continue;
 
         // 🔥 cache local
@@ -342,7 +398,7 @@ function drawPreview() {
     }
 
     if (
-        ["link-ethernet", "link-wireless", "link-wan", "link-console"].includes(ui.tool) &&
+        ["link-ethernet", "link-wireless", "link-wan", "link-console", "link-tokenring"].includes(ui.tool) &&
         linkStart
     ) {
         ctx.beginPath();
@@ -396,15 +452,32 @@ function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
 
     ctx.beginPath();
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = isSelected
-        ? getColor("--color-alert")
-        : (
-            type === "wan"
-                ? getColor("--color-link-wan")
-                : (type === "wireless" || type === "console")
-                    ? getColor("--color-link-drawing")
-                    : "black"
-        );
+    let strokeColor;
+
+    if (isSelected) {
+        strokeColor = getColor("--color-alert");
+    } else {
+        switch (type) {
+            case "wan":
+                strokeColor = getColor("--color-link-wan");
+                break;
+
+            case "wireless":
+            case "console":
+                strokeColor = getColor("--color-link-drawing");
+                break;
+
+            case "tokenring":
+                console.log("token ring");
+                strokeColor = getColor("--color-area-border");
+                break;
+
+            default:
+                strokeColor = "black";
+        }
+    }
+
+    ctx.strokeStyle = strokeColor;
 
     if (type === "wireless") {
         const nx = -uy;
@@ -471,6 +544,91 @@ function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
         ctx.moveTo(x1, y1);
         ctx.quadraticCurveTo(cx, cy, x2, y2);
 
+    } else if (type === "tokenring") {
+
+        // =====================================
+        // Curva principal
+        // =====================================
+
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+
+        const len = Math.hypot(dx, dy);
+
+        const ux = dx / len;
+        const uy = dy / len;
+
+        // perpendicular clockwise
+        const px = -uy;
+        const py = ux;
+
+        const curvature = 50;
+
+        const mx = (x1 + x2) * 0.5;
+        const my = (y1 + y2) * 0.5;
+
+        const cx = mx + px * curvature;
+        const cy = my + py * curvature;
+
+        ctx.moveTo(x1, y1);
+        ctx.quadraticCurveTo(cx, cy, x2, y2);
+
+        // =====================================
+        // Flechas centradas en la curva
+        // =====================================
+
+        const arrowCount = Math.max(1, Math.floor(len / 80));
+        const headSize = 6;
+
+        function q(t, p0, p1, p2) {
+            const mt = 1 - t;
+            return mt * mt * p0 + 2 * mt * t * p1 + t * t * p2;
+        }
+
+        function dq(t, p0, p1, p2) {
+            return 2 * (1 - t) * (p1 - p0) + 2 * t * (p2 - p1);
+        }
+
+        // zona útil alrededor del centro
+        const spread = 0.25; // controla cuánto se alejan del centro
+
+        for (let i = 0; i < arrowCount; i++) {
+
+            // distribución simétrica alrededor de 0
+            const n = arrowCount === 1 ? 0 : (i / (arrowCount - 1)) * 2 - 1;
+
+            // centro + desplazamiento simétrico
+            const t = 0.5 + n * spread;
+
+            const clampedT = Math.max(0.15, Math.min(0.85, t));
+
+            // punto en curva
+            const x = q(clampedT, x1, cx, x2);
+            const y = q(clampedT, y1, cy, y2);
+
+            // tangente
+            const tx = dq(clampedT, x1, cx, x2);
+            const ty = dq(clampedT, y1, cy, y2);
+
+            const tlen = Math.hypot(tx, ty);
+            const ux = tx / tlen;
+            const uy = ty / tlen;
+
+            const angle = Math.atan2(uy, ux);
+
+            // flecha
+            ctx.moveTo(x, y);
+            ctx.lineTo(
+                x - Math.cos(angle - Math.PI / 6) * headSize,
+                y - Math.sin(angle - Math.PI / 6) * headSize
+            );
+
+            ctx.moveTo(x, y);
+            ctx.lineTo(
+                x - Math.cos(angle + Math.PI / 6) * headSize,
+                y - Math.sin(angle + Math.PI / 6) * headSize
+            );
+        }
     } else {
         if (cross) ctx.setLineDash([7, 3]); // 6px línea, 4px espacio
         ctx.moveTo(x1, y1);
@@ -479,4 +637,19 @@ function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
 
     ctx.stroke();
     ctx.setLineDash([]); // reset
+}
+
+function getTokenringGroups(links) {
+
+    const map = new Map();
+
+    for (const l of links) {
+
+        const key = `${l.from.nodeId}->${l.to.nodeId}`;
+
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(l);
+    }
+
+    return map;
 }

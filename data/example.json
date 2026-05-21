@@ -6,9 +6,9 @@
         {
           "id": "cloud_3980",
           "type": "cloud",
-          "name": "cloud_3980",
+          "name": "A red 1",
           "position": {
-            "x": 300,
+            "x": 350,
             "y": 50
           },
           "link": "red1",
@@ -344,9 +344,35 @@
             "notas": ""
           },
           "interfaces": []
+        },
+        {
+          "id": "cloud_7545",
+          "type": "cloud",
+          "name": "A red 3",
+          "position": {
+            "x": 550,
+            "y": 100
+          },
+          "link": "red3",
+          "interfaces": [],
+          "metadata": {}
         }
       ],
-      "areas": [],
+      "areas": [
+        {
+          "id": "area_3573",
+          "name": "Oficina central",
+          "position": {
+            "x": 33,
+            "y": 180
+          },
+          "size": {
+            "width": 800,
+            "height": 350
+          },
+          "color": null
+        }
+      ],
       "links": [
         {
           "id": "wan_126",
@@ -570,6 +596,624 @@
           },
           "to": {
             "nodeId": "ipphone_7551"
+          }
+        },
+        {
+          "id": "wan_9494",
+          "type": "wan",
+          "from": {
+            "nodeId": "router_437"
+          },
+          "to": {
+            "nodeId": "cloud_7545"
+          }
+        }
+      ]
+    },
+    "red3": {
+      "nodes": [
+        {
+          "id": "mau_5772",
+          "type": "mau",
+          "name": "mau_5772",
+          "position": {
+            "x": 550,
+            "y": 200
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_9269",
+          "type": "mau",
+          "name": "mau_9269",
+          "position": {
+            "x": 700,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_4665",
+          "type": "mau",
+          "name": "mau_4665",
+          "position": {
+            "x": 650,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_6049",
+          "type": "mau",
+          "name": "mau_6049",
+          "position": {
+            "x": 450,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_9458",
+          "type": "mau",
+          "name": "mau_9458",
+          "position": {
+            "x": 400,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_1528",
+          "type": "pc",
+          "name": "pc_1528",
+          "position": {
+            "x": 100,
+            "y": 100
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_8435",
+          "type": "pc",
+          "name": "pc_8435",
+          "position": {
+            "x": 750,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_9071",
+          "type": "pc",
+          "name": "pc_9071",
+          "position": {
+            "x": 350,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "bridge_3566",
+          "type": "bridge",
+          "name": "bridge_3566",
+          "position": {
+            "x": 850,
+            "y": 250
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_1366",
+          "type": "mau",
+          "name": "mau_1366",
+          "position": {
+            "x": 1000,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_2662",
+          "type": "mau",
+          "name": "mau_2662",
+          "position": {
+            "x": 1150,
+            "y": 200
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_8179",
+          "type": "mau",
+          "name": "mau_8179",
+          "position": {
+            "x": 1300,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_3322",
+          "type": "mau",
+          "name": "mau_3322",
+          "position": {
+            "x": 1050,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_5898",
+          "type": "mau",
+          "name": "mau_5898",
+          "position": {
+            "x": 1250,
+            "y": 450
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_4968",
+          "type": "pc",
+          "name": "pc_4968",
+          "position": {
+            "x": 1150,
+            "y": 100
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_4586",
+          "type": "pc",
+          "name": "pc_4586",
+          "position": {
+            "x": 1400,
+            "y": 250
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_5287",
+          "type": "pc",
+          "name": "pc_5287",
+          "position": {
+            "x": 1350,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "pc_9219",
+          "type": "pc",
+          "name": "pc_9219",
+          "position": {
+            "x": 950,
+            "y": 550
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "bridge_9429",
+          "type": "bridge",
+          "name": "bridge_9429",
+          "position": {
+            "x": 250,
+            "y": 250
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_257",
+          "type": "mau",
+          "name": "mau_257",
+          "position": {
+            "x": 100,
+            "y": 200
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "mau_783",
+          "type": "mau",
+          "name": "mau_783",
+          "position": {
+            "x": 100,
+            "y": 300
+          },
+          "metadata": {
+            "productor": "",
+            "modelo": "",
+            "notas": ""
+          },
+          "interfaces": []
+        },
+        {
+          "id": "cloud_3550",
+          "type": "cloud",
+          "name": "A red 2",
+          "position": {
+            "x": 550,
+            "y": 100
+          },
+          "link": "red2",
+          "interfaces": [],
+          "metadata": {}
+        },
+        {
+          "id": "text_2091",
+          "type": "text",
+          "name": "text_2091",
+          "position": {
+            "x": 728,
+            "y": 74
+          },
+          "text": "Red con Token Ring\n\nEl sentido de los enlaces determina\nla direccionalidad de la curva.",
+          "metadata": {},
+          "_width": 212,
+          "_height": 66,
+          "_isNewText": true
+        }
+      ],
+      "areas": [],
+      "links": [
+        {
+          "id": "tokenring_8899",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_9269"
+          },
+          "to": {
+            "nodeId": "mau_5772"
+          }
+        },
+        {
+          "id": "tokenring_1787",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_4665"
+          },
+          "to": {
+            "nodeId": "mau_9269"
+          }
+        },
+        {
+          "id": "tokenring_748",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_6049"
+          },
+          "to": {
+            "nodeId": "mau_4665"
+          }
+        },
+        {
+          "id": "tokenring_849",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_9458"
+          },
+          "to": {
+            "nodeId": "mau_6049"
+          }
+        },
+        {
+          "id": "tokenring_490",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_5772"
+          },
+          "to": {
+            "nodeId": "mau_9458"
+          }
+        },
+        {
+          "id": "ethernet_2409",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_8435"
+          },
+          "to": {
+            "nodeId": "mau_4665"
+          }
+        },
+        {
+          "id": "ethernet_2998",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_9071"
+          },
+          "to": {
+            "nodeId": "mau_6049"
+          }
+        },
+        {
+          "id": "tokenring_6634",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_8179"
+          },
+          "to": {
+            "nodeId": "mau_2662"
+          }
+        },
+        {
+          "id": "tokenring_9866",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_5898"
+          },
+          "to": {
+            "nodeId": "mau_8179"
+          }
+        },
+        {
+          "id": "tokenring_1964",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_3322"
+          },
+          "to": {
+            "nodeId": "mau_5898"
+          }
+        },
+        {
+          "id": "tokenring_9591",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_1366"
+          },
+          "to": {
+            "nodeId": "mau_3322"
+          }
+        },
+        {
+          "id": "tokenring_3629",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_2662"
+          },
+          "to": {
+            "nodeId": "mau_1366"
+          }
+        },
+        {
+          "id": "ethernet_3881",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "mau_9269"
+          },
+          "to": {
+            "nodeId": "bridge_3566"
+          }
+        },
+        {
+          "id": "ethernet_2158",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "bridge_3566"
+          },
+          "to": {
+            "nodeId": "mau_1366"
+          }
+        },
+        {
+          "id": "ethernet_5668",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_4968"
+          },
+          "to": {
+            "nodeId": "mau_2662"
+          }
+        },
+        {
+          "id": "ethernet_7773",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_4586"
+          },
+          "to": {
+            "nodeId": "mau_8179"
+          }
+        },
+        {
+          "id": "ethernet_2473",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_5287"
+          },
+          "to": {
+            "nodeId": "mau_5898"
+          }
+        },
+        {
+          "id": "ethernet_9334",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_9219"
+          },
+          "to": {
+            "nodeId": "mau_3322"
+          }
+        },
+        {
+          "id": "tokenring_145",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_257"
+          },
+          "to": {
+            "nodeId": "mau_783"
+          }
+        },
+        {
+          "id": "tokenring_325",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_783"
+          },
+          "to": {
+            "nodeId": "mau_257"
+          }
+        },
+        {
+          "id": "ethernet_18",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "bridge_9429"
+          },
+          "to": {
+            "nodeId": "mau_783"
+          }
+        },
+        {
+          "id": "ethernet_505",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "bridge_9429"
+          },
+          "to": {
+            "nodeId": "mau_9458"
+          }
+        },
+        {
+          "id": "ethernet_8292",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "pc_1528"
+          },
+          "to": {
+            "nodeId": "mau_257"
+          }
+        },
+        {
+          "id": "ethernet_6350",
+          "type": "ethernet",
+          "from": {
+            "nodeId": "cloud_3550"
+          },
+          "to": {
+            "nodeId": "mau_5772"
+          }
+        },
+        {
+          "id": "tokenring_7838",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_257"
+          },
+          "to": {
+            "nodeId": "mau_783"
+          }
+        },
+        {
+          "id": "tokenring_721",
+          "type": "tokenring",
+          "from": {
+            "nodeId": "mau_783"
+          },
+          "to": {
+            "nodeId": "mau_257"
           }
         }
       ]
@@ -1029,9 +1673,9 @@
         {
           "id": "cloud_9046",
           "type": "cloud",
-          "name": "cloud_9046",
+          "name": "A red 2",
           "position": {
-            "x": 300,
+            "x": 350,
             "y": 50
           },
           "link": "red2",
@@ -1450,5 +2094,5 @@
       ]
     }
   },
-  "activeNetwork": "red1"
+  "activeNetwork": "red2"
 }
