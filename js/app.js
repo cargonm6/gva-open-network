@@ -241,8 +241,171 @@ function getAreaAt(x, y) {
   );
 }
 
+// helpers for hit-testing curved links
+function _dist2PointToSegment(x, y, x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const l2 = dx * dx + dy * dy;
+  if (l2 === 0) {
+    const px = x1;
+    const py = y1;
+    return (x - px) * (x - px) + (y - py) * (y - py);
+  }
+  let t = ((x - x1) * dx + (y - y1) * dy) / l2;
+  t = Math.max(0, Math.min(1, t));
+  const px = x1 + t * dx;
+  const py = y1 + t * dy;
+  return (x - px) * (x - px) + (y - py) * (y - py);
+}
+
+function _sampleQuadratic(x0, y0, cx, cy, x1, y1, segments) {
+  const pts = [];
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    const mt = 1 - t;
+    const x = mt * mt * x0 + 2 * mt * t * cx + t * t * x1;
+    const y = mt * mt * y0 + 2 * mt * t * cy + t * t * y1;
+    pts.push({ x, y });
+  }
+  return pts;
+}
+
+function _getConsoleControl(x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return { cx: x1, cy: y1 };
+  const ux = dx / len;
+  const uy = dy / len;
+  const px = -uy;
+  const py = ux;
+  const curvature = 50;
+  const mx = (x1 + x2) * 0.5;
+  const my = (y1 + y2) * 0.5;
+  const cx1 = mx + px * curvature;
+  const cy1 = my + py * curvature;
+  const cx2 = mx - px * curvature;
+  const cy2 = my - py * curvature;
+  const useFirst = cy1 < cy2;
+  return { cx: useFirst ? cx1 : cx2, cy: useFirst ? cy1 : cy2 };
+}
+
+function _getTokenringControl(x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return { cx: x1, cy: y1 };
+  const ux = dx / len;
+  const uy = dy / len;
+  const px = -uy;
+  const py = ux;
+  const curvature = 50;
+  const mx = (x1 + x2) * 0.5;
+  const my = (y1 + y2) * 0.5;
+  return { cx: mx + px * curvature, cy: my + py * curvature };
+}
+
+function _getSampledPointsForLink(link, x1, y1, x2, y2, ux, uy) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+
+  switch (link.type) {
+    case "wireless": {
+      // treat wireless as straight for selection (visually wavy but easier to pick)
+      return [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 }
+      ];
+    }
+
+    case "wan": {
+      // treat WAN as straight for selection (visual segmented style remains unchanged)
+      return [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 }
+      ];
+    }
+
+    case "console": {
+      const ctrl = _getConsoleControl(x1, y1, x2, y2);
+      const segments = Math.max(8, Math.ceil(len / 8));
+      return _sampleQuadratic(x1, y1, ctrl.cx, ctrl.cy, x2, y2, segments);
+    }
+
+    case "tokenring": {
+      const ctrl = _getTokenringControl(x1, y1, x2, y2);
+      const segments = Math.max(8, Math.ceil(len / 8));
+      return _sampleQuadratic(x1, y1, ctrl.cx, ctrl.cy, x2, y2, segments);
+    }
+
+    default:
+      return [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 }
+      ];
+  }
+}
+
 function getLinkAt(x, y) {
   for (const links of linkGroups.values()) {
+    // tokenring needs directional grouping (canvas draws tokenring per direction)
+    if (links.length && links[0].type === "tokenring") {
+      const dirMap = new Map();
+      for (const l of links) {
+        const key = `${l.from.nodeId}->${l.to.nodeId}`;
+        if (!dirMap.has(key)) dirMap.set(key, []);
+        dirMap.get(key).push(l);
+      }
+
+      for (const group of dirMap.values()) {
+        const from = nodeMap.get(group[0].from.nodeId);
+        const to = nodeMap.get(group[0].to.nodeId);
+        if (!from || !to) continue;
+
+        const fx = from.position.x + getNodeSize(from).w / 2;
+        const fy = from.position.y + getNodeSize(from).h / 2;
+        const tx = to.position.x + getNodeSize(to).w / 2;
+        const ty = to.position.y + getNodeSize(to).h / 2;
+
+        const dx = tx - fx;
+        const dy = ty - fy;
+        const len = Math.hypot(dx, dy);
+        if (len === 0) continue;
+        const ux = dx / len;
+        const uy = dy / len;
+
+        const px = -uy;
+        const py = ux;
+
+        const mid = (group.length - 1) * 0.5;
+
+        for (let i = 0; i < group.length; i++) {
+          const link = group[i];
+          const off = (i - mid) * 10;
+          const ox = px * off;
+          const oy = py * off;
+
+          const x1 = fx + ox;
+          const y1 = fy + oy;
+          const x2 = tx + ox;
+          const y2 = ty + oy;
+
+          const pts = _getSampledPointsForLink(link, x1, y1, x2, y2, ux, uy);
+
+          // check distance to polyline segments built from pts
+          for (let s = 0; s < pts.length - 1; s++) {
+            const p1 = pts[s];
+            const p2 = pts[s + 1];
+            const d2 = _dist2PointToSegment(x, y, p1.x, p1.y, p2.x, p2.y);
+            if (d2 < 36) return link;
+          }
+        }
+      }
+
+      continue;
+    }
+
     const from = nodeMap.get(links[0].from.nodeId);
     const to = nodeMap.get(links[0].to.nodeId);
     if (!from || !to) continue;
@@ -250,31 +413,32 @@ function getLinkAt(x, y) {
     const { ux, uy } = getLinkGeometry(from, to);
     const gap = 10;
 
+    const { w: fw, h: fh } = getNodeSize(from);
+    const { w: tw, h: th } = getNodeSize(to);
+    const fx = from.position.x + fw / 2;
+    const fy = from.position.y + fh / 2;
+    const tx = to.position.x + tw / 2;
+    const ty = to.position.y + th / 2;
+
     for (let i = 0; i < links.length; i++) {
       const link = links[i];
       const offset = (i - (links.length - 1) / 2) * gap;
       const ox = ux * offset;
       const oy = uy * offset;
 
-      const { w: fw, h: fh } = getNodeSize(from);
-      const { w: tw, h: th } = getNodeSize(to);
+      const x1 = fx + ox;
+      const y1 = fy + oy;
+      const x2 = tx + ox;
+      const y2 = ty + oy;
 
-      const x1 = from.position.x + fw / 2 + ox;
-      const y1 = from.position.y + fh / 2 + oy;
-      const x2 = to.position.x + tw / 2 + ox;
-      const y2 = to.position.y + th / 2 + oy;
+      const pts = _getSampledPointsForLink(link, x1, y1, x2, y2, ux, uy);
 
-      const denom = (x2 - x1) ** 2 + (y2 - y1) ** 2;
-      if (denom === 0) continue;
-
-      const t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / denom;
-      if (t < 0 || t > 1) continue;
-
-      const px = x1 + t * (x2 - x1);
-      const py = y1 + t * (y2 - y1);
-
-      const dist2 = (x - px) ** 2 + (y - py) ** 2;
-      if (dist2 < 36) return link;
+      for (let s = 0; s < pts.length - 1; s++) {
+        const p1 = pts[s];
+        const p2 = pts[s + 1];
+        const d2 = _dist2PointToSegment(x, y, p1.x, p1.y, p2.x, p2.y);
+        if (d2 < 36) return link;
+      }
     }
   }
   return null;
