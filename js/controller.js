@@ -141,7 +141,7 @@ document.addEventListener("keydown", (e) => {
         toggleTool("delete", deleteButton);
 
         setTimeout(() => {
-            if (ui.selection.node || ui.selection.area) {
+            if (ui.selection.node || ui.selection.area || ui.selection.link) {
                 deleteSelection({ confirmDelete: true });
             }
         }, 0);
