@@ -69,6 +69,20 @@ let editingTextNode = null;
 let isPanning = false;
 let panStart = { x: 0, y: 0 };
 
+let touchState = {
+  active: false,
+  mode: null,
+  startX: 0,
+  startY: 0,
+  lastX: 0,
+  lastY: 0,
+  pinchStartDist: 0,
+  pinchStartZoom: 1,
+  pinchCenter: { x: 0, y: 0 },
+  pointerDownTarget: null,
+  pointerDownTargetSelected: false,
+};
+
 let cursorIcon = null;
 let lastMouseX = 0;
 let lastMouseY = 0;
@@ -845,14 +859,29 @@ function clearTool() {
 // EVENT HANDLERS
 // =====================
 
-canvas.addEventListener("mousedown", (e) => {
+function getCanvasWorldPos(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  return screenToWorld(clientX - rect.left, clientY - rect.top);
+}
+
+function getTouchDistance(t1, t2) {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+function getTouchMidpoint(t1, t2) {
+  return {
+    x: (t1.clientX + t2.clientX) / 2,
+    y: (t1.clientY + t2.clientY) / 2,
+  };
+}
+
+function handleCanvasPointerDown(point, button = 0) {
   if (cloneMode) {
-    const { x, y } = getMousePos(e);
+    const { x, y } = getCanvasWorldPos(point.clientX, point.clientY);
     const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
     const newNode = cloneNode(cloneMode, snapped.x, snapped.y);
 
     ui.selection.node = newNode;
-
     requestRender();
     return;
   }
@@ -861,17 +890,27 @@ canvas.addEventListener("mousedown", (e) => {
     textEditor.blur();
   }
 
-  if (e.button === 1) {
+  if (button === 1) {
     isPanning = true;
-    panStart = { x: e.clientX, y: e.clientY };
+    panStart = { x: point.clientX, y: point.clientY };
     canvas.style.cursor = "grabbing";
     return;
   }
 
-  const { x, y } = getMousePos(e);
+  const { x, y } = getCanvasWorldPos(point.clientX, point.clientY);
   const node = getNodeAt(x, y);
   const area = getAreaAt(x, y);
   const link = getLinkAt(x, y);
+
+  touchState.pointerDownTarget = null;
+  touchState.pointerDownTargetSelected = false;
+  if (node) {
+    touchState.pointerDownTarget = { type: "node", id: node.id };
+    touchState.pointerDownTargetSelected = ui.selection.node === node;
+  } else if (area) {
+    touchState.pointerDownTarget = { type: "area", id: area.id };
+    touchState.pointerDownTargetSelected = ui.selection.area === area;
+  }
 
   mouseDownPos = { x, y };
   isDragging = false;
@@ -891,7 +930,6 @@ canvas.addEventListener("mousedown", (e) => {
     }
 
     createNode(ui.tool, nx, ny);
-
     requestRender();
     return;
   }
@@ -928,7 +966,6 @@ canvas.addEventListener("mousedown", (e) => {
       });
 
       rebuildLinkGroups();
-
       linkStart = null;
     }
 
@@ -938,7 +975,6 @@ canvas.addEventListener("mousedown", (e) => {
 
   if (ui.tool === "text") {
     const node = createTextNode(x, y - 10);
-
     node._isNewText = true;
 
     ui.selection.node = null;
@@ -946,7 +982,6 @@ canvas.addEventListener("mousedown", (e) => {
     ui.selection.link = null;
 
     ui.mode = "idle";
-    // draggingArea = null;
     isDragging = false;
     mouseDownPos = null;
     clearInspector();
@@ -965,7 +1000,6 @@ canvas.addEventListener("mousedown", (e) => {
     ui.selection.link = null;
     isDragging = false;
     ui.mode = "idle";
-    // draggingArea = null;
     clearInspector();
 
     resizingArea = area;
@@ -976,7 +1010,6 @@ canvas.addEventListener("mousedown", (e) => {
   }
 
   if (ui.tool === "select") {
-
     const isImageNode = node && node.type === "image";
 
     if (node && !isImageNode) {
@@ -984,25 +1017,21 @@ canvas.addEventListener("mousedown", (e) => {
       ui.selection.area = null;
       ui.selection.link = null;
       updateNodeInspector(node);
-
     } else if (link) {
       ui.selection.link = link;
       ui.selection.node = null;
       ui.selection.area = null;
       updateLinkInspector(link);
-
     } else if (area) {
       ui.selection.area = area;
       ui.selection.node = null;
       ui.selection.link = null;
       updateAreaInspector(area);
-
     } else if (isImageNode) {
       ui.selection.node = node;
       ui.selection.area = null;
       ui.selection.link = null;
       updateNodeInspector(node);
-
     } else {
       ui.selection.node = null;
       ui.selection.area = null;
@@ -1013,20 +1042,19 @@ canvas.addEventListener("mousedown", (e) => {
     requestRender();
     return;
   }
-});
+}
 
-canvas.addEventListener("mousemove", (e) => {
-
-  const { x, y } = getMousePos(e);
+function handleCanvasPointerMove(point, movementX = 0, movementY = 0) {
+  const { x, y } = getCanvasWorldPos(point.clientX, point.clientY);
   lastMouseX = x;
   lastMouseY = y;
 
   const node = getNodeAt(lastMouseX, lastMouseY);
-  if (tooltipEnabled) updateNodeTooltip(e, node);
+  if (tooltipEnabled) updateNodeTooltip(point, node);
 
   if (isPanning) {
-    view.offsetX += e.movementX;
-    view.offsetY += e.movementY;
+    view.offsetX += movementX;
+    view.offsetY += movementY;
     updateCursor();
     requestRender();
     return;
@@ -1042,33 +1070,36 @@ canvas.addEventListener("mousemove", (e) => {
     requestRender();
   }
 
-  // =========================
-  // detectar intención de drag
-  // =========================
   if (mouseDownPos && !isDragging && !resizing) {
     const dx = x - mouseDownPos.x;
     const dy = y - mouseDownPos.y;
 
     if (Math.sqrt(dx * dx + dy * dy) > 3) {
-      isDragging = true;
+      if (!touchState.pointerDownTarget && ui.tool === "select" && touchState.active) {
+        isPanning = true;
+        canvas.style.cursor = "grabbing";
+      } else if (touchState.pointerDownTargetSelected) {
+        isDragging = true;
 
-      if (ui.selection.node) {
-        ui.mode = "dragging_node";
+        if (ui.selection.node) {
+          ui.mode = "dragging_node";
 
-        draggingOffset = {
-          x: x - ui.selection.node.position.x,
-          y: y - ui.selection.node.position.y,
-        };
-      }
+          draggingOffset = {
+            x: x - ui.selection.node.position.x,
+            y: y - ui.selection.node.position.y,
+          };
+        }
 
-      if (ui.selection.area) {
-        ui.mode = "dragging_area"
-        // draggingArea = ui.selection.area;
+        if (ui.selection.area) {
+          ui.mode = "dragging_area";
 
-        draggingOffset = {
-          x: x - ui.selection.area.position.x,
-          y: y - ui.selection.area.position.y,
-        };
+          draggingOffset = {
+            x: x - ui.selection.area.position.x,
+            y: y - ui.selection.area.position.y,
+          };
+        }
+      } else {
+        return;
       }
     }
   }
@@ -1087,9 +1118,6 @@ canvas.addEventListener("mousemove", (e) => {
     return;
   }
 
-  // =========================
-  // DRAG AREA
-  // =========================
   if (ui.mode === "dragging_area") {
     ui.selection.area.position.x = x - draggingOffset.x;
     ui.selection.area.position.y = y - draggingOffset.y;
@@ -1099,9 +1127,6 @@ canvas.addEventListener("mousemove", (e) => {
     return;
   }
 
-  // =========================
-  // RESIZE AREA
-  // =========================
   if (resizing && resizingArea) {
     const newW = x - resizingArea.position.x;
     const newH = y - resizingArea.position.y;
@@ -1118,6 +1143,97 @@ canvas.addEventListener("mousemove", (e) => {
 
   requestRender();
   updateCursor();
+}
+
+function handleCanvasPointerUp() {
+  isPanning = false;
+
+  ui.mode = "idle";
+  resizing = false;
+  resizingArea = null;
+
+  mouseDownPos = null;
+  isDragging = false;
+
+  updateCursor();
+}
+
+canvas.addEventListener("mousedown", (e) => {
+  handleCanvasPointerDown(e, e.button);
+});
+
+canvas.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    touchState.active = true;
+    touchState.mode = "pinch";
+    touchState.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+    touchState.pinchStartZoom = view.scale;
+    const center = getTouchMidpoint(e.touches[0], e.touches[1]);
+    touchState.pinchCenter = center;
+    touchState.lastX = center.x;
+    touchState.lastY = center.y;
+    return;
+  }
+
+  if (e.touches.length === 1) {
+    e.preventDefault();
+    touchState.active = true;
+    touchState.mode = "single";
+    touchState.startX = e.touches[0].clientX;
+    touchState.startY = e.touches[0].clientY;
+    touchState.lastX = e.touches[0].clientX;
+    touchState.lastY = e.touches[0].clientY;
+    handleCanvasPointerDown(e.touches[0], 0);
+  }
+});
+
+canvas.addEventListener("touchmove", (e) => {
+  if (touchState.mode === "pinch" && e.touches.length === 2) {
+    e.preventDefault();
+    const dist = getTouchDistance(e.touches[0], e.touches[1]);
+    const center = getTouchMidpoint(e.touches[0], e.touches[1]);
+    const newScale = touchState.pinchStartZoom * (dist / touchState.pinchStartDist);
+    const worldCenter = getCanvasWorldPos(center.x, center.y);
+    setZoom(newScale, worldCenter.x, worldCenter.y);
+    view.offsetX += center.x - touchState.lastX;
+    view.offsetY += center.y - touchState.lastY;
+    touchState.lastX = center.x;
+    touchState.lastY = center.y;
+    requestRender();
+    return;
+  }
+
+  if (touchState.mode === "single" && e.touches.length === 1) {
+    e.preventDefault();
+    const movementX = e.touches[0].clientX - touchState.lastX;
+    const movementY = e.touches[0].clientY - touchState.lastY;
+    touchState.lastX = e.touches[0].clientX;
+    touchState.lastY = e.touches[0].clientY;
+    handleCanvasPointerMove(e.touches[0], movementX, movementY);
+  }
+});
+
+canvas.addEventListener("touchend", (e) => {
+  if (e.touches.length === 0) {
+    handleCanvasPointerUp();
+    touchState.active = false;
+    touchState.mode = null;
+  } else if (e.touches.length === 1 && touchState.mode === "pinch") {
+    touchState.mode = "single";
+    touchState.lastX = e.touches[0].clientX;
+    touchState.lastY = e.touches[0].clientY;
+  }
+});
+
+canvas.addEventListener("touchcancel", () => {
+  handleCanvasPointerUp();
+  touchState.active = false;
+  touchState.mode = null;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  handleCanvasPointerMove(e, e.movementX || 0, e.movementY || 0);
 });
 
 canvas.addEventListener("mouseup", () => {

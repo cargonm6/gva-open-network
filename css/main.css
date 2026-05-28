@@ -324,6 +324,8 @@ canvas {
     cursor: pointer;
     position: relative;
     z-index: 1;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* ===================== CUSTOM FILE LABEL ===================== */
@@ -405,148 +407,197 @@ canvas {
     display: none;
 }
 
-/* @media (max-width: 1024px) {
-    #container {
-        flex-direction: column;
-        height: 100vh;
-    }
+.dropdown.open > .dropdown-content {
+    display: flex !important;
+}
 
-    #resizer {
-        display: block;
-        height: 10px;
-        background: #ccc;
-        cursor: row-resize;
-        flex: 0 0 10px;
-        order: 3;
-    }
+#touchHint {
+    display: none;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #222;
+    padding: 8px 12px;
+    font-size: 13px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
 
-    #resizer::before {
-        content: "";
-        display: block;
-        width: 40px;
-        height: 4px;
-        background: #888;
-        margin: 3px auto;
-        border-radius: 2px;
+@media (max-width: 900px) {
+    body {
+        min-height: 100vh;
     }
 
     #topbar {
-        height: 50px;
-        padding: 5px;
-        gap: 5px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 6px;
+        padding: 8px;
+        height: auto;
+    }
+
+    #topbar #logo-img {
+        height: 40px;
+        margin-right: 4px;
+    }
+
+    #topbar #logo {
+        margin-right: 12px;
+    }
+
+    #topbar span {
+        display: none;
+    }
+
+    #topbar button,
+    #topbar .custom-file-label,
+    #topbar select,
+    #topbar input[type="text"] {
+        min-width: 48px;
+        flex: 1 1 auto;
+        max-width: 180px;
+        padding: 8px 10px;
+        font-size: 13px;
     }
 
     #topbar button,
     #topbar .custom-file-label {
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-width: 40px;
+        min-width: 44px;
+        height: 44px;
     }
 
-    #topbar button span,
-    #topbar .custom-file-label span {
+    #topbar .dropbtn::after {
         display: none;
     }
 
-    #topbar img.btn-icon {
-        width: 30px;
-        height: 30px;
+    #topbar button,
+    #topbar .custom-file-label,
+    #topbar select,
+    #topbar input[type="text"] {
+        max-width: 150px;
     }
 
-    #topbar .dropbtn {
-        display: none;
+    #touchHint {
+        display: block;
+    }
+
+    #container {
+        flex-direction: column;
+        height: calc(100vh - 104px);
     }
 
     #toolbar {
         width: 100%;
+        flex: 0 0 auto;
         flex-direction: row;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         overflow-x: auto;
-        padding: 5px;
-        gap: 5px;
+        overflow-y: hidden;
+        padding: 8px;
+        gap: 8px;
         order: 1;
-        max-height: 80px;
+        max-height: 180px;
+    }
+
+    .toolbar-scroll {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     #toolbar h5 {
         display: none;
     }
 
-    #toolbar #zoom,
-    #toolbar #zoomSlider {
-        display: none;
-    }
-
     #toolbar button.tool-btn {
-        width: 50px;
-        height: 50px;
+        width: 44px;
+        height: 44px;
         padding: 0;
         flex: 0 0 auto;
         justify-content: center;
         align-items: center;
-        border-radius: 8px;
-        min-width: 50px;
-        margin-top: 10px;
-    }
-
-    #toolbar button.tool-btn img {
-        width: 30px;
-        height: 30px;
+        border-radius: 10px;
+        min-width: 44px;
+        margin: 0;
     }
 
     #toolbar button.tool-btn span {
         display: none;
     }
 
-    #toolbar .dropdown .tool-btn.dropbtn,
-    #topbar .dropdown .dropbtn {
-        display: none;
+    #toolbar button.tool-btn img,
+    #topbar img.btn-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    #toolbar .toolbar-dropdown,
+    #toolbar .dropdown {
+        width: auto;
     }
 
     #toolbar .dropdown .dropdown-content,
     #topbar .dropdown .dropdown-content {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
         position: static;
-        padding: 0;
-        background: transparent;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.98);
         box-shadow: none;
         border: none;
-        margin: inherit;
+        margin: 0;
+        gap: 8px;
+        padding: 8px 0;
+        flex-direction: column;
+    }
+
+    #toolbar .dropdown .dropdown-content button,
+    #topbar .dropdown .dropdown-content button {
+        min-width: 100%;
     }
 
     canvas {
-        flex: 1;
         order: 2;
+    }
+
+    #resizer {
+        display: none;
+    }
+
+    #toolbar,
+    #inspector {
+        align-self: stretch;
     }
 
     #inspector {
         width: 100%;
-        flex: 0 0 250px;
+        flex: 0 0 auto;
         order: 4;
+        max-height: 260px;
         overflow-y: auto;
         border-top: 1px solid #ccc;
-        padding: 5px;
+        padding: 8px;
         background: var(--color-inspector-bg);
+        transition: max-height 0.2s ease;
     }
 
-    #toolbar button.tool-btn[data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: 55px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--color-dropdown-bg);
-        color: #000;
-        padding: 3px 6px;
-        border-radius: 4px;
-        font-size: 12px;
-        white-space: nowrap;
-        z-index: 1000;
+    #inspector.collapsed {
+        max-height: 52px;
+        overflow: hidden;
     }
-} */
+
+    @media (max-width: 900px) and (orientation: landscape) {
+        #inspector {
+            max-height: 32vh;
+        }
+    }
+
+    #zoom {
+        width: 100%;
+        margin: 8px 0 0 0;
+        font-size: 14px;
+    }
+
+    #zoomSlider {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+}
