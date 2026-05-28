@@ -31,6 +31,7 @@ const actions = {
     "toggle-grid": () => toggleGrid(),
     "toggle-ports": () => togglePorts(),
     "toggle-tooltip": () => toggleTooltip(),
+    "toggle-simulation": () => toggleSimulation(),
 
     "jumpToNode": (el) => {
         const node = nodeMap.get(el.dataset.nodeid);

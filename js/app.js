@@ -8,6 +8,7 @@ const font = "12px Arial";
 let dpr = window.devicePixelRatio || 1;
 
 let renderPending = false;
+let animationLoopActive = false;
 
 function requestRender() {
   if (renderPending) return;
@@ -18,6 +19,13 @@ function requestRender() {
     renderPending = false;
     render();
   });
+}
+
+function animationLoop() {
+  if (!animationLoopActive) return;
+  
+  render();
+  requestAnimationFrame(animationLoop);
 }
 
 function resizeCanvas() {
@@ -745,6 +753,30 @@ function toggleTooltip() {
   } else {
     toggleTooltipButton.querySelector("img").src = `img/buttons/tools/tooltip-on.svg`;
     toggleTooltipButton.querySelector("span").textContent = "Mostrar tooltip";
+  }
+
+  requestRender();
+}
+
+// =====================
+// PUNTOS MÓVILES
+// =====================
+
+let SimulationEnabled = false;
+
+function toggleSimulation() {
+  const toggleButton = document.getElementById("toggleSimulation");
+  SimulationEnabled = !SimulationEnabled;
+
+  if (SimulationEnabled) {
+    toggleButton.querySelector("img").src = `img/buttons/tools/sim-off.svg`;
+    toggleButton.querySelector("span").textContent = "Ocultar simulación";
+    animationLoopActive = true;
+    animationLoop();
+  } else {
+    toggleButton.querySelector("img").src = `img/buttons/tools/sim-on.svg`;
+    toggleButton.querySelector("span").textContent = "Mostrar simulación";
+    animationLoopActive = false;
   }
 
   requestRender();
