@@ -663,7 +663,7 @@ function drawSimulation() {
     // Configuración interna
     const speed = 0.5; // velocidad normalizada (0-1 por segundo)
     const dotRadius = 4;
-    const dotColor = "#4A90E2"; // azul
+    const dotColor = getColor("--color-simulation"); // azul
     
     const currentTime = Date.now() / 1000; // tiempo en segundos
 
