@@ -192,7 +192,7 @@ h5:not(:first-child) {
     height: auto;
 }
 
-.dropdown:hover > .dropdown-content {
+.dropdown:hover>.dropdown-content {
     display: flex;
     flex-direction: column;
 }
@@ -408,7 +408,7 @@ canvas {
     display: none;
 }
 
-.dropdown.open > .dropdown-content {
+.dropdown.open>.dropdown-content {
     display: flex !important;
 }
 
@@ -421,6 +421,10 @@ canvas {
     font-size: 13px;
     text-align: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+button#toggleInspectorButton {
+    display: none;
 }
 
 @media (max-width: 900px) {
@@ -476,6 +480,10 @@ canvas {
     #topbar select,
     #topbar input[type="text"] {
         max-width: 150px;
+    }
+
+    button#toggleInspectorButton {
+        display: block;
     }
 
     #touchHint {
