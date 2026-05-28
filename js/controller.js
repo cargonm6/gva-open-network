@@ -15,6 +15,11 @@ const actions = {
 
     "help": () => openHelp(),
 
+    "toggle-inspector": () => {
+        const inspector = document.getElementById("inspector");
+        inspector.classList.toggle("collapsed");
+    },
+
     "tool": (el) => toggleTool(el.dataset.tool, el),
 
     "image": () => triggerImportImage(),
@@ -26,6 +31,7 @@ const actions = {
     "toggle-grid": () => toggleGrid(),
     "toggle-ports": () => togglePorts(),
     "toggle-tooltip": () => toggleTooltip(),
+    "toggle-simulation": () => toggleSimulation(),
 
     "jumpToNode": (el) => {
         const node = nodeMap.get(el.dataset.nodeid);
@@ -67,6 +73,19 @@ document.addEventListener("click", (e) => {
     const action = el.dataset.action;
 
     actions[action]?.(el);
+});
+
+document.addEventListener("click", (e) => {
+    const toggle = e.target.closest(".dropdown > .dropbtn");
+    if (toggle) {
+        const dropdown = toggle.closest(".dropdown");
+        dropdown?.classList.toggle("open");
+        return;
+    }
+
+    document.querySelectorAll(".dropdown.open").forEach((dropdown) => {
+        dropdown.classList.remove("open");
+    });
 });
 
 // KEYBOARD
@@ -141,7 +160,7 @@ document.addEventListener("keydown", (e) => {
         toggleTool("delete", deleteButton);
 
         setTimeout(() => {
-            if (ui.selection.node || ui.selection.area) {
+            if (ui.selection.node || ui.selection.area || ui.selection.link) {
                 deleteSelection({ confirmDelete: true });
             }
         }, 0);

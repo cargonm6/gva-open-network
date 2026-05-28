@@ -33,6 +33,11 @@ function render() {
     // Dibuja links
     drawLinks();
 
+    // Dibuja puntos móviles
+    if (SimulationEnabled) {
+        drawSimulation();
+    }
+
     // Dibuja resto de nodos
     for (let i = 0; i < otherNodes.length; i++) {
         drawNodeBase(otherNodes[i]);
@@ -652,4 +657,271 @@ function getTokenringGroups(links) {
     }
 
     return map;
+}
+
+function drawSimulation() {
+    // Configuración interna
+    const speed = 0.5; // velocidad normalizada (0-1 por segundo)
+    const dotRadius = 4;
+    const dotColor = getColor("--color-simulation"); // azul
+    
+    const currentTime = Date.now() / 1000; // tiempo en segundos
+
+    for (const ls of linkGroups.values()) {
+        const first = ls[0];
+        const isTokenRing = first.type === "tokenring";
+
+        if (isTokenRing) {
+            // Token Ring: grupos por dirección
+            const groups = getTokenringGroups(ls);
+
+            for (const group of groups.values()) {
+                for (let i = 0; i < group.length; i++) {
+                    const l = group[i];
+
+                    const f = nodeMap.get(l.from.nodeId);
+                    const t = nodeMap.get(l.to.nodeId);
+                    if (!f || !t) continue;
+
+                    const fx = f.position.x + node_w * 0.5;
+                    const fy = f.position.y + node_h * 0.5;
+                    const tx = t.position.x + node_w * 0.5;
+                    const ty = t.position.y + node_h * 0.5;
+
+                    const dx = tx - fx;
+                    const dy = ty - fy;
+                    const len = Math.hypot(dx, dy);
+                    if (len === 0) continue;
+
+                    const ux = dx / len;
+                    const uy = dy / len;
+
+                    const px = -uy;
+                    const py = ux;
+
+                    const mid = (group.length - 1) * 0.5;
+                    const off = (i - mid) * 10;
+
+                    const ox = px * off;
+                    const oy = py * off;
+
+                    // Posición del punto: solo va de from a to (no vuelve en token ring)
+                    const progress = (currentTime * speed) % 1; // 0 a 1
+                    
+                    drawTokenringTravelingDot(fx + ox, fy + oy, tx + ox, ty + oy, progress, dotRadius, dotColor);
+                }
+            }
+        } else {
+            // Links normales
+            const firstNonToken = ls[0];
+
+            const f = nodeMap.get(firstNonToken.from.nodeId);
+            const t = nodeMap.get(firstNonToken.to.nodeId);
+            if (!f || !t) continue;
+
+            const fx = f.position.x + node_w * 0.5;
+            const fy = f.position.y + node_h * 0.5;
+            const tx = t.position.x + node_w * 0.5;
+            const ty = t.position.y + node_h * 0.5;
+
+            const dx = tx - fx;
+            const dy = ty - fy;
+            const len = Math.hypot(dx, dy);
+            if (len === 0) continue;
+
+            const ux = dx / len;
+            const uy = dy / len;
+
+            const gap = 10;
+            const count = ls.length;
+            const mid = (count - 1) * 0.5;
+
+            const px = -uy;
+            const py = ux;
+
+            for (let i = 0; i < count; i++) {
+                const l = ls[i];
+
+                const off = (i - mid) * gap;
+
+                const ox = px * off;
+                const oy = py * off;
+
+                // Movimiento de ida y vuelta
+                let progress = (currentTime * speed) % 2; // 0-2 (ida: 0-1, vuelta: 1-2)
+                if (progress > 1) {
+                    progress = 2 - progress; // invierte para la vuelta
+                }
+
+                // Dibuja el punto según el tipo de línea
+                if (l.type === "wireless") {
+                    drawWirelessTravelingDot(fx + ox, fy + oy, tx + ox, ty + oy, progress, dotRadius, dotColor);
+                } else if (l.type === "wan") {
+                    drawWanTravelingDot(fx + ox, fy + oy, tx + ox, ty + oy, progress, dotRadius, dotColor);
+                } else if (l.type === "console") {
+                    drawConsoleTravelingDot(fx + ox, fy + oy, tx + ox, ty + oy, progress, dotRadius, dotColor);
+                } else {
+                    // Línea recta normal
+                    const dotX = fx + ox + ux * (len * progress);
+                    const dotY = fy + oy + uy * (len * progress);
+                    drawDot(dotX, dotY, dotRadius, dotColor);
+                }
+            }
+        }
+    }
+}
+
+function drawDot(x, y, radius, color) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawWirelessTravelingDot(x1, y1, x2, y2, progress, dotRadius, dotColor) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+    const nx = -uy;
+    const ny = ux;
+
+    const amplitude = 5;
+    const wavelength = 20;
+
+    const i = len * progress;
+    const x = x1 + ux * i;
+    const y = y1 + uy * i;
+    const wave = Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
+
+    const px = x + nx * wave;
+    const py = y + ny * wave;
+
+    drawDot(px, py, dotRadius, dotColor);
+}
+
+function drawWanTravelingDot(x1, y1, x2, y2, progress, dotRadius, dotColor) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+    const px = -uy;
+    const py = ux;
+
+    const B = 5;
+    const A = len * 0.5 + B;
+
+    const xA = x1 + ux * A + px * B;
+    const yA = y1 + uy * A + py * B;
+
+    const xC = x2 - ux * A - px * B;
+    const yC = y2 - uy * A - py * B;
+
+    // Segmentos: x1-xA, xA-xC, xC-x2
+    const segLen1 = Math.hypot(xA - x1, yA - y1);
+    const segLen2 = Math.hypot(xC - xA, yC - yA);
+    const segLen3 = Math.hypot(x2 - xC, y2 - yC);
+    const totalLen = segLen1 + segLen2 + segLen3;
+
+    const travelDist = totalLen * progress;
+
+    let px_dot, py_dot;
+
+    if (travelDist <= segLen1) {
+        const t = travelDist / segLen1;
+        px_dot = x1 + (xA - x1) * t;
+        py_dot = y1 + (yA - y1) * t;
+    } else if (travelDist <= segLen1 + segLen2) {
+        const t = (travelDist - segLen1) / segLen2;
+        px_dot = xA + (xC - xA) * t;
+        py_dot = yA + (yC - yA) * t;
+    } else {
+        const t = (travelDist - segLen1 - segLen2) / segLen3;
+        px_dot = xC + (x2 - xC) * t;
+        py_dot = yC + (y2 - yC) * t;
+    }
+
+    drawDot(px_dot, py_dot, dotRadius, dotColor);
+}
+
+function drawConsoleTravelingDot(x1, y1, x2, y2, progress, dotRadius, dotColor) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+    const px = -uy;
+    const py = ux;
+
+    const curvature = 50;
+
+    const mx = (x1 + x2) * 0.5;
+    const my = (y1 + y2) * 0.5;
+
+    const cx1 = mx + px * curvature;
+    const cy1 = my + py * curvature;
+
+    const cx2 = mx - px * curvature;
+    const cy2 = my - py * curvature;
+
+    const useFirst = cy1 < cy2;
+    const cx = useFirst ? cx1 : cx2;
+    const cy = useFirst ? cy1 : cy2;
+
+    // Punto en curva cuadrática de Bézier
+    function q(t, p0, p1, p2) {
+        const mt = 1 - t;
+        return mt * mt * p0 + 2 * mt * t * p1 + t * t * p2;
+    }
+
+    const px_dot = q(progress, x1, cx, x2);
+    const py_dot = q(progress, y1, cy, y2);
+
+    drawDot(px_dot, py_dot, dotRadius, dotColor);
+}
+
+function drawTokenringTravelingDot(x1, y1, x2, y2, progress, dotRadius, dotColor) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+    const px = -uy;
+    const py = ux;
+
+    const curvature = 50;
+
+    const mx = (x1 + x2) * 0.5;
+    const my = (y1 + y2) * 0.5;
+
+    // Token ring siempre usa esta dirección (no elige entre dos)
+    const cx = mx + px * curvature;
+    const cy = my + py * curvature;
+
+    // Punto en curva cuadrática de Bézier
+    function q(t, p0, p1, p2) {
+        const mt = 1 - t;
+        return mt * mt * p0 + 2 * mt * t * p1 + t * t * p2;
+    }
+
+    const px_dot = q(progress, x1, cx, x2);
+    const py_dot = q(progress, y1, cy, y2);
+
+    drawDot(px_dot, py_dot, dotRadius, dotColor);
 }

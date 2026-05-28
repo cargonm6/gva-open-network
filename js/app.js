@@ -8,6 +8,7 @@ const font = "12px Arial";
 let dpr = window.devicePixelRatio || 1;
 
 let renderPending = false;
+let animationLoopActive = false;
 
 function requestRender() {
   if (renderPending) return;
@@ -18,6 +19,13 @@ function requestRender() {
     renderPending = false;
     render();
   });
+}
+
+function animationLoop() {
+  if (!animationLoopActive) return;
+  
+  render();
+  requestAnimationFrame(animationLoop);
 }
 
 function resizeCanvas() {
@@ -68,6 +76,21 @@ let editingTextNode = null;
 
 let isPanning = false;
 let panStart = { x: 0, y: 0 };
+
+let touchState = {
+  active: false,
+  mode: null,
+  startX: 0,
+  startY: 0,
+  lastX: 0,
+  lastY: 0,
+  pinchStartDist: 0,
+  pinchStartZoom: 1,
+  pinchCenter: { x: 0, y: 0 },
+  pointerDownTarget: null,
+  pointerDownTargetSelected: false,
+  isMouseEvent: false,
+};
 
 let cursorIcon = null;
 let lastMouseX = 0;
@@ -241,8 +264,171 @@ function getAreaAt(x, y) {
   );
 }
 
+// helpers for hit-testing curved links
+function _dist2PointToSegment(x, y, x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const l2 = dx * dx + dy * dy;
+  if (l2 === 0) {
+    const px = x1;
+    const py = y1;
+    return (x - px) * (x - px) + (y - py) * (y - py);
+  }
+  let t = ((x - x1) * dx + (y - y1) * dy) / l2;
+  t = Math.max(0, Math.min(1, t));
+  const px = x1 + t * dx;
+  const py = y1 + t * dy;
+  return (x - px) * (x - px) + (y - py) * (y - py);
+}
+
+function _sampleQuadratic(x0, y0, cx, cy, x1, y1, segments) {
+  const pts = [];
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    const mt = 1 - t;
+    const x = mt * mt * x0 + 2 * mt * t * cx + t * t * x1;
+    const y = mt * mt * y0 + 2 * mt * t * cy + t * t * y1;
+    pts.push({ x, y });
+  }
+  return pts;
+}
+
+function _getConsoleControl(x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return { cx: x1, cy: y1 };
+  const ux = dx / len;
+  const uy = dy / len;
+  const px = -uy;
+  const py = ux;
+  const curvature = 50;
+  const mx = (x1 + x2) * 0.5;
+  const my = (y1 + y2) * 0.5;
+  const cx1 = mx + px * curvature;
+  const cy1 = my + py * curvature;
+  const cx2 = mx - px * curvature;
+  const cy2 = my - py * curvature;
+  const useFirst = cy1 < cy2;
+  return { cx: useFirst ? cx1 : cx2, cy: useFirst ? cy1 : cy2 };
+}
+
+function _getTokenringControl(x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return { cx: x1, cy: y1 };
+  const ux = dx / len;
+  const uy = dy / len;
+  const px = -uy;
+  const py = ux;
+  const curvature = 50;
+  const mx = (x1 + x2) * 0.5;
+  const my = (y1 + y2) * 0.5;
+  return { cx: mx + px * curvature, cy: my + py * curvature };
+}
+
+function _getSampledPointsForLink(link, x1, y1, x2, y2, ux, uy) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+
+  switch (link.type) {
+    case "wireless": {
+      // treat wireless as straight for selection (visually wavy but easier to pick)
+      return [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 }
+      ];
+    }
+
+    case "wan": {
+      // treat WAN as straight for selection (visual segmented style remains unchanged)
+      return [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 }
+      ];
+    }
+
+    case "console": {
+      const ctrl = _getConsoleControl(x1, y1, x2, y2);
+      const segments = Math.max(8, Math.ceil(len / 8));
+      return _sampleQuadratic(x1, y1, ctrl.cx, ctrl.cy, x2, y2, segments);
+    }
+
+    case "tokenring": {
+      const ctrl = _getTokenringControl(x1, y1, x2, y2);
+      const segments = Math.max(8, Math.ceil(len / 8));
+      return _sampleQuadratic(x1, y1, ctrl.cx, ctrl.cy, x2, y2, segments);
+    }
+
+    default:
+      return [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 }
+      ];
+  }
+}
+
 function getLinkAt(x, y) {
   for (const links of linkGroups.values()) {
+    // tokenring needs directional grouping (canvas draws tokenring per direction)
+    if (links.length && links[0].type === "tokenring") {
+      const dirMap = new Map();
+      for (const l of links) {
+        const key = `${l.from.nodeId}->${l.to.nodeId}`;
+        if (!dirMap.has(key)) dirMap.set(key, []);
+        dirMap.get(key).push(l);
+      }
+
+      for (const group of dirMap.values()) {
+        const from = nodeMap.get(group[0].from.nodeId);
+        const to = nodeMap.get(group[0].to.nodeId);
+        if (!from || !to) continue;
+
+        const fx = from.position.x + getNodeSize(from).w / 2;
+        const fy = from.position.y + getNodeSize(from).h / 2;
+        const tx = to.position.x + getNodeSize(to).w / 2;
+        const ty = to.position.y + getNodeSize(to).h / 2;
+
+        const dx = tx - fx;
+        const dy = ty - fy;
+        const len = Math.hypot(dx, dy);
+        if (len === 0) continue;
+        const ux = dx / len;
+        const uy = dy / len;
+
+        const px = -uy;
+        const py = ux;
+
+        const mid = (group.length - 1) * 0.5;
+
+        for (let i = 0; i < group.length; i++) {
+          const link = group[i];
+          const off = (i - mid) * 10;
+          const ox = px * off;
+          const oy = py * off;
+
+          const x1 = fx + ox;
+          const y1 = fy + oy;
+          const x2 = tx + ox;
+          const y2 = ty + oy;
+
+          const pts = _getSampledPointsForLink(link, x1, y1, x2, y2, ux, uy);
+
+          // check distance to polyline segments built from pts
+          for (let s = 0; s < pts.length - 1; s++) {
+            const p1 = pts[s];
+            const p2 = pts[s + 1];
+            const d2 = _dist2PointToSegment(x, y, p1.x, p1.y, p2.x, p2.y);
+            if (d2 < 36) return link;
+          }
+        }
+      }
+
+      continue;
+    }
+
     const from = nodeMap.get(links[0].from.nodeId);
     const to = nodeMap.get(links[0].to.nodeId);
     if (!from || !to) continue;
@@ -250,31 +436,32 @@ function getLinkAt(x, y) {
     const { ux, uy } = getLinkGeometry(from, to);
     const gap = 10;
 
+    const { w: fw, h: fh } = getNodeSize(from);
+    const { w: tw, h: th } = getNodeSize(to);
+    const fx = from.position.x + fw / 2;
+    const fy = from.position.y + fh / 2;
+    const tx = to.position.x + tw / 2;
+    const ty = to.position.y + th / 2;
+
     for (let i = 0; i < links.length; i++) {
       const link = links[i];
       const offset = (i - (links.length - 1) / 2) * gap;
       const ox = ux * offset;
       const oy = uy * offset;
 
-      const { w: fw, h: fh } = getNodeSize(from);
-      const { w: tw, h: th } = getNodeSize(to);
+      const x1 = fx + ox;
+      const y1 = fy + oy;
+      const x2 = tx + ox;
+      const y2 = ty + oy;
 
-      const x1 = from.position.x + fw / 2 + ox;
-      const y1 = from.position.y + fh / 2 + oy;
-      const x2 = to.position.x + tw / 2 + ox;
-      const y2 = to.position.y + th / 2 + oy;
+      const pts = _getSampledPointsForLink(link, x1, y1, x2, y2, ux, uy);
 
-      const denom = (x2 - x1) ** 2 + (y2 - y1) ** 2;
-      if (denom === 0) continue;
-
-      const t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / denom;
-      if (t < 0 || t > 1) continue;
-
-      const px = x1 + t * (x2 - x1);
-      const py = y1 + t * (y2 - y1);
-
-      const dist2 = (x - px) ** 2 + (y - py) ** 2;
-      if (dist2 < 36) return link;
+      for (let s = 0; s < pts.length - 1; s++) {
+        const p1 = pts[s];
+        const p2 = pts[s + 1];
+        const d2 = _dist2PointToSegment(x, y, p1.x, p1.y, p2.x, p2.y);
+        if (d2 < 36) return link;
+      }
     }
   }
   return null;
@@ -573,6 +760,30 @@ function toggleTooltip() {
 }
 
 // =====================
+// PUNTOS MÓVILES
+// =====================
+
+let SimulationEnabled = false;
+
+function toggleSimulation() {
+  const toggleButton = document.getElementById("toggleSimulation");
+  SimulationEnabled = !SimulationEnabled;
+
+  if (SimulationEnabled) {
+    toggleButton.querySelector("img").src = `img/buttons/tools/sim-off.svg`;
+    toggleButton.querySelector("span").textContent = "Ocultar simulación";
+    animationLoopActive = true;
+    animationLoop();
+  } else {
+    toggleButton.querySelector("img").src = `img/buttons/tools/sim-on.svg`;
+    toggleButton.querySelector("span").textContent = "Mostrar simulación";
+    animationLoopActive = false;
+  }
+
+  requestRender();
+}
+
+// =====================
 // FORZADO A REJILLA
 // =====================
 
@@ -681,14 +892,29 @@ function clearTool() {
 // EVENT HANDLERS
 // =====================
 
-canvas.addEventListener("mousedown", (e) => {
+function getCanvasWorldPos(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  return screenToWorld(clientX - rect.left, clientY - rect.top);
+}
+
+function getTouchDistance(t1, t2) {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+function getTouchMidpoint(t1, t2) {
+  return {
+    x: (t1.clientX + t2.clientX) / 2,
+    y: (t1.clientY + t2.clientY) / 2,
+  };
+}
+
+function handleCanvasPointerDown(point, button = 0) {
   if (cloneMode) {
-    const { x, y } = getMousePos(e);
+    const { x, y } = getCanvasWorldPos(point.clientX, point.clientY);
     const snapped = snapToGrid(x - node_w / 2, y - node_h / 2);
     const newNode = cloneNode(cloneMode, snapped.x, snapped.y);
 
     ui.selection.node = newNode;
-
     requestRender();
     return;
   }
@@ -697,17 +923,27 @@ canvas.addEventListener("mousedown", (e) => {
     textEditor.blur();
   }
 
-  if (e.button === 1) {
+  if (button === 1) {
     isPanning = true;
-    panStart = { x: e.clientX, y: e.clientY };
+    panStart = { x: point.clientX, y: point.clientY };
     canvas.style.cursor = "grabbing";
     return;
   }
 
-  const { x, y } = getMousePos(e);
+  const { x, y } = getCanvasWorldPos(point.clientX, point.clientY);
   const node = getNodeAt(x, y);
   const area = getAreaAt(x, y);
   const link = getLinkAt(x, y);
+
+  touchState.pointerDownTarget = null;
+  touchState.pointerDownTargetSelected = false;
+  if (node) {
+    touchState.pointerDownTarget = { type: "node", id: node.id };
+    touchState.pointerDownTargetSelected = ui.selection.node === node;
+  } else if (area) {
+    touchState.pointerDownTarget = { type: "area", id: area.id };
+    touchState.pointerDownTargetSelected = ui.selection.area === area;
+  }
 
   mouseDownPos = { x, y };
   isDragging = false;
@@ -727,7 +963,6 @@ canvas.addEventListener("mousedown", (e) => {
     }
 
     createNode(ui.tool, nx, ny);
-
     requestRender();
     return;
   }
@@ -764,7 +999,6 @@ canvas.addEventListener("mousedown", (e) => {
       });
 
       rebuildLinkGroups();
-
       linkStart = null;
     }
 
@@ -774,7 +1008,6 @@ canvas.addEventListener("mousedown", (e) => {
 
   if (ui.tool === "text") {
     const node = createTextNode(x, y - 10);
-
     node._isNewText = true;
 
     ui.selection.node = null;
@@ -782,7 +1015,6 @@ canvas.addEventListener("mousedown", (e) => {
     ui.selection.link = null;
 
     ui.mode = "idle";
-    // draggingArea = null;
     isDragging = false;
     mouseDownPos = null;
     clearInspector();
@@ -801,7 +1033,6 @@ canvas.addEventListener("mousedown", (e) => {
     ui.selection.link = null;
     isDragging = false;
     ui.mode = "idle";
-    // draggingArea = null;
     clearInspector();
 
     resizingArea = area;
@@ -812,7 +1043,6 @@ canvas.addEventListener("mousedown", (e) => {
   }
 
   if (ui.tool === "select") {
-
     const isImageNode = node && node.type === "image";
 
     if (node && !isImageNode) {
@@ -820,25 +1050,21 @@ canvas.addEventListener("mousedown", (e) => {
       ui.selection.area = null;
       ui.selection.link = null;
       updateNodeInspector(node);
-
     } else if (link) {
       ui.selection.link = link;
       ui.selection.node = null;
       ui.selection.area = null;
       updateLinkInspector(link);
-
     } else if (area) {
       ui.selection.area = area;
       ui.selection.node = null;
       ui.selection.link = null;
       updateAreaInspector(area);
-
     } else if (isImageNode) {
       ui.selection.node = node;
       ui.selection.area = null;
       ui.selection.link = null;
       updateNodeInspector(node);
-
     } else {
       ui.selection.node = null;
       ui.selection.area = null;
@@ -849,20 +1075,19 @@ canvas.addEventListener("mousedown", (e) => {
     requestRender();
     return;
   }
-});
+}
 
-canvas.addEventListener("mousemove", (e) => {
-
-  const { x, y } = getMousePos(e);
+function handleCanvasPointerMove(point, movementX = 0, movementY = 0) {
+  const { x, y } = getCanvasWorldPos(point.clientX, point.clientY);
   lastMouseX = x;
   lastMouseY = y;
 
   const node = getNodeAt(lastMouseX, lastMouseY);
-  if (tooltipEnabled) updateNodeTooltip(e, node);
+  if (tooltipEnabled) updateNodeTooltip(point, node);
 
   if (isPanning) {
-    view.offsetX += e.movementX;
-    view.offsetY += e.movementY;
+    view.offsetX += movementX;
+    view.offsetY += movementY;
     updateCursor();
     requestRender();
     return;
@@ -878,33 +1103,60 @@ canvas.addEventListener("mousemove", (e) => {
     requestRender();
   }
 
-  // =========================
-  // detectar intención de drag
-  // =========================
   if (mouseDownPos && !isDragging && !resizing) {
     const dx = x - mouseDownPos.x;
     const dy = y - mouseDownPos.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const threshold = touchState.isMouseEvent ? 0.5 : 3;
 
-    if (Math.sqrt(dx * dx + dy * dy) > 3) {
-      isDragging = true;
+    if (distance > threshold) {
+      if (!touchState.pointerDownTarget && ui.tool === "select" && touchState.active) {
+        isPanning = true;
+        canvas.style.cursor = "grabbing";
+      } else if (touchState.isMouseEvent && touchState.pointerDownTarget) {
+        // En PC: permite arrastre directo si hay un elemento bajo el cursor
+        isDragging = true;
 
-      if (ui.selection.node) {
-        ui.mode = "dragging_node";
+        if (ui.selection.node) {
+          ui.mode = "dragging_node";
 
-        draggingOffset = {
-          x: x - ui.selection.node.position.x,
-          y: y - ui.selection.node.position.y,
-        };
-      }
+          draggingOffset = {
+            x: x - ui.selection.node.position.x,
+            y: y - ui.selection.node.position.y,
+          };
+        }
 
-      if (ui.selection.area) {
-        ui.mode = "dragging_area"
-        // draggingArea = ui.selection.area;
+        if (ui.selection.area) {
+          ui.mode = "dragging_area";
 
-        draggingOffset = {
-          x: x - ui.selection.area.position.x,
-          y: y - ui.selection.area.position.y,
-        };
+          draggingOffset = {
+            x: x - ui.selection.area.position.x,
+            y: y - ui.selection.area.position.y,
+          };
+        }
+      } else if (!touchState.isMouseEvent && touchState.pointerDownTargetSelected) {
+        // En móvil: solo arrastra si ya estaba seleccionado
+        isDragging = true;
+
+        if (ui.selection.node) {
+          ui.mode = "dragging_node";
+
+          draggingOffset = {
+            x: x - ui.selection.node.position.x,
+            y: y - ui.selection.node.position.y,
+          };
+        }
+
+        if (ui.selection.area) {
+          ui.mode = "dragging_area";
+
+          draggingOffset = {
+            x: x - ui.selection.area.position.x,
+            y: y - ui.selection.area.position.y,
+          };
+        }
+      } else {
+        return;
       }
     }
   }
@@ -923,9 +1175,6 @@ canvas.addEventListener("mousemove", (e) => {
     return;
   }
 
-  // =========================
-  // DRAG AREA
-  // =========================
   if (ui.mode === "dragging_area") {
     ui.selection.area.position.x = x - draggingOffset.x;
     ui.selection.area.position.y = y - draggingOffset.y;
@@ -935,9 +1184,6 @@ canvas.addEventListener("mousemove", (e) => {
     return;
   }
 
-  // =========================
-  // RESIZE AREA
-  // =========================
   if (resizing && resizingArea) {
     const newW = x - resizingArea.position.x;
     const newH = y - resizingArea.position.y;
@@ -954,6 +1200,99 @@ canvas.addEventListener("mousemove", (e) => {
 
   requestRender();
   updateCursor();
+}
+
+function handleCanvasPointerUp() {
+  isPanning = false;
+
+  ui.mode = "idle";
+  resizing = false;
+  resizingArea = null;
+
+  mouseDownPos = null;
+  isDragging = false;
+
+  updateCursor();
+}
+
+canvas.addEventListener("mousedown", (e) => {
+  touchState.isMouseEvent = true;
+  handleCanvasPointerDown(e, e.button);
+});
+
+canvas.addEventListener("touchstart", (e) => {
+  touchState.isMouseEvent = false;
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    touchState.active = true;
+    touchState.mode = "pinch";
+    touchState.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+    touchState.pinchStartZoom = view.scale;
+    const center = getTouchMidpoint(e.touches[0], e.touches[1]);
+    touchState.pinchCenter = center;
+    touchState.lastX = center.x;
+    touchState.lastY = center.y;
+    return;
+  }
+
+  if (e.touches.length === 1) {
+    e.preventDefault();
+    touchState.active = true;
+    touchState.mode = "single";
+    touchState.startX = e.touches[0].clientX;
+    touchState.startY = e.touches[0].clientY;
+    touchState.lastX = e.touches[0].clientX;
+    touchState.lastY = e.touches[0].clientY;
+    handleCanvasPointerDown(e.touches[0], 0);
+  }
+});
+
+canvas.addEventListener("touchmove", (e) => {
+  if (touchState.mode === "pinch" && e.touches.length === 2) {
+    e.preventDefault();
+    const dist = getTouchDistance(e.touches[0], e.touches[1]);
+    const center = getTouchMidpoint(e.touches[0], e.touches[1]);
+    const newScale = touchState.pinchStartZoom * (dist / touchState.pinchStartDist);
+    const worldCenter = getCanvasWorldPos(center.x, center.y);
+    setZoom(newScale, worldCenter.x, worldCenter.y);
+    view.offsetX += center.x - touchState.lastX;
+    view.offsetY += center.y - touchState.lastY;
+    touchState.lastX = center.x;
+    touchState.lastY = center.y;
+    requestRender();
+    return;
+  }
+
+  if (touchState.mode === "single" && e.touches.length === 1) {
+    e.preventDefault();
+    const movementX = e.touches[0].clientX - touchState.lastX;
+    const movementY = e.touches[0].clientY - touchState.lastY;
+    touchState.lastX = e.touches[0].clientX;
+    touchState.lastY = e.touches[0].clientY;
+    handleCanvasPointerMove(e.touches[0], movementX, movementY);
+  }
+});
+
+canvas.addEventListener("touchend", (e) => {
+  if (e.touches.length === 0) {
+    handleCanvasPointerUp();
+    touchState.active = false;
+    touchState.mode = null;
+  } else if (e.touches.length === 1 && touchState.mode === "pinch") {
+    touchState.mode = "single";
+    touchState.lastX = e.touches[0].clientX;
+    touchState.lastY = e.touches[0].clientY;
+  }
+});
+
+canvas.addEventListener("touchcancel", () => {
+  handleCanvasPointerUp();
+  touchState.active = false;
+  touchState.mode = null;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  handleCanvasPointerMove(e, e.movementX || 0, e.movementY || 0);
 });
 
 canvas.addEventListener("mouseup", () => {

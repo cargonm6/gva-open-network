@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ONetMap</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="css/main.css">
@@ -91,6 +92,11 @@
             <span>Ayuda</span>
         </button>
 
+        <button id="toggleInspectorButton" data-action="toggle-inspector">
+            <img src="img/buttons/tools/gear.svg" class="btn-icon">
+            <span>Propiedades</span>
+        </button>
+
         <input type="file" id="importFile" accept=".json,.gz,.gzip" style="display:none;">
 
         <input type="file" id="importImage" accept=".jpg,.jpeg,.png,.gif" style="display:none;">
@@ -101,6 +107,10 @@
         <span>Seleccionar hoja:&nbsp;</span>
         <select id="networkSelector" class="dropbtn"></select>
 
+    </div>
+
+    <div id="touchHint" class="mobile-info hidden">
+        Toca para seleccionar o arrastrar. Pellizca con dos dedos para acercar/alejar. Arrastra con dos dedos para mover el lienzo.
     </div>
 
     <!-- ===================== -->
@@ -379,6 +389,11 @@
                         <button class="tool-btn" id="toggleTooltip" data-action="toggle-tooltip">
                             <img src="img/buttons/tools/tooltip-off.svg" class="btn-icon">
                             <span>Quitar tooltip</span>
+                        </button>
+
+                        <button class="tool-btn" id="toggleSimulation" data-action="toggle-simulation">
+                            <img src="img/buttons/tools/sim-on.svg" class="btn-icon">
+                            <span>Mostrar simulación</span>
                         </button>
 
                     </div>
