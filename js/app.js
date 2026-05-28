@@ -89,6 +89,7 @@ let touchState = {
   pinchCenter: { x: 0, y: 0 },
   pointerDownTarget: null,
   pointerDownTargetSelected: false,
+  isMouseEvent: false,
 };
 
 let cursorIcon = null;
@@ -1105,12 +1106,36 @@ function handleCanvasPointerMove(point, movementX = 0, movementY = 0) {
   if (mouseDownPos && !isDragging && !resizing) {
     const dx = x - mouseDownPos.x;
     const dy = y - mouseDownPos.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const threshold = touchState.isMouseEvent ? 0.5 : 3;
 
-    if (Math.sqrt(dx * dx + dy * dy) > 3) {
+    if (distance > threshold) {
       if (!touchState.pointerDownTarget && ui.tool === "select" && touchState.active) {
         isPanning = true;
         canvas.style.cursor = "grabbing";
-      } else if (touchState.pointerDownTargetSelected) {
+      } else if (touchState.isMouseEvent && touchState.pointerDownTarget) {
+        // En PC: permite arrastre directo si hay un elemento bajo el cursor
+        isDragging = true;
+
+        if (ui.selection.node) {
+          ui.mode = "dragging_node";
+
+          draggingOffset = {
+            x: x - ui.selection.node.position.x,
+            y: y - ui.selection.node.position.y,
+          };
+        }
+
+        if (ui.selection.area) {
+          ui.mode = "dragging_area";
+
+          draggingOffset = {
+            x: x - ui.selection.area.position.x,
+            y: y - ui.selection.area.position.y,
+          };
+        }
+      } else if (!touchState.isMouseEvent && touchState.pointerDownTargetSelected) {
+        // En móvil: solo arrastra si ya estaba seleccionado
         isDragging = true;
 
         if (ui.selection.node) {
@@ -1191,10 +1216,12 @@ function handleCanvasPointerUp() {
 }
 
 canvas.addEventListener("mousedown", (e) => {
+  touchState.isMouseEvent = true;
   handleCanvasPointerDown(e, e.button);
 });
 
 canvas.addEventListener("touchstart", (e) => {
+  touchState.isMouseEvent = false;
   if (e.touches.length === 2) {
     e.preventDefault();
     touchState.active = true;
