@@ -18,6 +18,15 @@ const actions = {
     "toggle-inspector": () => {
         const inspector = document.getElementById("inspector");
         inspector.classList.toggle("collapsed");
+        resizeCanvas();
+
+        const handleTransitionEnd = (event) => {
+            if (event.target === inspector && event.propertyName === "max-height") {
+                resizeCanvas();
+            }
+        };
+
+        inspector.addEventListener("transitionend", handleTransitionEnd, { once: true });
     },
 
     "tool": (el) => toggleTool(el.dataset.tool, el),
