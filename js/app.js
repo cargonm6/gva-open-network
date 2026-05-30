@@ -116,13 +116,15 @@ function updateNetworkSelector() {
   const select = document.getElementById("networkSelector");
   select.innerHTML = "";
 
-  Object.keys(db.networks).forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    if (name === db.activeNetwork) opt.selected = true;
-    select.appendChild(opt);
-  });
+  Object.keys(db.networks)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
+    .forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      if (name === db.activeNetwork) opt.selected = true;
+      select.appendChild(opt);
+    });
 }
 
 // =====================
@@ -2181,9 +2183,11 @@ function renameCurrentNetwork() {
 
   db.activeNetwork = name;
 
-  for (const n of getNodes()) {
-    if (n.type === "cloud" && n.link === oldName) {
-      n.link = name;
+  for (const network of Object.values(db.networks)) {
+    for (const n of network.nodes) {
+      if (n.type === "cloud" && n.link === oldName) {
+        n.link = name;
+      }
     }
   }
 

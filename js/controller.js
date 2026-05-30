@@ -86,9 +86,19 @@ document.addEventListener("click", (e) => {
 
 document.addEventListener("click", (e) => {
     const toggle = e.target.closest(".dropdown > .dropbtn");
+    const isMobile = window.matchMedia("(max-width: 900px)").matches;
     if (toggle) {
         const dropdown = toggle.closest(".dropdown");
-        dropdown?.classList.toggle("open");
+        if (isMobile) {
+            document.querySelectorAll(".dropdown.open").forEach((opened) => {
+                if (opened !== dropdown) opened.classList.remove("open");
+            });
+            dropdown?.classList.toggle("open");
+        } else {
+            document.querySelectorAll(".dropdown.open").forEach((opened) => {
+                opened.classList.remove("open");
+            });
+        }
         return;
     }
 
