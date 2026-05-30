@@ -86,9 +86,9 @@
 }
 
 #inspector .opacity-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 #inspector td.opacity-cell input[type="range"] {
@@ -230,12 +230,25 @@
    RESPONSIVE
 ========================= */
 
-/* @media (max-width: 1024px) {
+@media (max-width: 1024px) {
     #inspector {
         width: 100%;
-        flex: 0 0 auto;
-        order: 4;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-        padding: 8px;
     }
-} */
+
+    #inspector div#props {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    #inspector fieldset {
+        flex: 1 1 300px;
+        display: block;
+    }
+
+    #inspector div.inspector-actions,
+    #inspector div.inspector-error {
+        flex: 0 0 100%;
+    }
+}
