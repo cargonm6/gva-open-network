@@ -630,3 +630,137 @@ button#toggleInspectorButton {
         margin-bottom: 8px;
     }
 }
+
+/* ===================== */
+/* SEARCH OVERLAY */
+/* ===================== */
+.search-overlay {
+    /* occupy the remaining space in #container (to the right of toolbar) */
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(255,255,255,0.98);
+}
+
+.search-overlay.hidden { display: none; }
+
+.search-panel {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-left: 1px solid #ddd;
+    border-radius: 0 6px 6px 0;
+    box-shadow: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-filters {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-filters .search-info {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tool-btn.small {
+    padding: 6px 8px;
+    font-size: 13px;
+}
+
+.search-filters input[type="text"],
+.search-filters input[type="search"],
+.search-filters input[type="number"] {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 140px;
+}
+
+.search-kind-checkboxes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-kind-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--color-toolbar-text);
+}
+
+.search-kind-checkboxes input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+#searchResultsTable { width: 100%; border-collapse: collapse; table-layout: fixed; }
+#searchResultsTable th, #searchResultsTable td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; overflow-wrap: anywhere; word-break: break-word; white-space: normal; vertical-align: top; }
+
+.search-results { padding: 0 12px 12px 12px; flex: 1 1 auto; overflow: auto; }
+
+.search-results table thead th { cursor: pointer; user-select: none; }
+.search-results table thead th.sort-asc::after { content: " \25B2"; }
+.search-results table thead th.sort-desc::after { content: " \25BC"; }
+
+/* sticky header inside scrollable results */
+.search-results table thead th {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 50;
+}
+
+/* column sizing: keep properties column limited */
+#searchResultsTable th[data-key="props"],
+#searchResultsTable td:nth-child(6) {
+    width: 40%;
+}
+
+#searchResultsTable th[data-key="id"],
+#searchResultsTable td:nth-child(1) { width: 12%; }
+#searchResultsTable th[data-key="name"],
+#searchResultsTable td:nth-child(2) { width: 18%; }
+#searchResultsTable th[data-key="type"],
+#searchResultsTable td:nth-child(3) { width: 12%; }
+#searchResultsTable th[data-key="sheet"],
+#searchResultsTable td:nth-child(4) { width: 10%; }
+#searchResultsTable th[data-key="pos"],
+#searchResultsTable td:nth-child(5) { width: 8%; }
+
+/* zebra striping for rows */
+#searchResultsTable tbody tr:nth-child(even) { background: #f5f7fa; }
+#searchResultsTable tbody tr:nth-child(odd) { background: #ffffff; }
+
+
+/* Hide canvas and inspector when search mode active */
+#container.search-active #canvas,
+#container.search-active #inspector,
+#container.search-active #resizer {
+    display: none !important;
+}
+
+/* Print mode: only show search panel */
+body.print-mode * { visibility: hidden; }
+body.print-mode #searchOverlay, body.print-mode #searchOverlay * { visibility: visible; }
+body.print-mode #searchOverlay { position: static; }
+
+@media print {
+    body * { visibility: hidden; }
+    #searchOverlay, #searchOverlay * { visibility: visible; }
+    #searchOverlay { position: static !important; }
+}

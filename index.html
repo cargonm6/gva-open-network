@@ -340,6 +340,11 @@
                     <span>Reasignar ID</span>
                 </button>
 
+                <button class="tool-btn" id="searchDevicesButton" data-action="search-equipment">
+                    <img src="img/buttons/tools/search.svg" class="btn-icon">
+                    <span>Buscar equipos</span>
+                </button>
+
                 <h5>Vista</h5>
 
                 <div class="dropdown toolbar-dropdown">
@@ -416,6 +421,45 @@
         <div id="inspector">
             <h3>Propiedades</h3>
             <div id="props"></div>
+        </div>
+
+        <!-- ===================== -->
+        <!-- BÚSQUEDA EQUIPOS (OVERLAY) -->
+        <!-- ===================== -->
+        <div id="searchOverlay" class="search-overlay hidden" aria-hidden="true">
+            <div class="search-panel">
+                <div class="search-filters">
+                    <input id="searchId" placeholder="ID" />
+                    <input id="searchName" placeholder="Nombre" />
+                    <input id="searchKeyword" placeholder="Cualquier término" />
+                    &nbsp;Filtrar por:
+                    <div class="search-kind-checkboxes">
+                        <label><input type="checkbox" id="searchChkNodes" checked> Nodos</label>
+                        <label><input type="checkbox" id="searchChkAreas" checked> Áreas</label>
+                        <label><input type="checkbox" id="searchChkLinks" checked> Enlaces</label>
+                        <label><input type="checkbox" id="searchChkGraphics"> Gráficos</label>
+                    </div>
+                    <div class="search-info">
+                        <span id="searchCount">0 registros</span>
+                        <button id="printResultsButton" class="tool-btn small" data-action="print-results">Imprimir</button>
+                    </div>
+                </div>
+                <div class="search-results">
+                    <table id="searchResultsTable">
+                        <thead>
+                            <tr>
+                                <th data-key="id">ID</th>
+                                <th data-key="name">Nombre</th>
+                                <th data-key="type">Tipo</th>
+                                <th data-key="sheet">Hoja</th>
+                                <th data-key="pos">Posición</th>
+                                <th data-key="props">Propiedades</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>
