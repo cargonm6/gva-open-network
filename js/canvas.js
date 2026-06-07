@@ -473,7 +473,6 @@ function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
                 break;
 
             case "tokenring":
-                console.log("token ring");
                 strokeColor = getColor("--color-area-border");
                 break;
 

@@ -629,6 +629,8 @@ function togglePorts() {
   }
 
   requestRender();
+
+  try { localStorage.setItem("showLinkPorts", showLinkPorts ? "1" : "0"); } catch (e) {}
 }
 
 function drawPorts() {
@@ -759,6 +761,8 @@ function toggleTooltip() {
   }
 
   requestRender();
+
+  try { localStorage.setItem("tooltipEnabled", tooltipEnabled ? "1" : "0"); } catch (e) {}
 }
 
 // =====================
@@ -783,6 +787,8 @@ function toggleSimulation() {
   }
 
   requestRender();
+
+  try { localStorage.setItem("simulationEnabled", SimulationEnabled ? "1" : "0"); } catch (e) {}
 }
 
 // =====================
@@ -804,6 +810,8 @@ function toggleGrid() {
   }
 
   requestRender();
+
+  try { localStorage.setItem("gridEnabled", gridEnabled ? "1" : "0"); } catch (e) {}
 }
 
 function drawGrid() {
@@ -2376,6 +2384,74 @@ async function init() {
   document.getElementById(
     "iconSetPreview"
   ).src = `img/devices/${savedIconSet}/router.svg`;
+
+  // Cargar opciones guardadas (rejilla, puertos, tooltip, simulación)
+  try {
+    const savedGrid = localStorage.getItem("gridEnabled");
+    if (savedGrid !== null) {
+      gridEnabled = savedGrid === "1";
+      const btn = document.getElementById("toggleGrid");
+      if (btn) {
+        if (gridEnabled) {
+          btn.querySelector("img").src = `img/buttons/tools/grid-off.svg`;
+          btn.querySelector("span").textContent = "Quitar rejilla";
+        } else {
+          btn.querySelector("img").src = `img/buttons/tools/grid-on.svg`;
+          btn.querySelector("span").textContent = "Forzar a rejilla";
+        }
+      }
+    }
+
+    const savedPorts = localStorage.getItem("showLinkPorts");
+    if (savedPorts !== null) {
+      showLinkPorts = savedPorts === "1";
+      const btn = document.getElementById("togglePorts");
+      if (btn) {
+        if (showLinkPorts) {
+          btn.querySelector("img").src = `img/buttons/tools/port-off.svg`;
+          btn.querySelector("span").textContent = "Quitar puertos";
+        } else {
+          btn.querySelector("img").src = `img/buttons/tools/port-on.svg`;
+          btn.querySelector("span").textContent = "Ver puertos";
+        }
+      }
+    }
+
+    const savedTooltip = localStorage.getItem("tooltipEnabled");
+    if (savedTooltip !== null) {
+      tooltipEnabled = savedTooltip === "1";
+      const btn = document.getElementById("toggleTooltip");
+      if (btn) {
+        if (tooltipEnabled) {
+          btn.querySelector("img").src = `img/buttons/tools/tooltip-off.svg`;
+          btn.querySelector("span").textContent = "Quitar tooltip";
+        } else {
+          btn.querySelector("img").src = `img/buttons/tools/tooltip-on.svg`;
+          btn.querySelector("span").textContent = "Mostrar tooltip";
+        }
+      }
+    }
+
+    const savedSim = localStorage.getItem("simulationEnabled");
+    if (savedSim !== null) {
+      SimulationEnabled = savedSim === "1";
+      const btn = document.getElementById("toggleSimulation");
+      if (btn) {
+        if (SimulationEnabled) {
+          btn.querySelector("img").src = `img/buttons/tools/sim-off.svg`;
+          btn.querySelector("span").textContent = "Ocultar simulación";
+        } else {
+          btn.querySelector("img").src = `img/buttons/tools/sim-on.svg`;
+          btn.querySelector("span").textContent = "Mostrar simulación";
+        }
+      }
+
+      if (SimulationEnabled) {
+        animationLoopActive = true;
+        animationLoop();
+      }
+    }
+  } catch (e) {}
 
   resetZoom();
 
