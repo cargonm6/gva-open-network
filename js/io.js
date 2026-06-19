@@ -84,7 +84,10 @@ async function exportTXT(data) {
 
     const networks = data.networks || {};
 
-    for (const [networkName, net] of Object.entries(networks)) {
+    const networkNames = Object.keys(networks).sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+    for (const networkName of networkNames) {
+        const net = networks[networkName];
         result.push(`\n====================`);
         result.push(`RED: ${networkName}`);
         result.push(`====================\n`);
@@ -97,58 +100,94 @@ async function exportTXT(data) {
             continue;
         }
 
-        const adjacency = {};
+        // Map nodes
         const nodeMap = {};
+        nodes.forEach(n => nodeMap[n.id] = n);
 
-        nodes.forEach(n => {
-            nodeMap[n.id] = n;
-            adjacency[n.id] = new Set();
-        });
+        // Build adjacency map with counts (to detect double/parallel links)
+        const adjacency = {};
+        nodes.forEach(n => adjacency[n.id] = {});
 
         links.forEach(l => {
-            const a = l.from.nodeId;
-            const b = l.to.nodeId;
-            if (adjacency[a] && adjacency[b]) {
-                adjacency[a].add(b);
-                adjacency[b].add(a);
-            }
+            const a = l.from?.nodeId;
+            const b = l.to?.nodeId;
+            if (!a || !b || !adjacency[a] || !adjacency[b]) return;
+
+            adjacency[a][b] = (adjacency[a][b] || 0) + 1;
+            adjacency[b][a] = (adjacency[b][a] || 0) + 1;
         });
 
-        const visited = new Set();
-        let groupIndex = 1;
+        // Detect areas and assign nodes to areas (anidamiento)
+        const areas = net.areas || [];
+        const areasMap = {};
+        areas.forEach(a => areasMap[a.id] = a);
 
-        function bfs(startId) {
-            const queue = [startId];
-            const group = [];
+        const areaNodes = {};
+        areas.forEach(a => areaNodes[a.id] = []);
 
-            visited.add(startId);
-
-            while (queue.length) {
-                const id = queue.shift();
-                group.push(id);
-
-                for (const n of adjacency[id] || []) {
-                    if (!visited.has(n)) {
-                        visited.add(n);
-                        queue.push(n);
+        const nodeToArea = {};
+        nodes.forEach(n => {
+            nodeToArea[n.id] = null;
+            if (n.position && areas.length) {
+                for (const a of areas) {
+                    const ax = a.position?.x || 0;
+                    const ay = a.position?.y || 0;
+                    const w = a.size?.width || 0;
+                    const h = a.size?.height || 0;
+                    if (n.position.x >= ax && n.position.x <= ax + w && n.position.y >= ay && n.position.y <= ay + h) {
+                        areaNodes[a.id].push(n.id);
+                        nodeToArea[n.id] = a.id;
+                        break;
                     }
                 }
             }
+        });
 
-            result.push(`-- Subred ${groupIndex++} --`);
+        // Nodes not in any area
+        const unassigned = nodes.map(n => n.id).filter(id => !nodeToArea[id]);
 
-            for (const id of group) {
-                const n = nodeMap[id];
-                result.push(`${n.name} (${n.type})`);
+        // Helper to print neighbors (first-level) with counts and area labels
+        function printNeighbors(id, indent) {
+            const neigh = adjacency[id] || {};
+            const keys = Object.keys(neigh).sort();
+            if (!keys.length) {
+                result.push(`${' '.repeat(indent)}(sin enlaces)`);
+                return;
             }
-
-            result.push("");
+            for (const nbr of keys) {
+                const cnt = neigh[nbr] || 0;
+                const areaLabel = nodeToArea[nbr] ? `area: ${areasMap[nodeToArea[nbr]].name}` : "sin área";
+                result.push(`${' '.repeat(indent)}-> ${nodeMap[nbr].name} (${nodeMap[nbr].type})${cnt > 1 ? ` x${cnt}` : ""} [${areaLabel}]`);
+            }
         }
 
-        for (const id of Object.keys(nodeMap)) {
-            if (!visited.has(id)) {
-                bfs(id);
+        // Print by areas (nesting)
+        if (areas.length) {
+            for (const a of areas) {
+                result.push(`Area: ${a.name}`);
+                const list = areaNodes[a.id] || [];
+                if (!list.length) {
+                    result.push(`  (vacía)`);
+                } else {
+                    for (const id of list) {
+                        const n = nodeMap[id];
+                        result.push(`  - ${n.name} (${n.type})`);
+                        printNeighbors(id, 6);
+                    }
+                }
+                result.push("");
             }
+        }
+
+        // Print unassigned nodes (outside areas)
+        if (unassigned.length) {
+            result.push(`Sin área:`);
+            for (const id of unassigned) {
+                const n = nodeMap[id];
+                result.push(`  - ${n.name} (${n.type})`);
+                printNeighbors(id, 6);
+            }
+            result.push("");
         }
     }
 

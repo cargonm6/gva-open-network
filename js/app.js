@@ -1508,14 +1508,9 @@ function updateNodeInspector(node) {
     const select = clone.querySelector('[data-bind="networkSelect"]');
 
     if (select) {
-      select.innerHTML = `
-      <option value="">-- Ninguno --</option>
-      ${Object.keys(db.networks).map(n => `
-        <option value="${n}" ${node.link === n ? "selected" : ""}>
-          ${n}
-        </option>
-      `).join("")}
-    `;
+      const names = Object.keys(db.networks).sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+      select.innerHTML = `\n      <option value="">-- Ninguno --</option>\n` +
+        names.map(n => `\n        <option value="${n}" ${node.link === n ? "selected" : ""}>${n}</option>`).join('\n');
     }
   }
 
