@@ -484,19 +484,60 @@ function drawLine(link, ctx, x1, y1, x2, y2, isSelected = false) {
     ctx.strokeStyle = strokeColor;
 
     if (type === "wireless") {
+        // Un solo dibujo: cuando la simulación está activa dibujamos
+        // únicamente la porción de onda viajera usando un envelope
+        // (gaussiano). Cuando no hay simulación dibujamos la onda completa.
         const nx = -uy;
         const ny = ux;
 
-        const amplitude = 5;
-        const wavelength = 20;
-        const step = 2;
+        const amplitudeMax = 8; // amplitud máxima más moderada
+        let wavelength = 20;
+        let step = 2;
 
+        // Si la simulación está activa, modulamos la amplitud con un
+        // envelope centrado en la posición actual de la onda. El envelope
+        // combina una gaussiana (centro móvil) y un factor de borde que
+        // hace que la señal sea 0 en los extremos.
+        let envelopeCenter = null;
+        let envelopeHalf = null;
+        if (typeof SimulationEnabled !== "undefined" && SimulationEnabled) {
+            const currentTime = Date.now() / 1000;
+            const speed = 0.5;
+            wavelength = wavelength / 2;
+            step = step / 2;
+
+            let progress = (currentTime * speed) % 2; // 0-2
+            if (progress > 1) progress = 2 - progress; // 0-1
+
+            envelopeCenter = len * progress;
+            // Hacer el segmento más estrecho
+            envelopeHalf = Math.min(40, Math.max(8, len * 0.05));
+            ctx.strokeStyle = getColor("--color-simulation");
+            ctx.lineWidth = 2;
+        } else {
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 1.5;
+        }
+
+        ctx.beginPath();
         for (let i = 0; i <= len; i += step) {
             const x = x1 + ux * i;
             const y = y1 + uy * i;
 
-            const wave =
-                Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
+            // envelope: por defecto 1; si hay simulación, combinación gaussiana + borde
+            let envelope = 1;
+            if (envelopeCenter !== null) {
+                const d = (i - envelopeCenter) / (envelopeHalf || 1);
+                const g = Math.exp(-0.5 * d * d);
+
+                // factor de borde que anula en los extremos (0 en 0 y len)
+                const edge = Math.sin(Math.PI * (i / len));
+
+                envelope = g * edge;
+            }
+
+            const amplitude = amplitudeMax * envelope;
+            const wave = Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
 
             const px = x + nx * wave;
             const py = y + ny * wave;
@@ -754,7 +795,8 @@ function drawSimulation() {
 
                 // Dibuja el punto según el tipo de línea
                 if (l.type === "wireless") {
-                    drawWirelessTravelingDot(fx + ox, fy + oy, tx + ox, ty + oy, progress, dotRadius, dotColor);
+                    // Wireless: no dibujamos la pelota (punto móvil).
+                    // La porción de onda la dibuja drawLine con envelope.
                 } else if (l.type === "wan") {
                     drawWanTravelingDot(fx + ox, fy + oy, tx + ox, ty + oy, progress, dotRadius, dotColor);
                 } else if (l.type === "console") {
@@ -791,18 +833,50 @@ function drawWirelessTravelingDot(x1, y1, x2, y2, progress, dotRadius, dotColor)
     const nx = -uy;
     const ny = ux;
 
-    const amplitude = 5;
-    const wavelength = 20;
+    // Dibuja una pequeña porción de onda centrada en la posición "progress".
+    // La onda se modula por "progress" (0 = plana, 1 = máxima) y varía en fase con el tiempo.
+    const amplitudeMax = 12; // amplitud máxima en px
+    const wavelength = 20; // longitud de onda en px
 
-    const i = len * progress;
-    const x = x1 + ux * i;
-    const y = y1 + uy * i;
-    const wave = Math.sin((i / wavelength) * Math.PI * 2) * amplitude;
+    const center = len * progress; // posición central de la onda a lo largo de la línea
 
-    const px = x + nx * wave;
-    const py = y + ny * wave;
+    // longitud de segmento de onda (mitad a cada lado)
+    const segHalf = Math.min(80, len * 0.25);
+    const start = Math.max(0, center - segHalf);
+    const end = Math.min(len, center + segHalf);
 
-    drawDot(px, py, dotRadius, dotColor);
+    // amplitud modulada por "progress" (ida y vuelta ya se gestiona fuera)
+    const amplitude = amplitudeMax * progress;
+
+    // fase que varía en el tiempo para dar sensación de movimiento/variación
+    const time = Date.now() / 1000;
+    const phaseShift = time * 4; // velocidad de variación de fase
+
+    ctx.save();
+    ctx.strokeStyle = dotColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    const step = 4;
+    for (let i = start; i <= end; i += step) {
+        const x = x1 + ux * i;
+        const y = y1 + uy * i;
+
+        // posición relativa al centro para crear un envelope (se atenúa hacia los extremos)
+        const rel = (i - center) / segHalf; // -1 .. 1
+        const envelope = Math.max(0, 1 - Math.abs(rel));
+
+        const wave = Math.sin((i / wavelength) * Math.PI * 2 + phaseShift) * amplitude * envelope;
+
+        const px = x + nx * wave;
+        const py = y + ny * wave;
+
+        if (i === start) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    }
+
+    ctx.stroke();
+    ctx.restore();
 }
 
 function drawWanTravelingDot(x1, y1, x2, y2, progress, dotRadius, dotColor) {
