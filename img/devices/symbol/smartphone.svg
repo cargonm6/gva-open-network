@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 44 44"
+   fill="#ffffff"
+   fill-rule="evenodd"
+   stroke="#000000"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg353"
+   sodipodi:docname="smartphone.svg"
+   width="44"
+   height="44"
+   inkscape:version="1.2.2 (1:1.2.2+202305151915+b0a8486541)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview355"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="9.3295455"
+     inkscape:cx="23.045067"
+     inkscape:cy="26.689403"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg353" />
+  <style
+     id="style2"><![CDATA[.B{stroke:none}.C{stroke:#fff}.D{stroke-linejoin:miter}.E{fill:none}.F{stroke-width:.394}.G{fill:#000}.H{stroke-linecap:square}.I{fill:#0c719f}]]></style>
+  <use
+     xlink:href="#A"
+     x="0.5"
+     y="0.5"
+     id="use4"
+     transform="translate(9.5914665,0.21141401)" />
+  <symbol
+     id="A"
+     overflow="visible">
+    <g
+       class="B"
+       id="g50">
+      <g
+         class="I"
+         id="g46">
+        <use
+           xlink:href="#C"
+           id="use6" />
+        <use
+           xlink:href="#D"
+           id="use8" />
+        <use
+           xlink:href="#E"
+           id="use10" />
+        <use
+           xlink:href="#F"
+           id="use12" />
+        <use
+           xlink:href="#G"
+           id="use14" />
+        <use
+           xlink:href="#H"
+           id="use16" />
+        <use
+           xlink:href="#I"
+           id="use18" />
+        <use
+           xlink:href="#J"
+           id="use20" />
+        <use
+           xlink:href="#K"
+           id="use22" />
+        <use
+           xlink:href="#L"
+           id="use24" />
+        <use
+           xlink:href="#M"
+           id="use26" />
+        <use
+           xlink:href="#N"
+           id="use28" />
+        <use
+           xlink:href="#O"
+           id="use30" />
+        <use
+           xlink:href="#P"
+           id="use32" />
+        <use
+           xlink:href="#Q"
+           id="use34" />
+        <use
+           xlink:href="#R"
+           id="use36" />
+        <use
+           xlink:href="#S"
+           id="use38" />
+        <use
+           xlink:href="#T"
+           id="use40" />
+        <use
+           xlink:href="#U"
+           id="use42" />
+        <use
+           xlink:href="#C"
+           id="use44" />
+      </g>
+      <use
+         xlink:href="#D"
+         class="G"
+         id="use48" />
+    </g>
+    <use
+       xlink:href="#D"
+       class="C D E F H"
+       id="use52" />
+    <use
+       xlink:href="#E"
+       class="B I"
+       id="use54" />
+    <use
+       xlink:href="#E"
+       class="C D E F"
+       id="use56" />
+    <use
+       xlink:href="#F"
+       class="B G"
+       id="use58" />
+    <use
+       xlink:href="#F"
+       class="C D E F"
+       id="use60" />
+    <use
+       xlink:href="#G"
+       class="B G"
+       id="use62" />
+    <use
+       xlink:href="#G"
+       class="C D E F"
+       id="use64" />
+    <use
+       xlink:href="#H"
+       class="B G"
+       id="use66" />
+    <use
+       xlink:href="#H"
+       class="C D E F"
+       id="use68" />
+    <use
+       xlink:href="#I"
+       class="B G"
+       id="use70" />
+    <use
+       xlink:href="#I"
+       class="C D E F"
+       id="use72" />
+    <use
+       xlink:href="#J"
+       class="B G"
+       id="use74" />
+    <use
+       xlink:href="#J"
+       class="C D E F"
+       id="use76" />
+    <use
+       xlink:href="#K"
+       class="B G"
+       id="use78" />
+    <use
+       xlink:href="#K"
+       class="C D E F"
+       id="use80" />
+    <use
+       xlink:href="#L"
+       class="B G"
+       id="use82" />
+    <use
+       xlink:href="#L"
+       class="C D E F"
+       id="use84" />
+    <use
+       xlink:href="#M"
+       class="B G"
+       id="use86" />
+    <use
+       xlink:href="#M"
+       class="C D E F"
+       id="use88" />
+    <use
+       xlink:href="#N"
+       class="B G"
+       id="use90" />
+    <use
+       xlink:href="#N"
+       class="C D E F"
+       id="use92" />
+    <use
+       xlink:href="#O"
+       class="B G"
+       id="use94" />
+    <use
+       xlink:href="#O"
+       class="C D E F"
+       id="use96" />
+    <use
+       xlink:href="#P"
+       class="B G"
+       id="use98" />
+    <use
+       xlink:href="#P"
+       class="C D E F"
+       id="use100" />
+    <use
+       xlink:href="#Q"
+       class="B G"
+       id="use102" />
+    <use
+       xlink:href="#Q"
+       class="C D E F H"
+       id="use104" />
+    <g
+       class="B I"
+       id="g110">
+      <use
+         xlink:href="#R"
+         id="use106" />
+      <use
+         xlink:href="#S"
+         id="use108" />
+    </g>
+    <use
+       xlink:href="#S"
+       class="C D E F"
+       id="use112" />
+    <use
+       xlink:href="#T"
+       class="B G"
+       id="use114" />
+    <use
+       xlink:href="#T"
+       class="C D E F"
+       id="use116" />
+    <path
+       d="M 15.002,8.265 15.79,4.72 Z"
+       class="B G"
+       id="path118" />
+    <path
+       d="M 15.002,8.265 15.79,4.72"
+       class="C D E F H"
+       id="path120" />
+    <path
+       d="M 15.396,8.265 16.184,5.114 Z"
+       class="B G"
+       id="path122" />
+    <g
+       class="C D E F"
+       id="g166">
+      <path
+         d="M 15.396,8.265 16.184,5.114"
+         class="H"
+         id="path124" />
+      <use
+         xlink:href="#C"
+         id="use126" />
+      <use
+         xlink:href="#D"
+         class="H"
+         id="use128" />
+      <use
+         xlink:href="#E"
+         id="use130" />
+      <use
+         xlink:href="#F"
+         id="use132" />
+      <use
+         xlink:href="#G"
+         id="use134" />
+      <use
+         xlink:href="#H"
+         id="use136" />
+      <use
+         xlink:href="#I"
+         id="use138" />
+      <use
+         xlink:href="#J"
+         id="use140" />
+      <use
+         xlink:href="#K"
+         id="use142" />
+      <use
+         xlink:href="#L"
+         id="use144" />
+      <use
+         xlink:href="#M"
+         id="use146" />
+      <use
+         xlink:href="#N"
+         id="use148" />
+      <use
+         xlink:href="#O"
+         id="use150" />
+      <use
+         xlink:href="#P"
+         id="use152" />
+      <g
+         class="H"
+         id="g158">
+        <use
+           xlink:href="#Q"
+           id="use154" />
+        <use
+           xlink:href="#R"
+           id="use156" />
+      </g>
+      <use
+         xlink:href="#S"
+         id="use160" />
+      <use
+         xlink:href="#T"
+         id="use162" />
+      <use
+         xlink:href="#V"
+         class="H"
+         id="use164" />
+    </g>
+    <g
+       class="B"
+       id="g212">
+      <g
+         class="I"
+         id="g208">
+        <use
+           xlink:href="#C"
+           id="use168" />
+        <use
+           xlink:href="#D"
+           id="use170" />
+        <use
+           xlink:href="#E"
+           id="use172" />
+        <use
+           xlink:href="#F"
+           id="use174" />
+        <use
+           xlink:href="#G"
+           id="use176" />
+        <use
+           xlink:href="#H"
+           id="use178" />
+        <use
+           xlink:href="#I"
+           id="use180" />
+        <use
+           xlink:href="#J"
+           id="use182" />
+        <use
+           xlink:href="#K"
+           id="use184" />
+        <use
+           xlink:href="#L"
+           id="use186" />
+        <use
+           xlink:href="#M"
+           id="use188" />
+        <use
+           xlink:href="#N"
+           id="use190" />
+        <use
+           xlink:href="#O"
+           id="use192" />
+        <use
+           xlink:href="#P"
+           id="use194" />
+        <use
+           xlink:href="#Q"
+           id="use196" />
+        <use
+           xlink:href="#R"
+           id="use198" />
+        <use
+           xlink:href="#S"
+           id="use200" />
+        <use
+           xlink:href="#T"
+           id="use202" />
+        <use
+           xlink:href="#U"
+           id="use204" />
+        <use
+           xlink:href="#C"
+           id="use206" />
+      </g>
+      <use
+         xlink:href="#D"
+         class="G"
+         id="use210" />
+    </g>
+    <use
+       xlink:href="#D"
+       class="C D E F H"
+       id="use214" />
+    <use
+       xlink:href="#E"
+       class="B I"
+       id="use216" />
+    <use
+       xlink:href="#E"
+       class="C D E F"
+       id="use218" />
+    <use
+       xlink:href="#F"
+       class="B G"
+       id="use220" />
+    <use
+       xlink:href="#F"
+       class="C D E F"
+       id="use222" />
+    <use
+       xlink:href="#G"
+       class="B G"
+       id="use224" />
+    <use
+       xlink:href="#G"
+       class="C D E F"
+       id="use226" />
+    <use
+       xlink:href="#H"
+       class="B G"
+       id="use228" />
+    <use
+       xlink:href="#H"
+       class="C D E F"
+       id="use230" />
+    <use
+       xlink:href="#I"
+       class="B G"
+       id="use232" />
+    <use
+       xlink:href="#I"
+       class="C D E F"
+       id="use234" />
+    <use
+       xlink:href="#J"
+       class="B G"
+       id="use236" />
+    <use
+       xlink:href="#J"
+       class="C D E F"
+       id="use238" />
+    <use
+       xlink:href="#K"
+       class="B G"
+       id="use240" />
+    <use
+       xlink:href="#K"
+       class="C D E F"
+       id="use242" />
+    <use
+       xlink:href="#L"
+       class="B G"
+       id="use244" />
+    <use
+       xlink:href="#L"
+       class="C D E F"
+       id="use246" />
+    <use
+       xlink:href="#M"
+       class="B G"
+       id="use248" />
+    <use
+       xlink:href="#M"
+       class="C D E F"
+       id="use250" />
+    <use
+       xlink:href="#N"
+       class="B G"
+       id="use252" />
+    <use
+       xlink:href="#N"
+       class="C D E F"
+       id="use254" />
+    <use
+       xlink:href="#O"
+       class="B G"
+       id="use256" />
+    <use
+       xlink:href="#O"
+       class="C D E F"
+       id="use258" />
+    <use
+       xlink:href="#P"
+       class="B G"
+       id="use260" />
+    <use
+       xlink:href="#P"
+       class="C D E F"
+       id="use262" />
+    <use
+       xlink:href="#Q"
+       class="B G"
+       id="use264" />
+    <use
+       xlink:href="#Q"
+       class="C D E F H"
+       id="use266" />
+    <g
+       class="B I"
+       id="g272">
+      <use
+         xlink:href="#R"
+         id="use268" />
+      <use
+         xlink:href="#S"
+         id="use270" />
+    </g>
+    <use
+       xlink:href="#S"
+       class="C D E F"
+       id="use274" />
+    <use
+       xlink:href="#T"
+       class="B G"
+       id="use276" />
+    <use
+       xlink:href="#T"
+       class="C D E F"
+       id="use278" />
+    <path
+       d="M 15.002,8.265 15.79,4.72 Z"
+       class="B G"
+       id="path280" />
+    <path
+       d="M 15.002,8.265 15.79,4.72"
+       class="C D E F H"
+       id="path282" />
+    <path
+       d="M 15.396,8.265 16.184,5.114 Z"
+       class="B G"
+       id="path284" />
+    <g
+       class="C D E F"
+       id="g328">
+      <path
+         d="M 15.396,8.265 16.184,5.114"
+         class="H"
+         id="path286" />
+      <use
+         xlink:href="#C"
+         id="use288" />
+      <use
+         xlink:href="#D"
+         class="H"
+         id="use290" />
+      <use
+         xlink:href="#E"
+         id="use292" />
+      <use
+         xlink:href="#F"
+         id="use294" />
+      <use
+         xlink:href="#G"
+         id="use296" />
+      <use
+         xlink:href="#H"
+         id="use298" />
+      <use
+         xlink:href="#I"
+         id="use300" />
+      <use
+         xlink:href="#J"
+         id="use302" />
+      <use
+         xlink:href="#K"
+         id="use304" />
+      <use
+         xlink:href="#L"
+         id="use306" />
+      <use
+         xlink:href="#M"
+         id="use308" />
+      <use
+         xlink:href="#N"
+         id="use310" />
+      <use
+         xlink:href="#O"
+         id="use312" />
+      <use
+         xlink:href="#P"
+         id="use314" />
+      <g
+         class="H"
+         id="g320">
+        <use
+           xlink:href="#Q"
+           id="use316" />
+        <use
+           xlink:href="#R"
+           id="use318" />
+      </g>
+      <use
+         xlink:href="#S"
+         id="use322" />
+      <use
+         xlink:href="#T"
+         id="use324" />
+      <use
+         xlink:href="#V"
+         class="H"
+         id="use326" />
+    </g>
+  </symbol>
+  <defs
+     id="defs351">
+    <path
+       id="C"
+       d="m 21.693,18.117 c 0.394,-1.182 1.969,-7.877 1.969,-8.665 0.394,-1.181 0,-2.363 -0.788,-2.363 L 23.268,6.695 22.874,6.301 c 0,0 0.394,-1.575 0.394,-2.363 0.394,-1.969 0.394,-3.151 0.394,-3.151 0,0 0,-0.394 -0.394,-0.394 L 22.086,0 c 0,0 -0.394,0 -0.394,0.394 0,0 -0.394,0.788 -1.182,2.757 C 20.116,3.939 20.116,5.514 20.116,5.514 19.328,5.12 18.541,5.12 17.753,4.726 l -5.12,-1.181 c 0,0 -0.394,0 -0.394,0.394 -0.394,0 -1.575,0.788 -1.969,1.575 -0.394,0.787 -2.363,7.483 -2.757,8.665 l -1.575,6.695 c 0,1.575 -0.394,4.332 -1.575,8.271 L 2,36.627 c 0,0.394 -1.182,2.363 0.394,2.757 l 5.514,1.969 c 1.181,0 3.544,0.788 5.12,1.182 1.969,0 1.969,-1.969 1.969,-2.363 l 1.969,-7.483 c 0.788,-3.938 2.363,-6.695 2.757,-8.271 0.788,-1.575 1.575,-4.726 1.969,-6.301 z" />
+    <path
+       id="D"
+       d="M 22.087,0.788 H 20.906 C 20.512,0.394 20.118,0.394 20.118,0.394" />
+    <path
+       id="E"
+       d="m 20.118,18.511 c 0.394,-1.181 1.969,-7.877 1.969,-9.058 0,-0.788 -0.394,-1.969 -0.788,-2.363 V 6.696 h -0.394 l 0.788,-2.757 c 0.394,-1.969 0.394,-2.757 0.394,-2.757 0,-0.394 -0.394,-0.788 -0.394,-0.788 L 20.511,0 C 20.117,0 20.117,0.394 19.723,0.394 L 18.935,3.151 18.147,5.514 C 17.359,5.12 16.965,5.12 16.178,4.726 14.209,4.332 12.633,3.938 10.664,3.938 L 10.27,4.332 C 9.876,4.332 9.089,5.12 8.695,5.907 8.301,6.694 5.938,12.996 5.544,14.572 5.15,15.753 4.756,19.298 4.363,20.873 3.97,22.448 3.575,25.599 2.788,29.538 l -2.363,7.089 c 0,0.394 -1.181,2.363 0.394,3.151 1.575,0.394 3.938,1.181 5.12,1.575 1.182,0.394 3.545,0.788 5.514,1.182 1.575,0.394 1.575,-1.969 1.575,-2.363 l 1.969,-7.089 c 1.181,-3.938 2.363,-6.695 3.151,-8.271 0.394,-1.575 1.575,-5.12 1.969,-6.302 z" />
+    <path
+       id="F"
+       d="M 7.515,27.963 C 7.121,28.357 6.727,28.751 5.94,28.751 5.152,28.357 4.759,27.963 5.152,27.176 c 0,-0.788 0.788,-1.181 1.575,-0.788 0.394,0 0.788,0.788 0.788,1.575 z" />
+    <path
+       id="G"
+       d="m 10.666,29.144 c 0,0.788 -0.788,1.181 -1.575,0.788 -0.788,0 -1.181,-0.788 -0.788,-1.575 0,-0.394 0.788,-0.788 1.575,-0.788 0.788,0.394 1.181,0.788 0.788,1.575 z" />
+    <path
+       id="H"
+       d="m 14.21,29.538 c 0,0.788 -0.788,1.182 -1.575,1.182 -0.788,-0.394 -1.182,-1.182 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-1.181 0.394,0.394 0.788,1.181 0.788,1.575 z" />
+    <path
+       id="I"
+       d="m 6.727,30.72 c -0.394,0.788 -0.788,1.181 -1.575,0.788 -0.788,0 -1.181,-0.788 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-0.788 0.394,0 0.788,0.788 0.788,1.575 z" />
+    <path
+       id="J"
+       d="m 9.878,31.901 c 0,0.788 -0.788,1.182 -1.575,1.182 -0.788,-0.394 -1.182,-1.182 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-1.181 0.788,0.394 1.181,1.181 0.788,1.575 z" />
+    <path
+       id="K"
+       d="m 13.423,32.689 c 0,0.394 -0.788,0.788 -1.575,0.788 -0.788,-0.394 -1.181,-0.788 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-0.788 0.394,0 0.788,0.788 0.788,1.575 z" />
+    <path
+       id="L"
+       d="m 5.94,33.477 c -0.394,0.788 -0.788,1.182 -1.575,0.788 -0.788,0 -1.182,-0.788 -0.788,-1.575 0,-0.394 0.788,-1.181 1.575,-0.788 0.394,0 0.788,0.788 0.788,1.575 z" />
+    <path
+       id="M"
+       d="m 9.09,34.658 c 0,0.788 -0.788,1.181 -1.575,1.181 -0.788,-0.394 -1.181,-1.181 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-1.181 0.788,0.394 1.181,1.181 0.788,1.575 z" />
+    <path
+       id="N"
+       d="m 12.635,35.446 c 0,0.394 -0.788,0.788 -1.575,0.788 -0.787,0 -1.182,-0.788 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-0.788 0.394,0 1.181,0.788 0.788,1.575 z" />
+    <path
+       id="O"
+       d="m 5.152,36.233 c -0.394,0.788 -0.788,1.181 -1.575,0.788 -0.788,0 -1.182,-0.788 -0.788,-1.575 0,-0.394 0.788,-0.788 1.575,-0.788 0.394,0.394 0.788,0.788 0.788,1.575 z m 3.151,1.575 c 0,0.394 -0.788,0.788 -1.575,0.788 C 5.94,38.202 5.546,37.808 5.94,37.021 c 0,-0.788 0.788,-1.182 1.575,-0.788 0.788,0 1.181,0.788 0.788,1.575 z" />
+    <path
+       id="P"
+       d="m 11.847,38.203 c 0,0.788 -0.788,1.181 -1.575,0.788 -0.788,0 -1.181,-0.788 -0.788,-1.575 0,-0.788 0.788,-1.181 1.575,-0.788 0.788,0 1.181,0.788 0.788,1.575 z" />
+    <path
+       id="Q"
+       d="m 6.727,39.385 c 0,0.394 0,0.394 -0.394,0.394 v -0.394 z m -0.394,0 -0.394,1.575 M 6.333,39.778 5.939,40.96 M 6.727,39.385 6.333,40.96 M 6.727,39.778 6.333,40.96 M 9.09,18.117 v 1.181 M 9.484,18.51 9.09,19.298 m 5.908,0.788 v 0.788 m 0,-1.181 -0.394,1.181" />
+    <path
+       id="R"
+       d="m 20.905,6.695 0.788,-2.757 c 0.394,-1.969 0.394,-2.757 0.394,-2.757 0,-0.394 -0.394,-0.788 -0.394,-0.788 L 20.511,0 c -0.394,0 -0.394,0.394 -0.788,0.394 l -0.788,2.757 -0.788,2.363 m -0.394,14.572 c 0,0.394 -0.394,0.394 -0.788,0.394 L 7.12,17.723 6.726,17.329 8.695,11.027 c 0,-0.394 0.394,-0.394 0.394,-0.394 l 9.846,2.757 c 0.394,0 0.394,0.394 0.394,0.394 z M 21.298,5.908 C 20.116,5.514 19.329,5.514 18.147,5.12 M 11.058,3.938 c 0,0 -2.362,4.727 -3.938,9.453 -1.575,5.908 -1.575,7.877 -1.575,10.634 0,0.394 0.788,1.181 1.181,1.575 h 0.788 c 0,0 0.394,0 0.788,0.394 0.394,0.394 0.788,0.394 0.788,0.394 0.394,0.394 0.394,0.394 0.788,0.394 0.788,0.394 0.788,0.394 1.182,0.394 0,0 0.394,0 0.788,-0.394 0.394,0 0.788,0.394 1.181,0.394 h 0.394 c 0.788,0.394 1.575,0 1.969,-0.394 1.575,-2.363 2.363,-3.939 3.938,-9.846 1.182,-5.12 1.575,-10.24 1.575,-10.24 M 9.483,6.302 c 1.969,0 3.938,0.788 5.908,1.181 1.97,0.393 3.938,1.182 5.514,1.969" />
+    <path
+       id="S"
+       d="m 13.816,24.024 c -0.394,1.575 -1.969,2.363 -3.545,1.969 -1.576,-0.394 -2.363,-1.969 -1.969,-3.544 0.394,-1.575 1.969,-2.363 3.545,-1.969 1.576,0.394 2.363,1.969 1.969,3.545 z M 8.302,19.298 c 0.394,0 0.788,0.394 1.181,0.394 v 0.394 c -0.394,0 -0.394,0 -0.788,0.394 H 8.301 C 7.907,20.086 7.119,19.692 7.119,19.298 c -0.394,0 0,0 0,0 0.394,-0.394 0.788,0 1.182,0 z m -1.969,3.151 c 0.394,0 0.788,0.394 1.181,0.394 0,0 0.394,0.394 0,0.394 0,0.394 0,1.181 0.394,1.575 v 0.394 c -0.394,0 -0.788,-0.394 -1.182,-0.394 L 6.332,24.418 v -1.969 z" />
+    <path
+       id="T"
+       d="M 15.391,21.268 C 14.997,20.874 14.603,20.874 14.21,20.874 v 1.181 h 2.363 v -0.394 c -0.394,0 -0.788,-0.394 -1.182,-0.394 z m 0,3.545 h -0.788 c -0.394,0 -0.788,0 -0.788,0.394 0,0 -0.394,0.788 -0.788,0.788 -0.394,0.394 -0.394,0.394 0,0.394 l 0.788,0.394 c 0.394,0 0.394,0 0.788,-0.394 0.394,0 0.788,-0.788 0.788,-1.181 v -0.394 z" />
+    <path
+       id="U"
+       d="M 15.002,8.265 15.79,4.72 Z m 0.394,0 0.788,-3.151 z" />
+    <path
+       id="V"
+       d="M 15.002,8.265 15.79,4.72 m -0.394,3.545 0.788,-3.151" />
+  </defs>
+</svg>
