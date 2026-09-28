@@ -1478,6 +1478,9 @@ function updateNodeInspector(node) {
     angle: node.angle ?? 0,
     text: node.text ?? "",
     opacity: node.opacity ?? 100,
+    width: node.size?.width ?? 150,
+    height: node.size?.height ?? 150,
+    keepAspectRatio: node.keepAspectRatio ?? true,
     link: node.link ?? null,
     metadata: JSON.stringify(node.metadata || {})
   };
@@ -1502,7 +1505,11 @@ function updateNodeInspector(node) {
 
   if (node.type === "text") bind(clone, "text", node.text);
   if (node.type === "north") bind(clone, "angle", node.angle || 0);
-  if (node.type === "image") bind(clone, "opacity", node.opacity ?? 100);
+  if (node.type === "image") {
+    bind(clone, "opacity", node.opacity ?? 100);
+    bind(clone, "widthInput", node.size?.width ?? 150);
+    bind(clone, "heightInput", node.size?.height ?? 150);
+  }
 
   // CLOUD
   if (node.type === "cloud") {
@@ -1537,6 +1544,9 @@ function updateNodeInspector(node) {
     nameInput: clone.querySelector('[data-bind="name"]'),
     angleInput: clone.querySelector('[data-bind="angle"]'),
     textInput: clone.querySelector('[data-bind="text"]'),
+    widthInput: clone.querySelector('[data-bind="widthInput"]'),
+    heightInput: clone.querySelector('[data-bind="heightInput"]'),
+    keepAspectRatio: clone.querySelector('[data-bind="keepAspectRatio"]'),
     opacitySlider: clone.querySelector('[data-bind="opacitySlider"]'),
     opacityValue: clone.querySelector('[data-bind="opacityValue"]'),
     networkSelect: clone.querySelector('[data-bind="networkSelect"]'),
@@ -1555,6 +1565,31 @@ function updateNodeInspector(node) {
 
     // live update
     refs.opacitySlider.addEventListener("input", updateOpacityLabel);
+  }
+
+  // MANTENER PROPORCIÓN
+  if (refs.keepAspectRatio && refs.widthInput && refs.heightInput) {
+    const initialWidth = node.size?.width ?? 150;
+    const initialHeight = node.size?.height ?? 150;
+    const aspectRatio = initialWidth / initialHeight;
+
+    refs.keepAspectRatio.checked = node.keepAspectRatio ?? true;
+
+    refs.widthInput.addEventListener("input", () => {
+      if (refs.keepAspectRatio.checked) {
+        const newWidth = parseFloat(refs.widthInput.value) || initialWidth;
+        const newHeight = Math.round(newWidth / aspectRatio);
+        refs.heightInput.value = newHeight;
+      }
+    });
+
+    refs.heightInput.addEventListener("input", () => {
+      if (refs.keepAspectRatio.checked) {
+        const newHeight = parseFloat(refs.heightInput.value) || initialHeight;
+        const newWidth = Math.round(newHeight * aspectRatio);
+        refs.widthInput.value = newWidth;
+      }
+    });
   }
 
   // METADATA
@@ -1670,6 +1705,39 @@ function saveNode(node, refs) {
     }
   }
 
+  // WIDTH & HEIGHT (image)
+  if (refs.widthInput) {
+    let width = Math.round(parseFloat(refs.widthInput.value)) || 150;
+    if (width < 10) width = 10;
+
+    if (width !== original.width) {
+      if (!node.size) node.size = {};
+      node.size.width = width;
+      changed = true;
+    }
+  }
+
+  if (refs.heightInput) {
+    let height = Math.round(parseFloat(refs.heightInput.value)) || 150;
+    if (height < 10) height = 10;
+
+    if (height !== original.height) {
+      if (!node.size) node.size = {};
+      node.size.height = height;
+      changed = true;
+    }
+  }
+
+  // KEEP ASPECT RATIO (image)
+  if (refs.keepAspectRatio) {
+    const newKeepAspectRatio = refs.keepAspectRatio.checked;
+
+    if (newKeepAspectRatio !== original.keepAspectRatio) {
+      node.keepAspectRatio = newKeepAspectRatio;
+      changed = true;
+    }
+  }
+
   // NETWORK SELECT (cloud link)
   if (refs.networkSelect) {
     const newLink = refs.networkSelect.value || null;
@@ -1703,6 +1771,9 @@ function saveNode(node, refs) {
       angle: node.angle ?? 0,
       text: node.text ?? "",
       opacity: node.opacity ?? 100,
+      width: node.size?.width ?? 150,
+      height: node.size?.height ?? 150,
+      keepAspectRatio: node.keepAspectRatio ?? true,
       link: node.link ?? null,
       metadata: JSON.stringify(node.metadata || {})
     };

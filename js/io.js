@@ -223,10 +223,10 @@ function loadImageToNode(file, node) {
             let h = img.height;
 
             if (w > h && w > maxSize) {
-                h *= maxSize / w;
+                h = Math.round(h * maxSize / w);
                 w = maxSize;
             } else if (h > maxSize) {
-                w *= maxSize / h;
+                w = Math.round(w * maxSize / h);
                 h = maxSize;
             }
 

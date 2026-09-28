@@ -36,6 +36,18 @@
     <legend>Imagen</legend>
     <table class="inspector-table">
       <tr>
+        <td>Ancho:</td>
+        <td><input type="number" min="10" step="1" data-bind="widthInput" /></td>
+      </tr>
+      <tr>
+        <td>Alto:</td>
+        <td><input type="number" min="10" step="1" data-bind="heightInput" /></td>
+      </tr>
+      <tr>
+        <td>Mantener proporción:</td>
+        <td><input type="checkbox" data-bind="keepAspectRatio" /></td>
+      </tr>
+      <tr>
         <td>Opacidad:</td>
         <td class="opacity-cell">
           <input type="range" min="10" max="100" step="10" data-bind="opacitySlider" />
