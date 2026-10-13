@@ -773,6 +773,24 @@ function toggleTooltip() {
 // =====================
 
 let SimulationEnabled = false;
+let displayNamesEnabled = true;
+
+function toggleDisplayNames() {
+  const toggleButton = document.getElementById("toggleDisplayNames");
+  displayNamesEnabled = !displayNamesEnabled;
+
+  if (displayNamesEnabled) {
+    toggleButton.querySelector("img").src = `img/buttons/tools/dis-off.svg`;
+    toggleButton.querySelector("span").textContent = "Ocultar nombres";
+  } else {
+    toggleButton.querySelector("img").src = `img/buttons/tools/dis-on.svg`;
+    toggleButton.querySelector("span").textContent = "Mostrar nombres";
+  }
+
+  requestRender();
+
+  try { localStorage.setItem("displayNamesEnabled", displayNamesEnabled ? "1" : "0"); } catch (e) {}
+}
 
 function toggleSimulation() {
   const toggleButton = document.getElementById("toggleSimulation");
@@ -2426,6 +2444,7 @@ function changeIconSet(setName) {
 
   document.getElementById("iconSetLabel").textContent = label;
   document.getElementById(
+   
     "iconSetPreview"
   ).src = `img/devices/${setName}/router.svg`;
 
@@ -2521,6 +2540,21 @@ async function init() {
       if (SimulationEnabled) {
         animationLoopActive = true;
         animationLoop();
+      }
+    }
+
+    const savedDisplayNames = localStorage.getItem("displayNamesEnabled");
+    if (savedDisplayNames !== null) {
+      displayNamesEnabled = savedDisplayNames === "1";
+      const btn = document.getElementById("toggleDisplayNames");
+      if (btn) {
+        if (displayNamesEnabled) {
+          btn.querySelector("img").src = `img/buttons/tools/dis-off.svg`;
+          btn.querySelector("span").textContent = "Ocultar nombres";
+        } else {
+          btn.querySelector("img").src = `img/buttons/tools/dis-on.svg`;
+          btn.querySelector("span").textContent = "Mostrar nombres";
+        }
       }
     }
   } catch (e) {}

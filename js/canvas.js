@@ -241,6 +241,11 @@ function drawNodeLabel(n) {
         return;
     }
 
+    if (!displayNamesEnabled) {
+        ctx.restore();
+        return;
+    }
+
     drawTextWithOutline(n.name, n.position.x + 25, n.position.y + 52, "center");
 
     ctx.restore();
