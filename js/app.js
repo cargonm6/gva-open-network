@@ -2008,17 +2008,23 @@ function updateLinkInspector(link) {
   bind(clone, "type", link.type);
   bind(clone, "mode", mode);
   bind(clone, "vlan", link.vlan || "");
+  bind(clone, "aggregation", !!link.aggregation);
   bind(clone, "fromNode", link.from.nodeId);
   bind(clone, "toNode", link.to.nodeId);
   bind(clone, "fromPort", link.from?.port || "");
   bind(clone, "toPort", link.to?.port || "");
 
   const crossoverInput = clone.querySelector('[data-bind="crossover"]');
+  const aggregationInput = clone.querySelector('[data-bind="aggregation"]');
   const fromNodeNameEl = clone.querySelector('[data-bind="fromNodeName"]');
   const toNodeNameEl = clone.querySelector('[data-bind="toNodeName"]');
 
   if (crossoverInput) crossoverInput.checked = !!link.crossover;
-  if (link.type !== "ethernet") crossoverInput.disabled = true;
+  if (aggregationInput) aggregationInput.checked = !!link.aggregation;
+  if (link.type !== "ethernet") {
+    crossoverInput.disabled = true;
+    if (aggregationInput) aggregationInput.disabled = true;
+  }
 
   if (fromNodeNameEl) {
     fromNodeNameEl.textContent = fromNode?.name ?? "";
@@ -2042,7 +2048,8 @@ function updateLinkInspector(link) {
     swapBtn: clone.querySelector('[data-action="swap"]'),
     saveBtn: clone.querySelector('[data-action="saveAll"]'),
     error: clone.querySelector('[data-bind="error"]'),
-    crossoverInput: clone.querySelector('[data-bind="crossover"]')
+    crossoverInput: clone.querySelector('[data-bind="crossover"]'),
+    aggregationInput: clone.querySelector('[data-bind="aggregation"]')
   };
 
   // Snapshot
@@ -2050,7 +2057,8 @@ function updateLinkInspector(link) {
     vlan: link.vlan ?? null,
     fromPort: link.from?.port ?? null,
     toPort: link.to?.port ?? null,
-    crossover: !!link.crossover
+    crossover: !!link.crossover,
+    aggregation: !!link.aggregation
   };
 
   // container._linkId = link.id;
@@ -2076,6 +2084,7 @@ function saveLink(link, refs) {
   const fromPortRaw = refs.fromPortInput.value.trim();
   const toPortRaw = refs.toPortInput.value.trim();
   const newCrossover = refs.crossoverInput?.checked ?? false;
+  const newaggregation = refs.aggregationInput?.checked ?? false;
 
   let changed = false;
 
@@ -2087,6 +2096,15 @@ function saveLink(link, refs) {
       link.crossover = true;
     } else {
       delete link.crossover;
+    }
+    changed = true;
+  }
+
+  if (newaggregation !== (original.aggregation ?? false)) {
+    if (newaggregation) {
+      link.aggregation = true;
+    } else {
+      delete link.aggregation;
     }
     changed = true;
   }
@@ -2139,6 +2157,7 @@ function saveLink(link, refs) {
   if (changed) {
     rebuildLinkGroups();
     requestRender();
+    updateLinkInspector(link);
 
     refs.error.textContent = "✔ Cambios guardados";
     refs.error.style.color = "green";
@@ -2147,7 +2166,9 @@ function saveLink(link, refs) {
     container._linkSnapshot = {
       vlan: link.vlan ?? null,
       fromPort: link.from?.port ?? null,
-      toPort: link.to?.port ?? null
+      toPort: link.to?.port ?? null,
+      crossover: !!link.crossover,
+      aggregation: !!link.aggregation
     };
 
   } else {

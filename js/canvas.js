@@ -251,6 +251,36 @@ function drawNodeLabel(n) {
     ctx.restore();
 }
 
+function drawaggregationBadge(links, x1, y1, x2, y2) {
+    const ecLinks = links.filter((link) => link.type === "ethernet" && link.aggregation);
+    if (!ecLinks.length) return;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len === 0) return;
+
+    const ux = dx / len;
+    const uy = dy / len;
+    const cx = (x1 + x2) * 0.5;
+    const cy = (y1 + y2) * 0.5;
+
+    const badgeCount = ecLinks.length;
+    const perpendicularRadius = 18 + (badgeCount - 1) * 4;
+    const parallelRadius = 6 + Math.min(badgeCount, 3) * 2;
+    const rotation = Math.atan2(uy, ux) + Math.PI / 2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = getColor("--color-link-wan");
+    ctx.fillStyle = "rgba(255, 255, 255, 0)";
+    ctx.ellipse(cx, cy, perpendicularRadius, parallelRadius, rotation, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+}
+
 function drawLinks() {
     for (const ls of linkGroups.values()) {
 
@@ -358,6 +388,11 @@ function drawLinks() {
                 ty + oy,
                 isSelected
             );
+        }
+
+        const ecLinks = ls.filter((link) => link.type === "ethernet" && link.aggregation);
+        if (ecLinks.length > 0) {
+            drawaggregationBadge(ls, fx, fy, tx, ty);
         }
     }
 }

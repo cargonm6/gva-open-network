@@ -1719,13 +1719,13 @@
           "id": "ethernet_8773",
           "type": "ethernet",
           "from": {
-            "nodeId": "switch3_9430",
-            "port": "fa0/4"
+            "nodeId": "switch3_9430"
           },
           "to": {
             "nodeId": "switch3_3851"
           },
-          "crossover": true
+          "crossover": true,
+          "aggregation": true
         },
         {
           "id": "ethernet_6727",
@@ -1736,7 +1736,8 @@
           "to": {
             "nodeId": "switch3_9430"
           },
-          "crossover": true
+          "crossover": true,
+          "aggregation": true
         },
         {
           "id": "ethernet_3716",
@@ -2094,5 +2095,5 @@
       ]
     }
   },
-  "activeNetwork": "red2"
+  "activeNetwork": "red1"
 }
